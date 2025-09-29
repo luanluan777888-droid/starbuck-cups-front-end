@@ -4,9 +4,14 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store";
 import { toast } from "sonner";
+import {
+  isValidPhoneNumber,
+  getPhoneValidationErrorMessage,
+} from "@/lib/utils/phoneValidation";
 
 export interface Address {
   addressLine: string;
+  ward?: string;
   district: string;
   city: string;
   postalCode: string;
@@ -41,7 +46,7 @@ export interface UseCustomerFormReturn {
   isSubmitting: boolean;
   updateField: (
     field: keyof CustomerFormData | string,
-    value: string | string[] | boolean
+    value: string | string[] | boolean | Address
   ) => void;
   updateAddress: (field: keyof Address, value: string) => void;
   validateForm: () => boolean;
@@ -74,6 +79,7 @@ export function useCustomerForm(
     isVip: initialData?.isVip || false,
     address: initialData?.address || {
       addressLine: "",
+      ward: "",
       district: "",
       city: "",
       postalCode: "",
@@ -87,7 +93,7 @@ export function useCustomerForm(
   const updateField = useCallback(
     (
       field: keyof CustomerFormData | string,
-      value: string | string[] | boolean
+      value: string | string[] | boolean | Address
     ) => {
       setFormData((prev) => ({
         ...prev,
@@ -132,12 +138,8 @@ export function useCustomerForm(
       newErrors.fullName = "Họ tên là bắt buộc";
     }
 
-    if (
-      formData.phone &&
-      !/^(0|\+84)(3|5|7|8|9)[0-9]{8}$/.test(formData.phone)
-    ) {
-      newErrors.phone =
-        "Số điện thoại không đúng định dạng Việt Nam (phải có 10 số và bắt đầu bằng 03, 05, 07, 08, 09)";
+    if (formData.phone && !isValidPhoneNumber(formData.phone)) {
+      newErrors.phone = getPhoneValidationErrorMessage();
     }
 
     // Only validate address fields when creating new customer (not editing)
@@ -184,6 +186,7 @@ export function useCustomerForm(
         isVip: boolean;
         address?: {
           addressLine: string;
+          ward?: string | null;
           district: string | null;
           city: string;
           postalCode: string | null;
@@ -208,9 +211,10 @@ export function useCustomerForm(
       ) {
         payload.address = {
           addressLine: formData.address.addressLine.trim(),
+          ward: formData.address.ward?.trim() || null,
           district: formData.address.district.trim() || null,
           city: formData.address.city.trim(),
-          postalCode: formData.address.postalCode.trim() || null,
+          postalCode: formData.address.postalCode?.trim() || null,
           isDefault: true,
         };
       }
@@ -280,6 +284,7 @@ export function useCustomerForm(
       isVip: initialData?.isVip || false,
       address: initialData?.address || {
         addressLine: "",
+        ward: "",
         district: "",
         city: "",
         postalCode: "",

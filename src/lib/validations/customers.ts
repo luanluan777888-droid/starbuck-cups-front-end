@@ -1,7 +1,5 @@
 import { z } from 'zod';
-
-// Vietnamese phone number validation
-const vietnamesePhoneRegex = /^(0|\+84)[3-9][0-9]{8}$/;
+import { INTERNATIONAL_PHONE_REGEX, getPhoneValidationErrorMessage } from '@/lib/utils/phoneValidation';
 
 // Address validation schema
 export const addressSchema = z.object({
@@ -30,7 +28,7 @@ export const customerSchema = z.object({
   fullName: z.string().max(255, 'Họ tên không được quá 255 ký tự').optional(),
   phone: z.string()
     .min(1, 'Số điện thoại là bắt buộc')
-    .regex(vietnamesePhoneRegex, 'Số điện thoại không đúng định dạng Việt Nam')
+    .regex(INTERNATIONAL_PHONE_REGEX, getPhoneValidationErrorMessage())
     .max(20, 'Số điện thoại không được quá 20 ký tự'),
   email: z.string()
     .email('Email không đúng định dạng')
@@ -79,7 +77,7 @@ export const customerSchema = z.object({
 export const createCustomerSchema = customerSchema.extend({
   phone: z.string()
     .min(1, 'Số điện thoại là bắt buộc')
-    .regex(vietnamesePhoneRegex, 'Số điện thoại không đúng định dạng Việt Nam'),
+    .regex(INTERNATIONAL_PHONE_REGEX, getPhoneValidationErrorMessage()),
 });
 
 // Update customer validation (more flexible)

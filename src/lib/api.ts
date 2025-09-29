@@ -40,6 +40,18 @@ class ApiService {
           if (token) {
             config.headers.Authorization = `Bearer ${token}`;
           }
+
+          // Debug log for cookie tracking
+          if (config.url?.includes('auth') || config.url?.includes('refresh')) {
+            console.log("API Request Debug:", {
+              url: config.url,
+              method: config.method,
+              hasToken: !!token,
+              cookies: document.cookie,
+              hasRefreshToken: document.cookie.includes('admin_refresh_token'),
+              withCredentials: config.withCredentials
+            });
+          }
         }
         return config;
       },

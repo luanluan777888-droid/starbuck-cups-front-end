@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
       "@lexical/html",
       "@lexical/utils",
       "lodash",
-      "swiper"
+      "swiper",
     ],
     webpackBuildWorker: true,
   },

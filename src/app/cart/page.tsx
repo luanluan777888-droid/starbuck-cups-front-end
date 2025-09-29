@@ -12,6 +12,7 @@ import { Header } from "@/components/layout/Header";
 import { Cart } from "@/components/ui/Cart";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
 import { trackConsultationSubmission } from "@/lib/analytics";
+import { isValidPhoneNumber, getPhoneValidationErrorMessage } from "@/lib/utils/phoneValidation";
 
 interface ConsultationFormData {
   customerName: string;
@@ -54,6 +55,11 @@ export default function CartPage() {
 
     if (!formData.phoneNumber.trim()) {
       toast.error("Vui lòng nhập số điện thoại");
+      return false;
+    }
+
+    if (!isValidPhoneNumber(formData.phoneNumber)) {
+      toast.error(getPhoneValidationErrorMessage());
       return false;
     }
 

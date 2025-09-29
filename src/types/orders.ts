@@ -16,6 +16,7 @@ export interface Customer {
     id: string;
     customerId: string;
     addressLine: string;
+    ward?: string | null;
     district: string | null;
     city: string;
     postalCode: string | null;
@@ -98,6 +99,7 @@ export interface OrderItem {
 
 export interface TemporaryAddress {
   addressLine: string;
+  ward?: string;
   district: string;
   city: string;
   postalCode: string;

@@ -143,6 +143,116 @@ export function CustomerForm({
           />
         </div>
 
+        {/* Address Information (only for new customers) */}
+        {!isEditing && (
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Địa chỉ
+            </h3>
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Địa chỉ cụ thể <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.address?.addressLine || ""}
+                  onChange={(e) => updateField("address", {
+                    ...formData.address,
+                    addressLine: e.target.value
+                  })}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
+                    errors["address.addressLine"] ? "border-red-500" : "border-gray-600"
+                  }`}
+                  placeholder="Nhập số nhà, tên đường"
+                  required
+                />
+                {errors["address.addressLine"] && (
+                  <p className="mt-1 text-sm text-red-400">{errors["address.addressLine"]}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Phường/Xã
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.address?.ward || ""}
+                    onChange={(e) => updateField("address", {
+                      ...formData.address,
+                      ward: e.target.value
+                    })}
+                    className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400"
+                    placeholder="Nhập phường/xã"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Quận/Huyện <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.address?.district || ""}
+                    onChange={(e) => updateField("address", {
+                      ...formData.address,
+                      district: e.target.value
+                    })}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
+                      errors["address.district"] ? "border-red-500" : "border-gray-600"
+                    }`}
+                    placeholder="Nhập quận/huyện"
+                    required
+                  />
+                  {errors["address.district"] && (
+                    <p className="mt-1 text-sm text-red-400">{errors["address.district"]}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Tỉnh/Thành phố <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.address?.city || ""}
+                    onChange={(e) => updateField("address", {
+                      ...formData.address,
+                      city: e.target.value
+                    })}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
+                      errors["address.city"] ? "border-red-500" : "border-gray-600"
+                    }`}
+                    placeholder="Nhập tỉnh/thành phố"
+                    required
+                  />
+                  {errors["address.city"] && (
+                    <p className="mt-1 text-sm text-red-400">{errors["address.city"]}</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Mã bưu điện
+                </label>
+                <input
+                  type="text"
+                  value={formData.address?.postalCode || ""}
+                  onChange={(e) => updateField("address", {
+                    ...formData.address,
+                    postalCode: e.target.value
+                  })}
+                  className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400"
+                  placeholder="Nhập mã bưu điện (tùy chọn)"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* VIP Status */}
         <div>
           <h3 className="text-lg font-semibold text-white mb-4">
