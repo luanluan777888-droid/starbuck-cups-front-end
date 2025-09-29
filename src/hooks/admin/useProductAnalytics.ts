@@ -1,0 +1,170 @@
+"use client";
+
+import { useState, useEffect } from 'react';
+
+export interface ProductAnalytics {
+  productId: string;
+  productName?: string;
+  clickCount: number;
+  addToCartCount: number;
+  conversionRate: number;
+  lastClicked?: string;
+  lastAddedToCart?: string;
+}
+
+export interface AnalyticsSummary {
+  totalClicks: number;
+  totalAddToCarts: number;
+  overallConversionRate: number;
+  topClickedProducts: ProductAnalytics[];
+  topConversionProducts: ProductAnalytics[];
+  uniqueProductsClicked: number;
+  uniqueProductsAddedToCart: number;
+}
+
+export const useProductAnalytics = () => {
+  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAnalyticsSummary = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch('/api/analytics/summary', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch analytics summary: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSummary(data.data);
+      } else {
+        throw new Error(data.message || 'Failed to fetch analytics summary');
+      }
+    } catch (err) {
+      console.error('Analytics summary fetch error:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnalyticsSummary();
+  }, []);
+
+  return {
+    summary,
+    loading,
+    error,
+    refetch: fetchAnalyticsSummary,
+  };
+};
+
+export const useTopClickedProducts = (limit: number = 10) => {
+  const [products, setProducts] = useState<ProductAnalytics[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTopClicked = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(`/api/analytics/top-clicked?limit=${limit}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch top clicked products: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setProducts(data.data);
+      } else {
+        throw new Error(data.message || 'Failed to fetch top clicked products');
+      }
+    } catch (err) {
+      console.error('Top clicked products fetch error:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTopClicked();
+  }, [limit]);
+
+  return {
+    products,
+    loading,
+    error,
+    refetch: fetchTopClicked,
+  };
+};
+
+export const useTopConversionProducts = (limit: number = 10) => {
+  const [products, setProducts] = useState<ProductAnalytics[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTopConversion = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(`/api/analytics/top-conversion?limit=${limit}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch top conversion products: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setProducts(data.data);
+      } else {
+        throw new Error(data.message || 'Failed to fetch top conversion products');
+      }
+    } catch (err) {
+      console.error('Top conversion products fetch error:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTopConversion();
+  }, [limit]);
+
+  return {
+    products,
+    loading,
+    error,
+    refetch: fetchTopConversion,
+  };
+};

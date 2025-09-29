@@ -1,103 +1,124 @@
-import Image from "next/image";
+import { Metadata } from "next";
+import { generateSEO } from "@/lib/seo";
+import HomePageComponent from "@/components/pages/HomePage";
+import { Category } from "@/types";
 
-export default function Home() {
+// Enable static generation with revalidation for better performance
+export const revalidate = 300; // 5 minutes
+export const dynamic = "force-static";
+
+interface HeroImageData {
+  id: string;
+  title: string;
+  imageUrl: string;
+  altText: string;
+  order: number;
+  isActive: boolean;
+}
+
+interface HomePageProps {
+  categories: Category[];
+  heroImages: HeroImageData[];
+}
+
+export const metadata: Metadata = generateSEO({
+  title: "Trang chủ",
+  description:
+    "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
+  openGraph: {
+    title: "Starbucks Cups Shop - Ly Starbucks chính thức",
+    description:
+      "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích",
+    image: "/images/og-home.jpg",
+    url: "/",
+    type: "website",
+  },
+});
+
+// Server-side data fetching
+async function getHomePageData(): Promise<HomePageProps> {
+  try {
+    // Fetch categories from API
+    const categoriesResponse = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://api-starbuck-cups.lequangtridat.com/api"
+      }/categories/public/`,
+      {
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
+        cache: 'force-cache',
+      }
+    );
+    console.log("Fetched categories response:", categoriesResponse);
+
+    let categories: Category[] = [];
+
+    if (categoriesResponse.ok) {
+      const categoriesData = await categoriesResponse.json();
+      console.log("Fetched categories data:", categoriesData);
+      if (categoriesData.success && categoriesData.data?.items) {
+        categories = categoriesData.data.items;
+      }
+    }
+
+    // Fetch hero images from API
+    let heroImages: HeroImageData[] = [];
+    try {
+      const heroImagesUrl = `${
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://api-starbuck-cups.lequangtridat.com/api"
+      }/hero-images/public`;
+
+      console.log("🔗 Hero images URL:", heroImagesUrl);
+
+      const heroImagesResponse = await fetch(heroImagesUrl, {
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
+        cache: 'force-cache',
+      });
+      console.log(
+        "📡 Fetched hero images response:",
+        heroImagesResponse.status,
+        heroImagesResponse.statusText
+      );
+
+      if (heroImagesResponse.ok) {
+        const heroImagesData = await heroImagesResponse.json();
+        console.log("✅ Fetched hero images data:", heroImagesData);
+        console.log("✅ Hero images count:", heroImagesData.data?.length || 0);
+        if (heroImagesData.success && heroImagesData.data) {
+          heroImages = heroImagesData.data;
+        }
+      } else {
+        console.error(
+          "❌ Hero images API failed:",
+          heroImagesResponse.status,
+          heroImagesResponse.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching hero images:", error);
+    }
+
+    return {
+      categories,
+      heroImages,
+    };
+  } catch (error) {
+    console.error("Error fetching home page data:", error);
+    return {
+      categories: [],
+      heroImages: [],
+    };
+  }
+}
+
+export default async function HomePage() {
+  const homePageData = await getHomePageData();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <HomePageComponent
+      categories={homePageData.categories || []}
+      heroImages={homePageData.heroImages || []}
+    />
   );
 }
