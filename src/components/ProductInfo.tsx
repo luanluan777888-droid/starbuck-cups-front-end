@@ -71,6 +71,24 @@ export default function ProductInfo() {
     }
   }, [params.slug, dispatch, hasAttemptedFetch]);
 
+  // Track product view when product is loaded
+  useEffect(() => {
+    if (product) {
+      // GA4 tracking
+      trackProductView({
+        id: product.id,
+        name: product.name,
+        category: product.productCategories?.[0]?.category?.name,
+      });
+
+      // Product analytics tracking
+      trackProductClick({
+        id: product.id,
+        name: product.name,
+        category: product.productCategories?.[0]?.category?.name,
+      });
+    }
+  }, [product]);
 
   // Show error page if product not found AFTER we tried to fetch
   if (error && !loading && hasAttemptedFetch) {
@@ -235,25 +253,6 @@ export default function ProductInfo() {
   }
 
   console.log("Rendering product:", product.name);
-
-  // Track product view when product is loaded
-  useEffect(() => {
-    if (product) {
-      // GA4 tracking
-      trackProductView({
-        id: product.id,
-        name: product.name,
-        category: product.productCategories?.[0]?.category?.name,
-      });
-
-      // Product analytics tracking
-      trackProductClick({
-        id: product.id,
-        name: product.name,
-        category: product.productCategories?.[0]?.category?.name,
-      });
-    }
-  }, [product]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

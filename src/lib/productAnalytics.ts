@@ -273,7 +273,7 @@ if (typeof window !== 'undefined') {
 
   // Debug: Add to window for development
   if (process.env.NODE_ENV === 'development') {
-    (window as any).productAnalytics = {
+    (window as Window & { productAnalytics?: object }).productAnalytics = {
       getSessionStats,
       resetSession,
       canTrackMoreClicks,

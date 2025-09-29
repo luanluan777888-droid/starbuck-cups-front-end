@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { Product } from "@/types";
-import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
 import { fetchRelatedProducts } from "@/store/slices/productsSlice";

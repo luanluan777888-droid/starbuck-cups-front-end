@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface ProductAnalytics {
   productId: string;
@@ -76,7 +76,7 @@ export const useTopClickedProducts = (limit: number = 10) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTopClicked = async () => {
+  const fetchTopClicked = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -106,11 +106,11 @@ export const useTopClickedProducts = (limit: number = 10) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
 
   useEffect(() => {
     fetchTopClicked();
-  }, [limit]);
+  }, [limit, fetchTopClicked]);
 
   return {
     products,
@@ -125,7 +125,7 @@ export const useTopConversionProducts = (limit: number = 10) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTopConversion = async () => {
+  const fetchTopConversion = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -155,11 +155,11 @@ export const useTopConversionProducts = (limit: number = 10) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
 
   useEffect(() => {
     fetchTopConversion();
-  }, [limit]);
+  }, [limit, fetchTopConversion]);
 
   return {
     products,

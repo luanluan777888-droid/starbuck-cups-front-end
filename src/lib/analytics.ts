@@ -4,7 +4,7 @@
 // Extend Window interface to include gtag
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
+    gtag: (...args: unknown[]) => void;
   }
 }
 
@@ -126,7 +126,7 @@ export const trackConsultationSubmission = (consultation: {
     transaction_id: consultation.id || `consultation_${Date.now()}`,
     currency: 'VND',
     value: consultation.totalItems * 50000, // Estimated value per consultation item
-    items: consultation.items.map((item, index) => ({
+    items: consultation.items.map((item) => ({
       item_id: item.id,
       item_name: item.name,
       item_category: item.category || 'Consultation',
@@ -147,7 +147,7 @@ export const trackConsultationSubmission = (consultation: {
 // Custom event tracking
 export const trackCustomEvent = (
   eventName: string,
-  parameters: Record<string, any> = {}
+  parameters: Record<string, unknown> = {}
 ) => {
   if (!isGAAvailable()) return;
 

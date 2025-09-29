@@ -3,7 +3,6 @@ import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { useAppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
-import { toast } from "sonner";
 
 interface ProductGridProps {
   apiEndpoint: string;

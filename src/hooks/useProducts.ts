@@ -4,7 +4,14 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
-import type { Product, Category, Color, Capacity, CapacityRange, PaginationMeta } from "@/types";
+import type {
+  Product,
+  Category,
+  Color,
+  Capacity,
+  CapacityRange,
+  PaginationMeta,
+} from "@/types";
 import { toast } from "sonner";
 
 interface UseProductsReturn {
@@ -69,7 +76,7 @@ export function useProducts(): UseProductsReturn {
   );
   const [capacityRange, setCapacityRange] = useState<CapacityRange>({
     min: parseInt(searchParams.get("capacityMin") || "0"),
-    max: parseInt(searchParams.get("capacityMax") || "9999")
+    max: parseInt(searchParams.get("capacityMax") || "9999"),
   });
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
@@ -85,7 +92,9 @@ export function useProducts(): UseProductsReturn {
   const [colors, setColors] = useState<Color[]>([]);
   const [capacities, setCapacities] = useState<Capacity[]>([]);
   const [totalItems, setTotalItems] = useState(0);
-  const [paginationData, setPaginationData] = useState<PaginationMeta | null>(null);
+  const [paginationData, setPaginationData] = useState<PaginationMeta | null>(
+    null
+  );
 
   // Fetch filter options (categories, colors, capacities)
   useEffect(() => {
@@ -144,8 +153,10 @@ export function useProducts(): UseProductsReturn {
         if (searchQuery) params.append("search", searchQuery);
         if (selectedCategory) params.append("category", selectedCategory);
         if (selectedColor) params.append("color", selectedColor);
-        if (capacityRange.min > 0) params.append("capacityMin", capacityRange.min.toString());
-        if (capacityRange.max < 9999) params.append("capacityMax", capacityRange.max.toString());
+        if (capacityRange.min > 0)
+          params.append("capacityMin", capacityRange.min.toString());
+        if (capacityRange.max < 9999)
+          params.append("capacityMax", capacityRange.max.toString());
         params.append("page", currentPage.toString());
         params.append("limit", "20");
 
@@ -256,7 +267,7 @@ export function useProducts(): UseProductsReturn {
   };
 
   const handleAddToCart = (product: Product) => {
-    dispatch(addToCart({ product, quantity: 1 }));
+    dispatch(addToCart({ product }));
     toast.success(`Đã thêm ${product.name} vào giỏ hàng`, {
       duration: 2000,
     });
@@ -276,7 +287,8 @@ export function useProducts(): UseProductsReturn {
     searchQuery.trim() !== "" ||
     selectedCategory !== "" ||
     selectedColor !== "" ||
-    (capacityRange.min > 0 || capacityRange.max < 9999) ||
+    capacityRange.min > 0 ||
+    capacityRange.max < 9999 ||
     sortBy !== "newest";
 
   return {

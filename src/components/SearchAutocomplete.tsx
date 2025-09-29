@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { useAppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
-import { toast } from "sonner";
 import type { Product } from "@/types";
 import { trackAddToCart, trackSearch } from "@/lib/analytics";
 

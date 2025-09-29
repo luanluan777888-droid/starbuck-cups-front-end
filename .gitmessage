@@ -6,7 +6,7 @@
 
 # Loại commit:
 # feat: tính năng mới
-# fix: sửa lỗi  
+# fix: sửa lỗi
 # docs: cập nhật tài liệu
 # style: format code, không ảnh hưởng logic
 # refactor: refactor code

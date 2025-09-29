@@ -19,8 +19,8 @@ export default function StatisticsPage() {
   const [period, setPeriod] = useState<"week" | "month" | "year">("month");
   const { data, loading, error, fetchStatistics } = useStatistics(period);
   const { summary: analyticsSummary, loading: analyticsLoading } = useProductAnalytics();
-  const { products: topClickedProducts, loading: topClickedLoading } = useTopClickedProducts(8);
-  const { products: topConversionProducts, loading: topConversionLoading } = useTopConversionProducts(8);
+  const { products: topClickedProducts } = useTopClickedProducts(8);
+  const { products: topConversionProducts } = useTopConversionProducts(8);
   console.log("data", data);
 
   const handlePeriodChange = (newPeriod: "week" | "month" | "year") => {

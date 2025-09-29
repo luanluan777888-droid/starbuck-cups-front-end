@@ -102,7 +102,7 @@ export function TopConversionProducts({ products }: TopConversionProductsProps) 
           <div className="text-xs text-gray-500 space-y-1">
             <div>🟢 Tỷ lệ cao: ≥50% (Rất tốt)</div>
             <div>🟡 Tỷ lệ trung bình: 25-49% (Có thể cải thiện)</div>
-            <div>🔴 Tỷ lệ thấp: <25% (Cần tối ưu)</div>
+            <div>🔴 Tỷ lệ thấp: &lt;25% (Cần tối ưu)</div>
           </div>
         </div>
       )}

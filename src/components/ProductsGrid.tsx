@@ -5,8 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import { useAppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
 import type { Product, CapacityRange } from "@/types";
-import { toast } from "sonner";
-import { trackAddToCart, trackSearch, trackPagination } from "@/lib/analytics";
+import { trackAddToCart, trackPagination } from "@/lib/analytics";
 import { Pagination } from "@/components/ui/Pagination";
 import {
   calculateOptimalProductsPerPage,

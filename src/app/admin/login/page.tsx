@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Admin Panel</h1>
           <p className="text-white">
-            Đăng nhập để quản lý hệ thống H's shoucangpu
+            Đăng nhập để quản lý hệ thống H&apos;s shoucangpu
           </p>
         </div>
 
@@ -196,7 +196,7 @@ export default function AdminLoginPage() {
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-white">
-          <p>© 2024 H's shoucangpu Admin Panel</p>
+          <p>© 2024 H&apos;s shoucangpu Admin Panel</p>
         </div>
       </div>
     </div>
