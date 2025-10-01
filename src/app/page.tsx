@@ -42,7 +42,7 @@ export const metadata: Metadata = generateSEO({
     title: "H’s shoucangpu - Trang chủ",
     description:
       "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Giao hàng toàn quốc.",
-    image: "/images/placeholder.webp",
+    image: "/images/placeholder.png",
     url: "/",
     type: "website",
   },

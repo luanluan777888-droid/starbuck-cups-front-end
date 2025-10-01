@@ -16,7 +16,7 @@ export const metadata: Metadata = {
       title: "H's shoucangpu - Collectible Gift Shop",
       description:
         "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích",
-      image: "/images/placeholder.webp",
+      image: "/images/placeholder.png",
       url: "/",
       type: "website",
     },
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: "H's shoucangpu - Cửa hàng ly St@rbucks",
     description:
       "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích",
-    images: ["/images/placeholder.webp"],
+    images: ["/images/placeholder.png"],
   },
   icons: {
     icon: [
