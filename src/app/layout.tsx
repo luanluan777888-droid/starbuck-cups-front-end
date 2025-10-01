@@ -4,21 +4,28 @@ import StoreProvider from "@/components/StoreProvider";
 import ClientLayout from "@/components/layout/ClientLayout";
 import { generateSEO, generateOrganizationStructuredData } from "@/lib/seo";
 
-export const metadata: Metadata = generateSEO({
-  title: "Cửa hàng ly Starbucks chính thức",
-  description:
-    "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
-  keywords:
-    "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam",
-  openGraph: {
-    title: "Starbucks Cups Shop - Ly Starbucks chính thức",
+export const metadata: Metadata = {
+  ...generateSEO({
+    title: "Cửa hàng ly Starbucks",
     description:
-      "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích",
-    image: "/images/og-image.jpg",
-    url: "/",
-    type: "website",
+      "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
+    keywords:
+      "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam",
+    openGraph: {
+      title: "H's shoucangpu - Cửa hàng ly Starbucks",
+      description:
+        "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích",
+      image: "/images/og-image.jpg",
+      url: "/",
+      type: "website",
+    },
+  }),
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
-});
+};
 
 export default function RootLayout({
   children,
@@ -26,15 +33,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const organizationData = generateOrganizationStructuredData();
-  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
+  const gaMeasurementId =
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-XXXXXXXXXX";
+
+  // Dynamic AWS resource hints
+  const awsS3Url = process.env.NEXT_PUBLIC_AWS_S3_URL;
 
   return (
     <html lang="vi">
       <head>
-        {/* Critical resource hints */}
-        <link rel="preconnect" href="https://starbucks-shop.s3.ap-southeast-1.amazonaws.com" />
-        <link rel="preconnect" href="https://picsum.photos" />
-        <link rel="dns-prefetch" href="https://starbucks-shop.s3.ap-southeast-1.amazonaws.com" />
+        {/* Dynamic AWS resource hints nếu có */}
+        {awsS3Url && (
+          <>
+            <link rel="preconnect" href={awsS3Url} />
+            <link rel="dns-prefetch" href={awsS3Url} />
+          </>
+        )}
 
         {/* Preload critical fonts để tối ưu LCP */}
         <link
@@ -53,7 +67,10 @@ export default function RootLayout({
         />
 
         {/* Optimize viewport for mobile performance */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
         <meta name="theme-color" content="#000000" />
 
         {/* Performance hints */}
