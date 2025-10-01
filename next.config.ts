@@ -16,13 +16,14 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "starbucks-shop.s3.ap-southeast-1.amazonaws.com",
+        hostname: "hasron-starbucks-shop.s3.ap-southeast-1.amazonaws.com",
         port: "",
         pathname: "/**",
       },
+
       {
         protocol: "https",
-        hostname: "picsum.photos",
+        hostname: "starbucks-shop.s3.ap-southeast-1.amazonaws.com",
         port: "",
         pathname: "/**",
       },
