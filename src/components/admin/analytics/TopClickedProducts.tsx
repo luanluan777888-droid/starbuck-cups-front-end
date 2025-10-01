@@ -2,26 +2,56 @@
 
 import { MousePointer, ShoppingCart } from "lucide-react";
 import { ProductAnalytics } from "@/hooks/admin/useProductAnalytics";
+import Link from "next/link";
+import { Pagination } from "@/components/ui/Pagination";
 
 interface TopClickedProductsProps {
+  page: number;
+  onPageChange: (page: number) => void;
   products: ProductAnalytics[];
+  loading?: boolean;
 }
 
-export function TopClickedProducts({ products }: TopClickedProductsProps) {
+export function TopClickedProducts({
+  page,
+  onPageChange,
+  products,
+  loading,
+}: TopClickedProductsProps) {
+  const itemsPerPage = 10;
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return "Chưa có";
-    return new Date(dateString).toLocaleDateString('vi-VN');
+    return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
   const formatPercentage = (num: number) => {
     return `${num.toFixed(1)}%`;
   };
 
+  if (loading) {
+    return (
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 className="text-lg font-medium text-white mb-4">
+          Sản phẩm được click nhiều nhất
+        </h3>
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="h-16 bg-gray-700 rounded-lg animate-pulse"
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (products.length === 0) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
         <h3 className="text-lg font-medium text-white mb-4">
-          Top Clicked Products
+          Sản phẩm được click nhiều nhất
         </h3>
         <p className="text-gray-400 text-center py-8">
           Chưa có dữ liệu về sản phẩm được click
@@ -31,26 +61,30 @@ export function TopClickedProducts({ products }: TopClickedProductsProps) {
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+    <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-lg">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-medium text-white">Top Clicked Products</h3>
+        <h3 className="text-lg font-medium text-white">
+          Sản phẩm được click nhiều nhất
+        </h3>
         <p className="text-sm text-gray-400">{products.length} sản phẩm</p>
       </div>
 
       <div className="space-y-4">
         {products.map((product, index) => (
-          <div
+          <Link
             key={product.productId}
-            className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
+            href={`/products/${product.productSlug || product.productId}`}
+            target="_blank"
+            className="flex items-center justify-between p-4 bg-gray-800/50 border border-gray-700 rounded-lg hover:bg-gray-800 hover:border-gray-600 transition-all cursor-pointer"
           >
             <div className="flex items-center space-x-4">
-              <div className="flex items-center justify-center w-8 h-8 bg-blue-500/20 text-blue-400 rounded-full text-sm font-medium">
-                #{index + 1}
+              <div className="flex items-center justify-center w-8 h-8 bg-gray-700 text-white rounded-full text-sm font-medium">
+                #{(page - 1) * itemsPerPage + index + 1}
               </div>
 
               <div>
                 <h4 className="font-medium text-white truncate max-w-48">
-                  {product.productName || `Product ${product.productId}`}
+                  {product.productName || `Sản phẩm ${product.productId}`}
                 </h4>
                 <p className="text-xs text-gray-400">
                   Lần cuối: {formatDate(product.lastClicked)}
@@ -62,12 +96,16 @@ export function TopClickedProducts({ products }: TopClickedProductsProps) {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1 text-blue-400">
                   <MousePointer className="w-4 h-4" />
-                  <span className="text-sm font-medium">{product.clickCount}</span>
+                  <span className="text-sm font-medium">
+                    {product.clickCount}
+                  </span>
                 </div>
 
                 <div className="flex items-center space-x-1 text-green-400">
                   <ShoppingCart className="w-4 h-4" />
-                  <span className="text-sm font-medium">{product.addToCartCount}</span>
+                  <span className="text-sm font-medium">
+                    {product.addToCartCount}
+                  </span>
                 </div>
               </div>
 
@@ -75,9 +113,25 @@ export function TopClickedProducts({ products }: TopClickedProductsProps) {
                 Chuyển đổi: {formatPercentage(product.conversionRate)}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
+
+      {products.length === itemsPerPage && (
+        <div className="mt-6 pt-4 border-t border-gray-700">
+          <Pagination
+            data={{
+              current_page: page,
+              total_pages: 999,
+              has_next: products.length === itemsPerPage,
+              has_prev: page > 1,
+              per_page: itemsPerPage,
+              total_items: page * itemsPerPage,
+            }}
+            onPageChange={onPageChange}
+          />
+        </div>
+      )}
     </div>
   );
 }

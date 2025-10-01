@@ -77,16 +77,18 @@ export function CustomerForm({
               </label>
               <input
                 type="tel"
-                value={formData.phone}
-                onChange={(e) => updateField("phone", e.target.value)}
+                value={formData.phoneNumber}
+                onChange={(e) => updateField("phoneNumber", e.target.value)}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
-                  errors.phone ? "border-red-500" : "border-gray-600"
+                  errors.phoneNumber ? "border-red-500" : "border-gray-600"
                 }`}
-                placeholder="0901234567"
+                placeholder="Nhập số điện thoại"
                 required
               />
-              {errors.phone && (
-                <p className="mt-1 text-sm text-red-400">{errors.phone}</p>
+              {errors.phoneNumber && (
+                <p className="mt-1 text-sm text-red-400">
+                  {errors.phoneNumber}
+                </p>
               )}
             </div>
           </div>
@@ -146,9 +148,7 @@ export function CustomerForm({
         {/* Address Information (only for new customers) */}
         {!isEditing && (
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Địa chỉ
-            </h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Địa chỉ</h3>
             <div className="grid grid-cols-1 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -157,18 +157,24 @@ export function CustomerForm({
                 <input
                   type="text"
                   value={formData.address?.addressLine || ""}
-                  onChange={(e) => updateField("address", {
-                    ...formData.address,
-                    addressLine: e.target.value
-                  })}
+                  onChange={(e) =>
+                    updateField("address", {
+                      ...formData.address,
+                      addressLine: e.target.value,
+                    })
+                  }
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
-                    errors["address.addressLine"] ? "border-red-500" : "border-gray-600"
+                    errors["address.addressLine"]
+                      ? "border-red-500"
+                      : "border-gray-600"
                   }`}
                   placeholder="Nhập số nhà, tên đường"
                   required
                 />
                 {errors["address.addressLine"] && (
-                  <p className="mt-1 text-sm text-red-400">{errors["address.addressLine"]}</p>
+                  <p className="mt-1 text-sm text-red-400">
+                    {errors["address.addressLine"]}
+                  </p>
                 )}
               </div>
 
@@ -180,10 +186,12 @@ export function CustomerForm({
                   <input
                     type="text"
                     value={formData.address?.ward || ""}
-                    onChange={(e) => updateField("address", {
-                      ...formData.address,
-                      ward: e.target.value
-                    })}
+                    onChange={(e) =>
+                      updateField("address", {
+                        ...formData.address,
+                        ward: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400"
                     placeholder="Nhập phường/xã"
                   />
@@ -196,18 +204,24 @@ export function CustomerForm({
                   <input
                     type="text"
                     value={formData.address?.district || ""}
-                    onChange={(e) => updateField("address", {
-                      ...formData.address,
-                      district: e.target.value
-                    })}
+                    onChange={(e) =>
+                      updateField("address", {
+                        ...formData.address,
+                        district: e.target.value,
+                      })
+                    }
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
-                      errors["address.district"] ? "border-red-500" : "border-gray-600"
+                      errors["address.district"]
+                        ? "border-red-500"
+                        : "border-gray-600"
                     }`}
                     placeholder="Nhập quận/huyện"
                     required
                   />
                   {errors["address.district"] && (
-                    <p className="mt-1 text-sm text-red-400">{errors["address.district"]}</p>
+                    <p className="mt-1 text-sm text-red-400">
+                      {errors["address.district"]}
+                    </p>
                   )}
                 </div>
 
@@ -218,18 +232,24 @@ export function CustomerForm({
                   <input
                     type="text"
                     value={formData.address?.city || ""}
-                    onChange={(e) => updateField("address", {
-                      ...formData.address,
-                      city: e.target.value
-                    })}
+                    onChange={(e) =>
+                      updateField("address", {
+                        ...formData.address,
+                        city: e.target.value,
+                      })
+                    }
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400 ${
-                      errors["address.city"] ? "border-red-500" : "border-gray-600"
+                      errors["address.city"]
+                        ? "border-red-500"
+                        : "border-gray-600"
                     }`}
                     placeholder="Nhập tỉnh/thành phố"
                     required
                   />
                   {errors["address.city"] && (
-                    <p className="mt-1 text-sm text-red-400">{errors["address.city"]}</p>
+                    <p className="mt-1 text-sm text-red-400">
+                      {errors["address.city"]}
+                    </p>
                   )}
                 </div>
               </div>
@@ -241,10 +261,12 @@ export function CustomerForm({
                 <input
                   type="text"
                   value={formData.address?.postalCode || ""}
-                  onChange={(e) => updateField("address", {
-                    ...formData.address,
-                    postalCode: e.target.value
-                  })}
+                  onChange={(e) =>
+                    updateField("address", {
+                      ...formData.address,
+                      postalCode: e.target.value,
+                    })
+                  }
                   className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white placeholder-gray-400"
                   placeholder="Nhập mã bưu điện (tùy chọn)"
                 />

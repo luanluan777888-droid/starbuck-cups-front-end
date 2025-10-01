@@ -2,24 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useAppSelector } from "@/store";
-import { CustomerForm } from "./CustomerForm";
 import { OrderHistory } from "./OrderHistory";
-import {
-  User,
-  Phone,
-  MapPin,
-  Calendar,
-  Clock,
-  Shield,
-  MessageSquare,
-} from "lucide-react";
+import { PhoneManager } from "./PhoneManager";
+import { AddressManager } from "./AddressManager";
+import { CustomerInfoManager } from "./CustomerInfoManager";
 
 interface Customer {
   id: string;
   messengerId?: string | null;
   zaloId?: string | null;
   fullName: string;
-  phone: string;
   notes?: string | null;
   isVip?: boolean;
   createdAt: string;
@@ -53,13 +45,13 @@ interface Customer {
 
 interface CustomerDetailProps {
   customerId: string;
-  isEditing: boolean;
 }
 
-export function CustomerDetail({ customerId, isEditing }: CustomerDetailProps) {
+export function CustomerDetail({ customerId }: CustomerDetailProps) {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Get auth state from Redux store
   const { token, isAuthenticated, sessionChecked } = useAppSelector(
@@ -133,17 +125,7 @@ export function CustomerDetail({ customerId, isEditing }: CustomerDetailProps) {
     };
 
     fetchCustomer();
-  }, [customerId, token, sessionChecked]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  }, [customerId, token, sessionChecked, refreshTrigger]);
 
   if (loading) {
     return (
@@ -191,200 +173,19 @@ export function CustomerDetail({ customerId, isEditing }: CustomerDetailProps) {
     );
   }
 
-  if (isEditing) {
-    return (
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-        <CustomerForm
-          initialData={{
-            messengerId: customer.messengerId || "",
-            zaloId: customer.zaloId || "",
-            fullName: customer.fullName,
-            phone: customer.phone,
-            notes: customer.notes || "",
-            isVip: customer.isVip || false,
-          }}
-          isEditing={true}
-          customerId={customerId}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Customer Overview */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <User className="w-8 h-8 text-green-600" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">
-                {customer.fullName || "Chưa có tên"}
-              </h2>
-              <p className="text-gray-400">ID: {customer.id}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                  Hoạt động
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <CustomerInfoManager
+        customer={customer}
+        onCustomerUpdate={() => setRefreshTrigger((prev) => prev + 1)}
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Contact Information */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Thông tin liên hệ
-            </h3>
-            <div className="space-y-3">
-              {customer.phone && (
-                <div className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <div className="text-sm font-medium text-white">
-                      {customer.phone}
-                    </div>
-                    <div className="text-sm text-gray-400">Số điện thoại</div>
-                  </div>
-                </div>
-              )}
-
-              {customer.messengerId && (
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <div className="text-sm font-medium text-white">
-                      {customer.messengerId}
-                    </div>
-                    <div className="text-sm text-gray-400">Messenger ID</div>
-                  </div>
-                </div>
-              )}
-
-              {customer.zaloId && (
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <div className="text-sm font-medium text-white">
-                      {customer.zaloId}
-                    </div>
-                    <div className="text-sm text-gray-400">Zalo ID</div>
-                  </div>
-                </div>
-              )}
-
-              {/* VIP Status */}
-              <div className="flex items-center gap-3">
-                <Shield className="w-5 h-5 text-gray-400" />
-                <div>
-                  <div
-                    className={`text-sm font-medium ${
-                      customer.isVip ? "text-yellow-400" : "text-white"
-                    }`}
-                  >
-                    {customer.isVip ? "Khách hàng VIP" : "Khách hàng thường"}
-                  </div>
-                  <div className="text-sm text-gray-400">Phân loại</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* System Information */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Thông tin hệ thống
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-white">
-                    {formatDate(customer.createdAt)}
-                  </div>
-                  <div className="text-sm text-gray-400">Ngày tạo</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-white">
-                    {formatDate(customer.updatedAt)}
-                  </div>
-                  <div className="text-sm text-gray-400">Cập nhật cuối</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Shield className="w-5 h-5 text-gray-400" />
-                <div>
-                  <div className="text-sm font-medium text-white">
-                    {customer.createdByAdmin.username}
-                  </div>
-                  <div className="text-sm text-gray-400">Được tạo bởi</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Phone Numbers */}
+      <PhoneManager customerId={customerId} />
 
       {/* Addresses */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">
-          Địa chỉ giao hàng ({customer.addresses?.length || 0})
-        </h3>
-
-        {(customer.addresses?.length || 0) > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {customer.addresses?.map((address) => (
-              <div
-                key={address.id}
-                className={`p-4 rounded-lg border-2 ${
-                  address.isDefault
-                    ? "border-green-600 bg-green-900/20"
-                    : "border-gray-600 bg-gray-700"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium text-white">
-                      {address.isDefault ? "Địa chỉ chính" : "Địa chỉ phụ"}
-                    </span>
-                  </div>
-                  {address.isDefault && (
-                    <span className="px-2 py-1 text-xs bg-green-600 text-white rounded-full">
-                      Mặc định
-                    </span>
-                  )}
-                </div>
-                <div className="text-sm text-gray-300">
-                  <div>{address.addressLine}</div>
-                  <div>
-                    {[address.district, address.city]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </div>
-                  {address.postalCode && (
-                    <div className="text-gray-400">
-                      Mã bưu điện: {address.postalCode}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-gray-400 text-center py-8">
-            Chưa có địa chỉ nào được thêm
-          </div>
-        )}
-      </div>
+      <AddressManager customerId={customerId} />
 
       {/* Order Statistics */}
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">

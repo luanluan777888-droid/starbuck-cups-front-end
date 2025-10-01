@@ -4,10 +4,6 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store";
 import { toast } from "sonner";
-import {
-  isValidPhoneNumber,
-  getPhoneValidationErrorMessage,
-} from "@/lib/utils/phoneValidation";
 
 export interface Address {
   addressLine: string;
@@ -21,7 +17,7 @@ export interface CustomerFormData {
   messengerId: string;
   zaloId: string;
   fullName: string;
-  phone: string;
+  phoneNumber: string;
   notes: string;
   isVip: boolean;
   address: Address;
@@ -74,7 +70,7 @@ export function useCustomerForm(
     messengerId: initialData?.messengerId || "",
     zaloId: initialData?.zaloId || "",
     fullName: initialData?.fullName || "",
-    phone: initialData?.phone || "",
+    phoneNumber: initialData?.phoneNumber || "",
     notes: initialData?.notes || "",
     isVip: initialData?.isVip || false,
     address: initialData?.address || {
@@ -138,8 +134,10 @@ export function useCustomerForm(
       newErrors.fullName = "Họ tên là bắt buộc";
     }
 
-    if (formData.phone && !isValidPhoneNumber(formData.phone)) {
-      newErrors.phone = getPhoneValidationErrorMessage();
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = "Số điện thoại là bắt buộc";
+    } else if (!/^[0-9+\-\s()]+$/.test(formData.phoneNumber.trim())) {
+      newErrors.phoneNumber = "Số điện thoại không hợp lệ";
     }
 
     // Only validate address fields when creating new customer (not editing)
@@ -181,7 +179,7 @@ export function useCustomerForm(
         messengerId: string | null;
         zaloId: string | null;
         fullName: string;
-        phone: string;
+        phoneNumber: string;
         notes: string | null;
         isVip: boolean;
         address?: {
@@ -198,7 +196,7 @@ export function useCustomerForm(
         messengerId: formData.messengerId.trim() || null,
         zaloId: formData.zaloId.trim() || null,
         fullName: formData.fullName.trim(),
-        phone: formData.phone.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
         notes: formData.notes.trim() || null,
         isVip: formData.isVip,
       };
@@ -279,7 +277,7 @@ export function useCustomerForm(
       messengerId: initialData?.messengerId || "",
       zaloId: initialData?.zaloId || "",
       fullName: initialData?.fullName || "",
-      phone: initialData?.phone || "",
+      phoneNumber: initialData?.phoneNumber || "",
       notes: initialData?.notes || "",
       isVip: initialData?.isVip || false,
       address: initialData?.address || {

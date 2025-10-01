@@ -39,6 +39,46 @@ export interface StatisticsData {
     period: string;
     revenue: number;
   }>;
+  productAnalytics?: {
+    topClickedProducts: Array<{
+      productId: string;
+      productName: string;
+      productSlug?: string;
+      clickCount: number;
+      addToCartCount: number;
+      conversionRate: number;
+    }>;
+    topAddToCartProducts: Array<{
+      productId: string;
+      productName: string;
+      productSlug?: string;
+      clickCount: number;
+      addToCartCount: number;
+      conversionRate: number;
+    }>;
+    topConversionProducts: Array<{
+      productId: string;
+      productName: string;
+      productSlug?: string;
+      clickCount: number;
+      addToCartCount: number;
+      conversionRate: number;
+    }>;
+    summary: {
+      totalClicks: number;
+      totalAddToCarts: number;
+      overallConversionRate: number;
+      totalTrackedProducts: number;
+    };
+    recentActivity: Array<{
+      productId: string;
+      productName: string;
+      productSlug?: string;
+      lastClicked: string;
+      clickCount: number;
+      addToCartCount: number;
+    }>;
+  };
 }
 
 export const useStatistics = (period: "week" | "month" | "year" = "month") => {
@@ -49,37 +89,40 @@ export const useStatistics = (period: "week" | "month" | "year" = "month") => {
   // Get token from Redux store
   const { token } = useAppSelector((state) => state.auth);
 
-  const fetchStatistics = useCallback(async (selectedPeriod: string) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchStatistics = useCallback(
+    async (selectedPeriod: string) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard/statistics?period=${selectedPeriod}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+        if (!token) {
+          throw new Error("No authentication token found");
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch statistics");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard/statistics?period=${selectedPeriod}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch statistics");
+        }
+
+        const result = await response.json();
+        setData(result.data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
       }
-
-      const result = await response.json();
-      setData(result.data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
+    },
+    [token]
+  );
 
   useEffect(() => {
     if (token) {

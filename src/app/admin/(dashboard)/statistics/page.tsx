@@ -5,7 +5,6 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { LoadingState } from "@/components/admin/LoadingState";
 import { ErrorMessage } from "@/components/admin/ErrorMessage";
 import { useStatistics } from "@/hooks/useStatistics";
-import { useProductAnalytics, useTopClickedProducts, useTopConversionProducts } from "@/hooks/admin/useProductAnalytics";
 import { OverviewCards } from "@/components/admin/statistics/OverviewCards";
 import { TopSellingProducts } from "@/components/admin/statistics/TopSellingProducts";
 import { TopCustomersList } from "@/components/admin/statistics/TopCustomersList";
@@ -18,9 +17,6 @@ import { TopConversionProducts } from "@/components/admin/analytics/TopConversio
 export default function StatisticsPage() {
   const [period, setPeriod] = useState<"week" | "month" | "year">("month");
   const { data, loading, error, fetchStatistics } = useStatistics(period);
-  const { summary: analyticsSummary, loading: analyticsLoading } = useProductAnalytics();
-  const { products: topClickedProducts } = useTopClickedProducts(8);
-  const { products: topConversionProducts } = useTopConversionProducts(8);
   console.log("data", data);
 
   const handlePeriodChange = (newPeriod: "week" | "month" | "year") => {
@@ -100,42 +96,48 @@ export default function StatisticsPage() {
       {/* Top Selling Products & Top Customers */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TopSellingProducts products={data.topSellingProducts} />
-        <TopCustomersList customers={data.topCustomers} itemsPerPage={8} />
+        <TopCustomersList customers={data.topCustomers} />
       </div>
 
       {/* Low Stock Products Alert */}
       <LowStockAlert products={data.lowStockProducts} />
 
       {/* Product Analytics Section */}
-      {analyticsSummary && !analyticsLoading && (
+      {data.productAnalytics && (
         <>
           {/* Analytics Overview */}
-          <AnalyticsOverview data={analyticsSummary} />
+          <AnalyticsOverview
+            data={{
+              totalClicks: data.productAnalytics.summary.totalClicks,
+              totalAddToCarts: data.productAnalytics.summary.totalAddToCarts,
+              overallConversionRate:
+                data.productAnalytics.summary.overallConversionRate,
+              uniqueProductsClicked:
+                data.productAnalytics.topClickedProducts.length,
+              uniqueProductsAddedToCart:
+                data.productAnalytics.topAddToCartProducts.length,
+              topClickedProducts: data.productAnalytics.topClickedProducts,
+              topConversionProducts:
+                data.productAnalytics.topConversionProducts,
+            }}
+          />
 
           {/* Top Clicked Products & Top Conversion Products */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <TopClickedProducts
-              products={topClickedProducts}
+              page={1}
+              onPageChange={() => {}}
+              products={data.productAnalytics.topClickedProducts}
+              loading={false}
             />
             <TopConversionProducts
-              products={topConversionProducts}
+              page={1}
+              onPageChange={() => {}}
+              products={data.productAnalytics.topConversionProducts}
+              loading={false}
             />
           </div>
         </>
-      )}
-
-      {/* Analytics Loading State */}
-      {analyticsLoading && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-zinc-800 rounded w-1/4"></div>
-            <div className="grid grid-cols-4 gap-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-24 bg-zinc-800 rounded"></div>
-              ))}
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );

@@ -6,7 +6,7 @@ export const siteConfig = {
   description:
     "Cửa hàng ly Starbucks chính thức với đa dạng màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com",
-  image: "/images/og-image.jpg",
+  image: "/logo.png",
   keywords:
     "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam",
 };
@@ -82,13 +82,21 @@ export function generateProductStructuredData(product: Product) {
     "@type": "Product",
     name: product.name,
     description: product.description,
-    image: product.productImages?.map((img: { url: string }) => `${siteConfig.url}${img.url}`),
+    image: product.productImages?.map(
+      (img: { url: string }) => `${siteConfig.url}${img.url}`
+    ),
     brand: {
       "@type": "Brand",
       name: "Starbucks",
     },
-    category: product.productCategories?.map((pc: { category: { name: string } }) => pc.category.name).join(", ") || "",
-    color: product.productColors?.map((pc: { color: { name: string } }) => pc.color.name).join(", ") || "",
+    category:
+      product.productCategories
+        ?.map((pc: { category: { name: string } }) => pc.category.name)
+        .join(", ") || "",
+    color:
+      product.productColors
+        ?.map((pc: { color: { name: string } }) => pc.color.name)
+        .join(", ") || "",
     offers: {
       "@type": "AggregateOffer",
       availability: "https://schema.org/InStock",

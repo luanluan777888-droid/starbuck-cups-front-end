@@ -7,11 +7,11 @@ import { ArrowRight } from "lucide-react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 // Dynamic import toàn bộ Swiper bundle
-const SwiperCarousel = dynamic(() => import('./SwiperCarousel'), {
+const SwiperCarousel = dynamic(() => import("./SwiperCarousel"), {
   ssr: false,
   loading: () => (
     <div className="h-full bg-gray-200 rounded-2xl md:rounded-3xl animate-pulse" />
-  )
+  ),
 });
 
 interface HeroImageData {
@@ -23,9 +23,20 @@ interface HeroImageData {
   isActive: boolean;
 }
 
+interface PromotionalBannerData {
+  id: string;
+  title: string;
+  highlightText: string | null;
+  highlightColor: string | null;
+  description: string;
+  buttonText: string;
+  buttonLink: string;
+}
+
 interface HeroSectionProps {
   loading?: boolean;
   heroImages?: HeroImageData[];
+  promotionalBanner?: PromotionalBannerData | null;
 }
 
 const HeroSectionSkeleton = () => (
@@ -66,6 +77,7 @@ const HeroSectionSkeleton = () => (
 const HeroSection: React.FC<HeroSectionProps> = ({
   loading = false,
   heroImages = [],
+  promotionalBanner = null,
 }) => {
   const [showSwiper, setShowSwiper] = useState(false);
 
@@ -73,6 +85,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     loading,
     heroImagesCount: heroImages.length,
     heroImages,
+    promotionalBanner,
   });
 
   // Delay Swiper load để tối ưu LCP - load static content trước
@@ -111,30 +124,54 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   ];
 
   const imagesToShow = heroImages.length > 0 ? heroImages : defaultImages;
-  const activeImages = imagesToShow.filter(img => img.isActive).sort((a, b) => a.order - b.order);
+  const activeImages = imagesToShow
+    .filter((img) => img.isActive)
+    .sort((a, b) => a.order - b.order);
+
+  // Default banner data
+  const defaultBanner = {
+    title: "Bộ Sưu Tập",
+    highlightText: "Ly Starbucks",
+    highlightColor: "#10b981",
+    description:
+      "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
+    buttonText: "Khám Phá Ngay",
+    buttonLink: "/products",
+  };
+
+  const bannerData = promotionalBanner || defaultBanner;
+  console.log("🏷️ Banner Data:", bannerData);
 
   return (
     <section className="py-4 md:py-8">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
-          {/* Left text card */}
+          {/* Left text card - Dynamic from promotional banner */}
           <div className="bg-zinc-900 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
             <div className="mb-4 md:mb-6">
               <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-                Bộ Sưu Tập
-                <br />
-                <span className="text-green-400">Ly Starbucks</span>
+                {bannerData.title}
+                {bannerData.highlightText && (
+                  <>
+                    <br />
+                    <span
+                      className="font-bold"
+                      style={{ color: bannerData.highlightColor || "#10b981" }}
+                    >
+                      {bannerData.highlightText}
+                    </span>
+                  </>
+                )}
               </h1>
             </div>
             <p className="text-gray-300 text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed">
-              Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích.
-              Tư vấn miễn phí qua Messenger.
+              {bannerData.description}
             </p>
             <Link
-              href="/products"
+              href={bannerData.buttonLink}
               className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition-all duration-300 w-fit text-sm md:text-base"
             >
-              Khám Phá Ngay
+              {bannerData.buttonText}
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </Link>
           </div>
@@ -145,7 +182,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               {!showSwiper ? (
                 // Fast loading fallback - skeleton placeholder
                 <div className="relative h-full bg-gray-200 rounded-2xl md:rounded-3xl animate-pulse" />
-
               ) : (
                 // Swiper carousel sau khi LCP đã tối ưu
                 <SwiperCarousel images={activeImages} />

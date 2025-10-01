@@ -25,6 +25,7 @@ import {
   Bell,
   Image,
   BarChart3,
+  Megaphone,
 } from "lucide-react";
 
 interface SidebarItem {
@@ -111,6 +112,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       icon: Image,
       label: "Hero Images",
       path: "/admin/hero-images",
+    },
+    {
+      icon: Megaphone,
+      label: "Banner quảng cáo",
+      path: "/admin/promotional-banners",
     },
     {
       icon: BarChart3,

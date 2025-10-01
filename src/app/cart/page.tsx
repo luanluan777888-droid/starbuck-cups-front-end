@@ -12,7 +12,10 @@ import { Header } from "@/components/layout/Header";
 import { Cart } from "@/components/ui/Cart";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
 import { trackConsultationSubmission } from "@/lib/analytics";
-import { isValidPhoneNumber, getPhoneValidationErrorMessage } from "@/lib/utils/phoneValidation";
+import {
+  isValidPhoneNumber,
+  getPhoneValidationErrorMessage,
+} from "@/lib/utils/phoneValidation";
 
 interface ConsultationFormData {
   customerName: string;
@@ -62,7 +65,6 @@ export default function CartPage() {
       toast.error(getPhoneValidationErrorMessage());
       return false;
     }
-
 
     if (!formData.address.trim()) {
       toast.error("Vui lòng nhập địa chỉ");
@@ -126,7 +128,7 @@ export default function CartPage() {
           id: responseData.data?.consultation?.id,
           totalItems: items.length,
           customerName: formData.customerName,
-          items: items.map(item => ({
+          items: items.map((item) => ({
             id: item.product.id,
             name: item.product.name,
             category: item.product.productCategories?.[0]?.category?.name,
@@ -154,7 +156,6 @@ export default function CartPage() {
       setIsSubmitting(false);
     }
   };
-
 
   if (items.length === 0) {
     return (
@@ -214,7 +215,7 @@ export default function CartPage() {
                   Thông tin liên hệ
                 </h2>
                 <p className="text-zinc-400">
-                  Vui lòng liên hệ hotline 0906862256 (Zalo) để được tư vấn
+                  Vui lòng liên hệ hotline 0896686008 (Zalo) để được tư vấn
                   nhanh nhất
                 </p>
               </div>

@@ -275,7 +275,8 @@ export function OrderWizard() {
                     </div>
                     <div className="text-gray-300">
                       <span className="font-medium text-white">SĐT:</span>{" "}
-                      {formData.customer?.phone}
+                      {formData.customer?.customerPhones?.[0]?.phoneNumber ||
+                        "Chưa có SĐT"}
                     </div>
                   </div>
                 </div>

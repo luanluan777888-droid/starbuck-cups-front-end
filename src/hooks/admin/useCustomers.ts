@@ -10,7 +10,6 @@ export interface CustomerAdmin {
   messengerId?: string | null;
   zaloId?: string | null;
   fullName?: string;
-  phone?: string;
   notes?: string | null;
   isVip?: boolean;
   createdAt: string;
@@ -18,6 +17,11 @@ export interface CustomerAdmin {
   createdByAdminId: string;
   lastOrderDate?: string;
   totalSpent?: number;
+  customerPhones?: Array<{
+    id: string;
+    phoneNumber: string;
+    isMain: boolean;
+  }>;
   addresses?: Array<{
     id: string;
     customerId: string;

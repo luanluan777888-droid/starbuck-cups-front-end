@@ -11,6 +11,8 @@ export default function CustomersPage() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [sortBy, setSortBy] = useState("createdAt"); // Default sort by created date
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   return (
     <div className="space-y-6 bg-gray-900 min-h-screen p-6">
@@ -62,7 +64,7 @@ export default function CustomersPage() {
         {/* Advanced Filters */}
         {isFilterOpen && (
           <div className="mt-4 pt-4 border-t border-gray-700">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Từ ngày
@@ -99,6 +101,35 @@ export default function CustomersPage() {
                   <option value="regular">Khách thường</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Sắp xếp theo
+                </label>
+                <select
+                  value={`${sortBy}-${sortOrder}`}
+                  onChange={(e) => {
+                    const [field, order] = e.target.value.split("-");
+                    setSortBy(field);
+                    setSortOrder(order as "asc" | "desc");
+                  }}
+                  className="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 bg-gray-700 text-white"
+                >
+                  <option value="createdAt-desc">Ngày tạo (Mới nhất)</option>
+                  <option value="createdAt-asc">Ngày tạo (Cũ nhất)</option>
+                  <option value="fullName-asc">Tên khách hàng (A-Z)</option>
+                  <option value="fullName-desc">Tên khách hàng (Z-A)</option>
+                  <option value="totalSpent-desc">
+                    Tổng tiền chi tiêu (Nhiều nhất)
+                  </option>
+                  <option value="totalSpent-asc">
+                    Tổng tiền chi tiêu (Ít nhất)
+                  </option>
+                  <option value="orderCount-desc">
+                    Số đơn hàng (Nhiều nhất)
+                  </option>
+                  <option value="orderCount-asc">Số đơn hàng (Ít nhất)</option>
+                </select>
+              </div>
             </div>
           </div>
         )}
@@ -110,6 +141,8 @@ export default function CustomersPage() {
         vipStatus={vipStatus}
         dateFrom={dateFrom}
         dateTo={dateTo}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
       />
     </div>
   );

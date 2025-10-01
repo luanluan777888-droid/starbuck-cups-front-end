@@ -196,7 +196,11 @@ export function OrderList(props: OrderListProps) {
                         {order.customer.fullName || "Khách hàng"}
                       </div>
                       <div className="text-xs text-gray-300">
-                        {order.customer.phone}
+                        {order.customer.customerPhones?.find(
+                          (phone) => phone.isMain
+                        )?.phoneNumber ||
+                          order.customer.customerPhones?.[0]?.phoneNumber ||
+                          "Chưa có số điện thoại"}
                       </div>
                     </div>
                   </td>

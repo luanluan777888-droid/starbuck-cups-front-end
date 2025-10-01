@@ -125,7 +125,12 @@ export function useCustomerSearch() {
       customer.addresses.find((addr) => addr.isDefault) ||
       customer.addresses[0];
 
-    setCustomerSearchTerm(customer.fullName || customer.phone || "");
+    setCustomerSearchTerm(
+      customer.fullName ||
+        customer.customerPhones?.find((phone) => phone.isMain)?.phoneNumber ||
+        customer.customerPhones?.[0]?.phoneNumber ||
+        ""
+    );
     setShowCustomerDropdown(false);
 
     return {

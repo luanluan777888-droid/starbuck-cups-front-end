@@ -1,21 +1,30 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
-import { Eye, Edit, Trash2, Phone, MapPin } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 
 import { useAdminCustomers } from "@/hooks/admin/useCustomers";
 import { CustomerConfirmModal } from "./CustomerConfirmModal";
+import { timeAgo } from "@/lib/utils/dateUtils";
 
 interface CustomerListProps {
   searchTerm: string;
   vipStatus?: string;
   dateFrom?: string;
   dateTo?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
   refreshTrigger?: number;
 }
 
 export function CustomerList({
   searchTerm,
+  vipStatus,
+  dateFrom,
+  dateTo,
+  sortBy = "createdAt",
+  sortOrder = "desc",
 }: CustomerListProps) {
   const {
     customers,
@@ -26,10 +35,115 @@ export function CustomerList({
     performDelete,
     setConfirmModal,
   } = useAdminCustomers();
+
   console.log("CustomerList render - customers:", customers);
 
+  // Filter and sort customers based on all criteria
+  const filteredAndSortedCustomers = useMemo(() => {
+    if (!customers) return [];
+
+    // First, filter customers
+    const filtered = customers.filter((customer) => {
+      // Search term filter
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        const matchesName =
+          customer.fullName?.toLowerCase().includes(searchLower) || false;
+        const matchesPhone =
+          customer.customerPhones?.some((phone) =>
+            phone.phoneNumber.includes(searchTerm)
+          ) || false;
+        const matchesAddress =
+          customer.addresses?.some(
+            (addr) =>
+              addr.addressLine.toLowerCase().includes(searchLower) ||
+              addr.city.toLowerCase().includes(searchLower) ||
+              addr.district?.toLowerCase().includes(searchLower) ||
+              addr.ward?.toLowerCase().includes(searchLower)
+          ) || false;
+
+        if (!matchesName && !matchesPhone && !matchesAddress) {
+          return false;
+        }
+      }
+
+      // VIP status filter
+      if (vipStatus && vipStatus !== "all") {
+        if (vipStatus === "vip" && !customer.isVip) return false;
+        if (vipStatus === "regular" && customer.isVip) return false;
+      }
+
+      // Date range filter
+      if (dateFrom || dateTo) {
+        const customerDate = new Date(customer.createdAt);
+
+        if (dateFrom) {
+          const fromDate = new Date(dateFrom);
+          fromDate.setHours(0, 0, 0, 0); // Start of day
+          if (customerDate < fromDate) return false;
+        }
+
+        if (dateTo) {
+          const toDate = new Date(dateTo);
+          toDate.setHours(23, 59, 59, 999); // End of day
+          if (customerDate > toDate) return false;
+        }
+      }
+
+      return true;
+    });
+
+    // Then, sort filtered results
+    const sorted = [...filtered].sort((a, b) => {
+      let aValue: string | number | Date;
+      let bValue: string | number | Date;
+
+      switch (sortBy) {
+        case "fullName":
+          aValue = a.fullName || "";
+          bValue = b.fullName || "";
+          break;
+        case "totalSpent":
+          aValue = a.totalSpent || 0;
+          bValue = b.totalSpent || 0;
+          break;
+        case "orderCount":
+          aValue = a._count?.orders || 0;
+          bValue = b._count?.orders || 0;
+          break;
+        case "createdAt":
+        default:
+          aValue = new Date(a.createdAt);
+          bValue = new Date(b.createdAt);
+          break;
+      }
+
+      if (typeof aValue === "string") {
+        return sortOrder === "asc"
+          ? aValue.localeCompare(bValue as string)
+          : (bValue as string).localeCompare(aValue);
+      }
+
+      if (sortOrder === "asc") {
+        return (aValue as number) > (bValue as number)
+          ? 1
+          : (aValue as number) < (bValue as number)
+          ? -1
+          : 0;
+      } else {
+        return (bValue as number) > (aValue as number)
+          ? 1
+          : (bValue as number) < (aValue as number)
+          ? -1
+          : 0;
+      }
+    });
+
+    return sorted;
+  }, [customers, searchTerm, vipStatus, dateFrom, dateTo, sortBy, sortOrder]);
+
   // TODO: Implement search filtering later
-  // For now, just load all customers
+  // For now, just load all customers and sort on frontend
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("vi-VN", {
@@ -125,7 +239,7 @@ export function CustomerList({
                 Địa chỉ
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
-                Được tạo
+                Đã tạo
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                 Tổng tiền chi tiêu
@@ -139,7 +253,7 @@ export function CustomerList({
             </tr>
           </thead>
           <tbody className="bg-gray-800 divide-y divide-gray-700">
-            {customers.map((customer) => (
+            {filteredAndSortedCustomers.map((customer) => (
               <tr key={customer.id} className="hover:bg-gray-700">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="max-w-48">
@@ -168,29 +282,26 @@ export function CustomerList({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="space-y-1">
-                    {customer.phone && (
-                      <div className="flex items-center gap-2 text-sm text-white">
-                        <Phone className="w-4 h-4 text-gray-400" />
-                        {customer.phone}
-                      </div>
-                    )}
+                    {customer.customerPhones &&
+                      customer.customerPhones.length > 0 && (
+                        <div className="flex items-center gap-2 text-sm text-white">
+                          {customer.customerPhones[0].phoneNumber}
+                        </div>
+                      )}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-white max-w-32">
                     {customer.addresses && customer.addresses.length > 0 ? (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                        <div className="min-w-0">
-                          <div
-                            className="truncate"
-                            title={customer.addresses[0].city}
-                          >
-                            {customer.addresses[0].city}
-                          </div>
-                          <div className="text-gray-300 text-xs">
-                            {customer.addresses.length} địa chỉ
-                          </div>
+                      <div className="min-w-0">
+                        <div
+                          className="truncate"
+                          title={customer.addresses[0].city}
+                        >
+                          {customer.addresses[0].city}
+                        </div>
+                        <div className="text-gray-300 text-xs">
+                          {customer.addresses.length} địa chỉ
                         </div>
                       </div>
                     ) : (
@@ -200,23 +311,33 @@ export function CustomerList({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-white">
-                    {formatDate(customer.createdAt)}
+                    {timeAgo(customer.createdAt)}
                   </div>
-                  <div className="text-sm text-gray-300">
-                    bởi {customer.createdByAdmin.username}
+                  <div className="text-sm text-gray-400">
+                    {formatDate(customer.createdAt)}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-white">
                     {formatCurrency(customer.totalSpent || 0)}
                   </div>
+                  <div className="text-sm text-gray-300">
+                    {customer._count?.orders || 0} đơn
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-white">
-                    {customer.lastOrderDate
-                      ? formatDate(customer.lastOrderDate)
-                      : "Chưa có đơn"}
-                  </div>
+                  {customer.lastOrderDate ? (
+                    <>
+                      <div className="text-sm text-white">
+                        {timeAgo(customer.lastOrderDate)}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {formatDate(customer.lastOrderDate)}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-sm text-gray-400">Chưa có đơn</div>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
@@ -255,7 +376,7 @@ export function CustomerList({
       </div>
 
       {/* Empty State */}
-      {customers.length === 0 && (
+      {filteredAndSortedCustomers.length === 0 && (
         <div className="px-6 py-12 text-center">
           <div className="text-gray-300">
             {searchTerm

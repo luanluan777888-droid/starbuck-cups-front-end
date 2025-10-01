@@ -1,9 +1,12 @@
 import { MetadataRoute } from "next";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
-  return [
+  // Static pages
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -17,17 +20,41 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/admin/login`,
+      url: `${baseUrl}/cart`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    // Dynamic product pages would be generated from database in real app
-    ...Array.from({ length: 10 }, (_, i) => ({
-      url: `${baseUrl}/products/starbucks-tumbler-${i + 1}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
+      changeFrequency: "weekly",
       priority: 0.8,
-    })),
+    },
   ];
+
+  // Fetch dynamic product pages from API
+  let productPages: MetadataRoute.Sitemap = [];
+
+  try {
+    const response = await fetch(`${apiUrl}/products/public?limit=100`, {
+      next: { revalidate: 3600 }, // Revalidate every hour
+      headers: {
+        "User-Agent": "Sitemap Generator",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.data) {
+        productPages = data.data.map(
+          (product: { slug: string; updatedAt: string }) => ({
+            url: `${baseUrl}/products/${product.slug}`,
+            lastModified: new Date(product.updatedAt),
+            changeFrequency: "weekly" as const,
+            priority: 0.8,
+          })
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching products for sitemap:", error);
+    // Fallback to empty array if API fails
+  }
+
+  return [...staticPages, ...productPages];
 }

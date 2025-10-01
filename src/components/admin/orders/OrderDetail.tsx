@@ -41,9 +41,13 @@ interface OrderDetailData {
   customer: {
     id: string;
     fullName?: string;
-    phone?: string;
     email?: string;
     messengerId?: string;
+    customerPhones?: Array<{
+      id: string;
+      phoneNumber: string;
+      isMain: boolean;
+    }>;
   };
   orderType: "PRODUCT" | "CUSTOM";
   status: string;
@@ -596,7 +600,12 @@ export function OrderDetail({ orderId, isEditing }: OrderDetailProps) {
               <div className="font-medium text-white">
                 {order.customer.fullName || "Khách hàng"}
               </div>
-              <div className="text-gray-300">{order.customer.phone}</div>
+              <div className="text-gray-300">
+                {order.customer.customerPhones?.find((phone) => phone.isMain)
+                  ?.phoneNumber ||
+                  order.customer.customerPhones?.[0]?.phoneNumber ||
+                  "Chưa có số điện thoại"}
+              </div>
               {order.customer.email && (
                 <div className="text-gray-300">{order.customer.email}</div>
               )}

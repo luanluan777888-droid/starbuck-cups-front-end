@@ -8,7 +8,11 @@ export interface Order {
   customer: {
     id: string;
     fullName?: string;
-    phone?: string;
+    customerPhones?: Array<{
+      id: string;
+      phoneNumber: string;
+      isMain: boolean;
+    }>;
   };
   orderType: "PRODUCT" | "CUSTOM";
   status: string;

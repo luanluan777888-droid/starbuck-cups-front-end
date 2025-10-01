@@ -3,7 +3,11 @@ export interface Customer {
   messengerId?: string | null;
   zaloId?: string | null;
   fullName: string;
-  phone: string;
+  customerPhones?: Array<{
+    id: string;
+    phoneNumber: string;
+    isMain: boolean;
+  }>;
   notes?: string | null;
   createdAt: string;
   updatedAt: string;

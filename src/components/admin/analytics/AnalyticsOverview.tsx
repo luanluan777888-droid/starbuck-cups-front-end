@@ -9,7 +9,7 @@ interface AnalyticsOverviewProps {
 
 export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
   const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('vi-VN').format(num);
+    return new Intl.NumberFormat("vi-VN").format(num);
   };
 
   const formatPercentage = (num: number) => {
@@ -52,36 +52,19 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
   ];
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-medium text-white mb-2">Product Analytics Overview</h2>
-        <p className="text-sm text-gray-400">
-          Thống kê tương tác người dùng với sản phẩm
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {cards.map((card, index) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={index}
-              className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 hover:border-zinc-700 transition-colors"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-400 mb-1">{card.title}</p>
-                  <p className="text-2xl font-bold text-white">{card.value}</p>
-                  <p className="text-xs text-gray-500 mt-1">{card.description}</p>
-                </div>
-                <div className={`p-3 rounded-lg ${card.bgColor}`}>
-                  <Icon className={`w-6 h-6 ${card.color}`} />
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {cards.map((card, index) => (
+        <div
+          key={index}
+          className="bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 hover:border-gray-600 transition-all"
+        >
+          <div>
+            <p className="text-2xl font-bold text-white mb-1">{card.value}</p>
+            <p className="text-sm text-gray-400">{card.title}</p>
+            <p className="text-xs text-gray-500 mt-1">{card.description}</p>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

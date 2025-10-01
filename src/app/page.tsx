@@ -16,20 +16,33 @@ interface HeroImageData {
   isActive: boolean;
 }
 
+interface PromotionalBannerData {
+  id: string;
+  title: string;
+  highlightText: string | null;
+  highlightColor: string | null;
+  description: string;
+  buttonText: string;
+  buttonLink: string;
+}
+
 interface HomePageProps {
   categories: Category[];
   heroImages: HeroImageData[];
+  promotionalBanner: PromotionalBannerData | null;
 }
 
 export const metadata: Metadata = generateSEO({
   title: "Trang chủ",
   description:
     "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
+  keywords:
+    "ly starbucks, tumbler starbucks, cốc starbucks, ly giữ nhiệt, starbucks vietnam, mua ly starbucks, ly gai starbucks, shoucangpu",
   openGraph: {
-    title: "Starbucks Cups Shop - Ly Starbucks chính thức",
+    title: "H’s shoucangpu - Trang chủ",
     description:
-      "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích",
-    image: "/images/og-home.jpg",
+      "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Giao hàng toàn quốc.",
+    image: "/images/placeholder.png",
     url: "/",
     type: "website",
   },
@@ -46,7 +59,7 @@ async function getHomePageData(): Promise<HomePageProps> {
       }/categories/public/`,
       {
         next: { revalidate: 300 }, // Revalidate every 5 minutes
-        cache: 'force-cache',
+        cache: "force-cache",
       }
     );
     console.log("Fetched categories response:", categoriesResponse);
@@ -73,7 +86,7 @@ async function getHomePageData(): Promise<HomePageProps> {
 
       const heroImagesResponse = await fetch(heroImagesUrl, {
         next: { revalidate: 300 }, // Revalidate every 5 minutes
-        cache: 'force-cache',
+        cache: "force-cache",
       });
       console.log(
         "📡 Fetched hero images response:",
@@ -99,15 +112,53 @@ async function getHomePageData(): Promise<HomePageProps> {
       console.error("Error fetching hero images:", error);
     }
 
+    // Fetch promotional banner from API
+    let promotionalBanner: PromotionalBannerData | null = null;
+    try {
+      const bannerUrl = `${
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://api-starbuck-cups.lequangtridat.com/api"
+      }/promotional-banners`;
+
+      console.log("🔗 Promotional banner URL:", bannerUrl);
+
+      const bannerResponse = await fetch(bannerUrl, {
+        next: { revalidate: 60 }, // Revalidate every 1 minute for promotional content
+        cache: "force-cache",
+      });
+
+      console.log(
+        "📡 Fetched promotional banner response:",
+        bannerResponse.status
+      );
+
+      if (bannerResponse.ok) {
+        const bannerData = await bannerResponse.json();
+        console.log("✅ Fetched promotional banner data:", bannerData);
+        if (bannerData.success && bannerData.data) {
+          promotionalBanner = bannerData.data;
+        }
+      } else {
+        console.error(
+          "❌ Promotional banner API failed:",
+          bannerResponse.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching promotional banner:", error);
+    }
+
     return {
       categories,
       heroImages,
+      promotionalBanner,
     };
   } catch (error) {
     console.error("Error fetching home page data:", error);
     return {
       categories: [],
       heroImages: [],
+      promotionalBanner: null,
     };
   }
 }
@@ -119,6 +170,7 @@ export default async function HomePage() {
     <HomePageComponent
       categories={homePageData.categories || []}
       heroImages={homePageData.heroImages || []}
+      promotionalBanner={homePageData.promotionalBanner}
     />
   );
 }

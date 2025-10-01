@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 interface TopProduct {
   id: string;
   name: string;
   capacity: string;
   totalSold: number;
+  slug?: string;
 }
 
 interface TopSellingProductsProps {
@@ -23,8 +25,13 @@ export function TopSellingProducts({ products }: TopSellingProductsProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {products.slice(0, 5).map((product, index) => (
-            <div key={product.id} className="flex items-center justify-between">
+          {products.map((product, index) => (
+            <Link
+              key={product.id}
+              href={`/products/${product.slug || product.id}`}
+              target="_blank"
+              className="flex items-center justify-between p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors cursor-pointer"
+            >
               <div className="flex items-center space-x-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-sm font-medium text-white">
                   {index + 1}
@@ -37,7 +44,7 @@ export function TopSellingProducts({ products }: TopSellingProductsProps) {
               <span className="font-bold text-white">
                 {formatNumber(product.totalSold)}
               </span>
-            </div>
+            </Link>
           ))}
         </div>
       </CardContent>

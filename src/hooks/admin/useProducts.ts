@@ -16,10 +16,12 @@ interface ProductListItem extends Product {
 
 interface ProductFilters {
   search: string;
-  category: string;
   color: string;
-  capacity: string;
+  minCapacity: string;
+  maxCapacity: string;
   status: "all" | "active" | "inactive" | "low_stock";
+  sortBy: string;
+  sortOrder: "asc" | "desc";
 }
 
 export interface UseProductsReturn {
@@ -113,10 +115,12 @@ export function useProducts(): UseProductsReturn {
 
   const [filters, setFilters] = useState<ProductFilters>({
     search: "",
-    category: "",
     color: "",
-    capacity: "",
+    minCapacity: "",
+    maxCapacity: "",
     status: "all",
+    sortBy: "createdAt",
+    sortOrder: "desc",
   });
 
   const [pagination, setPagination] = useState<PaginationMeta>({
@@ -141,15 +145,17 @@ export function useProducts(): UseProductsReturn {
         page: pagination.current_page.toString(),
         limit: pagination.per_page.toString(),
         ...(filters.search && { search: filters.search }),
-        ...(filters.category && { categorySlug: filters.category }),
         ...(filters.color && { colorSlug: filters.color }),
-        ...(filters.capacity && { capacitySlug: filters.capacity }),
+        ...(filters.minCapacity && { minCapacity: filters.minCapacity }),
+        ...(filters.maxCapacity && { maxCapacity: filters.maxCapacity }),
         ...(filters.status === "active" && { isActive: "true" }),
         ...(filters.status === "inactive" && { isActive: "false" }),
         ...(filters.status === "low_stock" && {
           lowStock: "true",
           lowStockThreshold: "1",
         }),
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
       });
 
       const response = await fetch(`/api/admin/products?${params}`, {

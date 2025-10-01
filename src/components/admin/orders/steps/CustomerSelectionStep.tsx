@@ -95,7 +95,10 @@ export function CustomerSelectionStep({
                       {customer.fullName || "Chưa có tên"}
                     </div>
                     <div className="text-sm text-gray-300">
-                      {customer.phone}
+                      {customer.customerPhones?.find((phone) => phone.isMain)
+                        ?.phoneNumber ||
+                        customer.customerPhones?.[0]?.phoneNumber ||
+                        "Chưa có số điện thoại"}
                     </div>
                   </div>
                 </div>
@@ -127,8 +130,11 @@ export function CustomerSelectionStep({
                 Đã chọn: {selectedCustomer.fullName || "Chưa có tên"}
               </div>
               <div className="text-sm text-gray-300">
-                {selectedCustomer.phone} •{" "}
-                {selectedCustomer.notes || "Chưa có ghi chú"}
+                {selectedCustomer.customerPhones?.find((phone) => phone.isMain)
+                  ?.phoneNumber ||
+                  selectedCustomer.customerPhones?.[0]?.phoneNumber ||
+                  "Chưa có số điện thoại"}{" "}
+                • {selectedCustomer.notes || "Chưa có ghi chú"}
               </div>
             </div>
             <button
@@ -184,7 +190,10 @@ export function CustomerSelectionStep({
                       {customer.fullName || "Chưa có tên"}
                     </div>
                     <div className="text-xs text-gray-300">
-                      {customer.phone}
+                      {customer.customerPhones?.find((phone) => phone.isMain)
+                        ?.phoneNumber ||
+                        customer.customerPhones?.[0]?.phoneNumber ||
+                        "Chưa có số điện thoại"}
                     </div>
                   </div>
                 </div>

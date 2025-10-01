@@ -106,7 +106,6 @@ export default function AdminProductsPage() {
         {/* Filters */}
         <ProductsFilters
           filters={filters}
-          categories={categories}
           colors={colors}
           capacities={capacities}
           onFilterChange={handleFilterChange}

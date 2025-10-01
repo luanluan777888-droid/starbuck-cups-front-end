@@ -14,8 +14,12 @@ export interface OrderDetailData {
   customer: {
     id: string;
     fullName?: string;
-    phone?: string;
     email?: string;
+    customerPhones?: Array<{
+      id: string;
+      phoneNumber: string;
+      isMain: boolean;
+    }>;
   };
   deliveryAddress?: {
     city?: string;
