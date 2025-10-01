@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import React from "react";
 import "./globals.css";
 import StoreProvider from "@/components/StoreProvider";
 import ClientLayout from "@/components/layout/ClientLayout";
@@ -6,24 +7,35 @@ import { generateSEO, generateOrganizationStructuredData } from "@/lib/seo";
 
 export const metadata: Metadata = {
   ...generateSEO({
-    title: "Cửa hàng ly Starbucks",
+    title: "H's shoucangpu - Collectible Gift Shop",
     description:
-      "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
+      "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Zalo 0896686008.",
     keywords:
       "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam",
     openGraph: {
-      title: "H's shoucangpu - Cửa hàng ly Starbucks",
+      title: "H's shoucangpu - Collectible Gift Shop",
       description:
-        "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích",
-      image: "/images/og-image.jpg",
+        "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích",
+      image: "/logo.png",
       url: "/",
       type: "website",
     },
   }),
+  twitter: {
+    card: "summary",
+    title: "H's shoucangpu - Cửa hàng ly St@rbucks",
+    description:
+      "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích",
+    images: ["/logo.png"],
+  },
   icons: {
-    icon: "/logo.png",
+    icon: [
+      { url: "/logo.png", sizes: "any", type: "image/png" },
+      { url: "/logo.png", sizes: "16x16", type: "image/png" },
+      { url: "/logo.png", sizes: "32x32", type: "image/png" },
+    ],
     shortcut: "/logo.png",
-    apple: "/logo.png",
+    apple: [{ url: "/logo.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
@@ -36,7 +48,6 @@ export default function RootLayout({
   const gaMeasurementId =
     process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-XXXXXXXXXX";
 
-  // Dynamic AWS resource hints
   const awsS3Url = process.env.NEXT_PUBLIC_AWS_S3_URL;
 
   return (
