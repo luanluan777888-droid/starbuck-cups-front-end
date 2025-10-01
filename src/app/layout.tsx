@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description:
       "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Zalo 0896686008.",
     keywords:
-      "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam",
+      "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam, ly starbucks chính hãng, ly starbuck chính hãng, ly starbucks auth, starbuck chính hãng,  starbucks chính hãng, mua ly starbuck chính hãng, bình starbucks chính hãng, bình giữ nhiệt starbucks, ly giữ nhiệt starbucks, ly sứ starbucks",
     openGraph: {
       title: "H's shoucangpu - Collectible Gift Shop",
       description:
