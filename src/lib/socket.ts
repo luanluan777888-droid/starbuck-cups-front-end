@@ -74,7 +74,6 @@ class SocketManager {
       });
 
       this.socket.on("connect", () => {
-
         this.isConnecting = false;
 
         // Join admin room
@@ -84,19 +83,16 @@ class SocketManager {
       });
 
       this.socket.on("connect_error", (error) => {
-
         this.isConnecting = false;
         reject(error);
       });
 
-      this.socket.on("disconnect", (reason) => {
-
+      this.socket.on("disconnect", () => {
         this.isConnecting = false;
       });
 
       // Set up error handling
       this.socket.on("connect_error", (error: Error) => {
-
         this.isConnecting = false;
         reject(error);
       });
@@ -131,14 +127,12 @@ class SocketManager {
 
   public joinAdminRoom(): void {
     if (this.socket?.connected) {
-
       this.socket.emit("admin:join");
     }
   }
 
   public leaveAdminRoom(): void {
     if (this.socket?.connected) {
-
       this.socket.emit("admin:leave");
     }
   }

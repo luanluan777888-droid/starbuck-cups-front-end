@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     description:
       "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Zalo 0896686008.",
     keywords:
-      "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam, ly starbucks chính hãng, ly starbuck chính hãng, ly starbucks auth, starbuck chính hãng,  starbucks chính hãng, mua ly starbuck chính hãng, bình starbucks chính hãng, bình giữ nhiệt starbucks, ly giữ nhiệt starbucks, ly sứ starbucks",
+      "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam, ly starbucks chính hãng, ly starbuck chính hãng, ly starbucks auth, starbuck chính hãng,  starbucks chính hãng, mua ly starbuck chính hãng, bình starbucks chính hãng, bình giữ nhiệt starbucks, ly giữ nhiệt starbucks, ly sứ starbucks, hasron.com, hasron, hasron starbucks chính hãng, hasron starbucks, hasron ly starbucks chính hãng, h's, h's shoucangpu, hasron leung",
     openGraph: {
       title: "H's shoucangpu - Collectible Gift Shop",
       description:
         "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích",
-      image: "/logo.png",
+      image: "/images/placeholder.webp",
       url: "/",
       type: "website",
     },
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: "H's shoucangpu - Cửa hàng ly St@rbucks",
     description:
       "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích",
-    images: ["/logo.png"],
+    images: ["/images/placeholder.webp"],
   },
   icons: {
     icon: [

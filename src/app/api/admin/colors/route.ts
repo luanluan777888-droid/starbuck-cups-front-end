@@ -8,10 +8,8 @@ function getAuthHeaders(request: NextRequest): Record<string, string> {
   // Forward authorization header from client request
   const authHeader = request.headers.get("authorization");
 
-
   if (authHeader) {
     headers["authorization"] = authHeader;
-
   }
 
   return headers;
@@ -30,8 +28,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
 
     return NextResponse.json(data, { status: response.status });
-  } catch (error) {
-
+  } catch {
     return NextResponse.json(
       { success: false, message: "Failed to fetch colors" },
       { status: 500 }
@@ -56,8 +53,7 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     return NextResponse.json(data, { status: response.status });
-  } catch (error) {
-
+  } catch {
     return NextResponse.json(
       { success: false, message: "Failed to create color" },
       { status: 500 }
