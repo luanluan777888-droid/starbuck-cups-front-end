@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   DecoratorNode,
   NodeKey,
@@ -66,7 +66,7 @@ export class ImageNode extends DecoratorNode<React.ReactElement> {
       version: 1,
       width: this.__width === 'inherit' ? 0 : this.__width,
     };
-    console.log("📤 ImageNode exportJSON:", json);
+
     return json;
   }
 
@@ -120,7 +120,7 @@ export class ImageNode extends DecoratorNode<React.ReactElement> {
       img.setAttribute('height', this.__height.toString());
     }
     img.style.maxWidth = '100%';
-    console.log("📤 ImageNode exportDOM:", img.outerHTML);
+
     return { element: img };
   }
 

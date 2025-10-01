@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -31,7 +31,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (error: unknown) {
-    console.error("Error fetching promotional banner:", error);
+
     return NextResponse.json(
       {
         success: false,

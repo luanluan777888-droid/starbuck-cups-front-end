@@ -1,4 +1,4 @@
-import { StepProps, Product } from "@/types/orders";
+﻿import { StepProps, Product } from "@/types/orders";
 import { useProductSearch } from "@/hooks/admin/useProductSearch";
 import Image from "next/image";
 
@@ -139,10 +139,6 @@ export function OrderDetailsStep({
                           item.product.id &&
                           item.product.id !== ""
                         ) {
-                          console.log(
-                            "🗑️ User cleared input, clearing product for item",
-                            index
-                          );
 
                           // Reset product selection
                           onUpdateItem(index, "productId", "");
@@ -203,12 +199,6 @@ export function OrderDetailsStep({
                             (e.ctrlKey && (e.key === "v" || e.key === "a")); // Ctrl+V, Ctrl+A
 
                           if (isEditingKey) {
-                            console.log(
-                              "🔤 User editing text, clearing product for item",
-                              index,
-                              "key:",
-                              e.key
-                            );
 
                             // Reset product selection
                             onUpdateItem(index, "productId", "");
@@ -491,28 +481,11 @@ export function OrderDetailsStep({
                 >
                   {/* Debug logs */}
                   {(function () {
-                    console.log("🔍 Product data for item", index, ":");
-                    console.log("📋 Full product object:", item.product);
-                    console.log(
-                      "🔑 All product keys:",
-                      Object.keys(item.product)
-                    );
-                    console.log("🎨 Color data:", {
-                      color: item.product.color,
-                      colors: item.product.colors,
-                      productColors: item.product.productColors,
-                      hasColor: "color" in item.product,
-                      hasColors: "colors" in item.product,
-                      hasProductColors: "productColors" in item.product,
-                    });
-                    console.log("📂 Category data:", {
-                      category: item.product.category,
-                      categories: item.product.categories,
-                      productCategories: item.product.productCategories,
-                      hasCategory: "category" in item.product,
-                      hasCategories: "categories" in item.product,
-                      hasProductCategories: "productCategories" in item.product,
-                    });
+
+
+
+
+
                     return null;
                   })()}
 
@@ -575,12 +548,7 @@ export function OrderDetailsStep({
                         <span className="text-xs text-gray-400">Màu:</span>
                         {(function () {
                           const productColors = item.product.productColors;
-                          console.log("🎨 Color check for item", index, ":", {
-                            hasProductColors: !!productColors,
-                            isProductColorsArray: Array.isArray(productColors),
-                            productColorsLength: productColors?.length,
-                            productColorsData: productColors,
-                          });
+
                           return null;
                         })()}
                         {item.product.productColors &&
@@ -622,19 +590,7 @@ export function OrderDetailsStep({
                         {(function () {
                           const productCategories =
                             item.product.productCategories;
-                          console.log(
-                            "📂 Category check for item",
-                            index,
-                            ":",
-                            {
-                              hasProductCategories: !!productCategories,
-                              isProductCategoriesArray:
-                                Array.isArray(productCategories),
-                              productCategoriesLength:
-                                productCategories?.length,
-                              productCategoriesData: productCategories,
-                            }
-                          );
+
                           return null;
                         })()}
                         {item.product.productCategories &&

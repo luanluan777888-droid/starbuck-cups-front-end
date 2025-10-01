@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getApiUrl } from "@/lib/api-config";
 
 export async function POST(request: NextRequest) {
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     return nextResponse;
   } catch (error) {
-    console.error("Admin login proxy error:", error);
+
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

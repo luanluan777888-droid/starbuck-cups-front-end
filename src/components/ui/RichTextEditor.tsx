@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
@@ -76,23 +76,19 @@ function ValuePlugin({
   value: string;
   onChange: (value: string) => void;
 }) {
-  console.log("ValuePlugin render - value:", value);
+
   const [editor] = useLexicalComposerContext();
   const isUpdatingFromExternalRef = useRef(false);
   const lastValueRef = useRef("");
 
   // Set initial value and update when value changes from external source
   useEffect(() => {
-    console.log("ValuePlugin useEffect - value:", value);
-    console.log("ValuePlugin useEffect - lastValue:", lastValueRef.current);
-    console.log(
-      "ValuePlugin useEffect - isUpdating:",
-      isUpdatingFromExternalRef.current
-    );
+
+
 
     // Avoid infinite loop: only update if value actually changed and not from internal change
     if (value !== lastValueRef.current && !isUpdatingFromExternalRef.current) {
-      console.log("🔄 Value changed, updating editor...");
+
       lastValueRef.current = value;
       isUpdatingFromExternalRef.current = true;
 
@@ -109,52 +105,45 @@ function ValuePlugin({
           const nodes = $generateNodesFromDOM(editor, dom);
           $insertNodes(nodes);
 
-          console.log("✅ Updated editor content with:", value);
         });
       } else {
         // Clear editor if value is empty
         editor.update(() => {
           const root = $getRoot();
           root.clear();
-          console.log("🧹 Cleared editor content");
+
         });
       }
 
       // Reset flag after update
       setTimeout(() => {
         isUpdatingFromExternalRef.current = false;
-        console.log("🏁 Reset isUpdating flag");
+
       }, 100);
     } else {
-      console.log("⏭️ Skipping update - no change or already updating");
+
     }
   }, [value, editor]); // Include value in dependencies to update when it changes
 
   return (
     <OnChangePlugin
       onChange={(editorState) => {
-        console.log("🔄 OnChangePlugin onChange called");
 
         // Skip onChange if we're updating from external source
         if (isUpdatingFromExternalRef.current) {
-          console.log("⏭️ Skipping onChange - updating from external source");
+
           return;
         }
 
         editorState.read(() => {
           const htmlString = $generateHtmlFromNodes(editor, null);
-          console.log("📝 Generated HTML:", htmlString);
 
           // Kiểm tra xem có hình ảnh trong HTML không
           const hasImages = htmlString.includes("<img");
           const imageCount = (htmlString.match(/<img/g) || []).length;
-          console.log("🖼️ Has images:", hasImages, "Count:", imageCount);
 
           if (hasImages) {
-            console.log(
-              "🔍 Image URLs found:",
-              htmlString.match(/src="[^"]*"/g)
-            );
+
           }
 
           // Update last value ref to prevent unnecessary updates
@@ -172,8 +161,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   placeholder = "Nhập mô tả sản phẩm...",
   height = 400,
 }) => {
-  console.log("RichTextEditor render - value:", value);
-  console.log("RichTextEditor render - onChange type:", typeof onChange);
+
 
   const initialConfig = {
     namespace: "RichTextEditor",
@@ -241,7 +229,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       ImageNode,
     ],
     onError: (error: Error) => {
-      console.error("Lexical Editor Error:", error);
+
     },
   };
 

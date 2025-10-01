@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+﻿import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
 export interface PromotionalBanner {
@@ -79,7 +79,7 @@ export function usePromotionalBanner() {
           : "Failed to fetch promotional banners";
       setError(errorMessage);
       toast.error(errorMessage);
-      console.error("Error fetching banners:", err);
+
     } finally {
       setLoading(false);
     }
@@ -115,7 +115,7 @@ export function usePromotionalBanner() {
           ? err.message
           : "Failed to create promotional banner";
       toast.error(errorMessage);
-      console.error("Error creating banner:", err);
+
       return false;
     } finally {
       setLoading(false);
@@ -156,7 +156,7 @@ export function usePromotionalBanner() {
           ? err.message
           : "Failed to update promotional banner";
       toast.error(errorMessage);
-      console.error("Error updating banner:", err);
+
       return false;
     } finally {
       setLoading(false);
@@ -190,7 +190,7 @@ export function usePromotionalBanner() {
           ? err.message
           : "Failed to delete promotional banner";
       toast.error(errorMessage);
-      console.error("Error deleting banner:", err);
+
       return false;
     } finally {
       setLoading(false);

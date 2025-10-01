@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+﻿import { Metadata } from "next";
 import { generateSEO } from "@/lib/seo";
 import HomePageComponent from "@/components/pages/HomePage";
 import { Category } from "@/types";
@@ -62,13 +62,12 @@ async function getHomePageData(): Promise<HomePageProps> {
         cache: "force-cache",
       }
     );
-    console.log("Fetched categories response:", categoriesResponse);
 
     let categories: Category[] = [];
 
     if (categoriesResponse.ok) {
       const categoriesData = await categoriesResponse.json();
-      console.log("Fetched categories data:", categoriesData);
+
       if (categoriesData.success && categoriesData.data?.items) {
         categories = categoriesData.data.items;
       }
@@ -82,34 +81,23 @@ async function getHomePageData(): Promise<HomePageProps> {
         "https://api-starbuck-cups.lequangtridat.com/api"
       }/hero-images/public`;
 
-      console.log("🔗 Hero images URL:", heroImagesUrl);
-
       const heroImagesResponse = await fetch(heroImagesUrl, {
         next: { revalidate: 300 }, // Revalidate every 5 minutes
         cache: "force-cache",
       });
-      console.log(
-        "📡 Fetched hero images response:",
-        heroImagesResponse.status,
-        heroImagesResponse.statusText
-      );
 
       if (heroImagesResponse.ok) {
         const heroImagesData = await heroImagesResponse.json();
-        console.log("✅ Fetched hero images data:", heroImagesData);
-        console.log("✅ Hero images count:", heroImagesData.data?.length || 0);
+
+
         if (heroImagesData.success && heroImagesData.data) {
           heroImages = heroImagesData.data;
         }
       } else {
-        console.error(
-          "❌ Hero images API failed:",
-          heroImagesResponse.status,
-          heroImagesResponse.statusText
-        );
+
       }
     } catch (error) {
-      console.error("Error fetching hero images:", error);
+
     }
 
     // Fetch promotional banner from API
@@ -120,32 +108,22 @@ async function getHomePageData(): Promise<HomePageProps> {
         "https://api-starbuck-cups.lequangtridat.com/api"
       }/promotional-banners`;
 
-      console.log("🔗 Promotional banner URL:", bannerUrl);
-
       const bannerResponse = await fetch(bannerUrl, {
         next: { revalidate: 60 }, // Revalidate every 1 minute for promotional content
         cache: "force-cache",
       });
 
-      console.log(
-        "📡 Fetched promotional banner response:",
-        bannerResponse.status
-      );
-
       if (bannerResponse.ok) {
         const bannerData = await bannerResponse.json();
-        console.log("✅ Fetched promotional banner data:", bannerData);
+
         if (bannerData.success && bannerData.data) {
           promotionalBanner = bannerData.data;
         }
       } else {
-        console.error(
-          "❌ Promotional banner API failed:",
-          bannerResponse.status
-        );
+
       }
     } catch (error) {
-      console.error("Error fetching promotional banner:", error);
+
     }
 
     return {
@@ -154,7 +132,7 @@ async function getHomePageData(): Promise<HomePageProps> {
       promotionalBanner,
     };
   } catch (error) {
-    console.error("Error fetching home page data:", error);
+
     return {
       categories: [],
       heroImages: [],

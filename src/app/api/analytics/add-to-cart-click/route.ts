@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getApiUrl } from "@/lib/api-config";
 
 // Track add to cart click
@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Add to cart click tracking error:", error);
 
     // Return success even on error to prevent blocking user experience
     return NextResponse.json(

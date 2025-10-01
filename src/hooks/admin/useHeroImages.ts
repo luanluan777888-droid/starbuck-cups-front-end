@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+﻿import { useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import type { RootState } from "@/store";
@@ -51,7 +51,6 @@ export function useHeroImages(): UseHeroImagesReturn {
       });
 
       const data = await response.json();
-      console.log("Hero images response:", data);
 
       if (data.success) {
         setHeroImages(data.data || []);
@@ -59,7 +58,7 @@ export function useHeroImages(): UseHeroImagesReturn {
         setError(data.message || "Không thể tải danh sách hero images");
       }
     } catch (error) {
-      console.error("Error fetching hero images:", error);
+
       setError("Lỗi kết nối. Vui lòng thử lại.");
     } finally {
       setLoading(false);
@@ -89,7 +88,7 @@ export function useHeroImages(): UseHeroImagesReturn {
           return false;
         }
       } catch (error) {
-        console.error("Error deleting hero image:", error);
+
         setError("Lỗi kết nối. Vui lòng thử lại.");
         toast.error("Lỗi kết nối khi xóa hero image");
         return false;
@@ -127,7 +126,7 @@ export function useHeroImages(): UseHeroImagesReturn {
           return false;
         }
       } catch (error) {
-        console.error("Error reordering hero images:", error);
+
         setError("Lỗi kết nối. Vui lòng thử lại.");
         toast.error("Lỗi kết nối khi cập nhật thứ tự");
         return false;

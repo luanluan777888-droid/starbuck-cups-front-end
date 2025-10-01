@@ -1,4 +1,4 @@
-// Product-specific analytics with spam prevention
+﻿// Product-specific analytics with spam prevention
 // Tracks product clicks and add-to-cart actions with deduplication
 
 interface ClickTracker {
@@ -29,7 +29,7 @@ const MAX_CLICKS_PER_PRODUCT = 5; // Maximum clicks per product per session
 const resetSessionIfNeeded = () => {
   const now = Date.now();
   if (now - sessionTracker.sessionStart > SESSION_TIMEOUT_MS) {
-    console.debug('Analytics session reset due to timeout');
+
     sessionTracker = {
       productClicks: new Map(),
       cartClicks: new Map(),
@@ -64,34 +64,33 @@ const shouldTrackClick = (
 
   // Check session-wide rate limit
   if (totalClicks >= MAX_CLICKS_PER_SESSION) {
-    console.warn(`Session rate limit exceeded: ${totalClicks}/${MAX_CLICKS_PER_SESSION}`);
+
     return false;
   }
 
   if (!tracker) {
     // First click cho product này
     clickMap.set(productId, { lastClickTime: now, clickCount: 1 });
-    console.debug(`First ${actionType} for product ${productId}`);
+
     return true;
   }
 
   // Check product-specific rate limit
   if (tracker.clickCount >= MAX_CLICKS_PER_PRODUCT) {
-    console.debug(`Product rate limit exceeded for ${productId}: ${tracker.clickCount}/${MAX_CLICKS_PER_PRODUCT}`);
+
     return false;
   }
 
   // Check debounce time
   const timeSinceLastClick = now - tracker.lastClickTime;
   if (timeSinceLastClick < CLICK_DEBOUNCE_MS) {
-    console.debug(`Debounce active for product ${productId}: ${timeSinceLastClick}ms < ${CLICK_DEBOUNCE_MS}ms`);
+
     return false; // Too soon, ignore click
   }
 
   // Update tracker
   tracker.lastClickTime = now;
   tracker.clickCount++;
-  console.debug(`${actionType} tracked for product ${productId} (count: ${tracker.clickCount})`);
 
   return true;
 };
@@ -131,11 +130,11 @@ export const trackProductClick = async (product: {
       }),
     }).catch(error => {
       // Silent fail - không ảnh hưởng user experience
-      console.debug('Product click tracking failed:', error);
+
     });
 
   } catch (error) {
-    console.debug('Product click tracking error:', error);
+
   }
 };
 
@@ -173,11 +172,11 @@ export const trackAddToCartClick = async (product: {
         timestamp: new Date().toISOString(),
       }),
     }).catch(error => {
-      console.debug('Add to cart tracking failed:', error);
+
     });
 
   } catch (error) {
-    console.debug('Add to cart tracking error:', error);
+
   }
 };
 
@@ -212,7 +211,7 @@ export const resetSession = () => {
     cartClicks: new Map(),
     sessionStart: Date.now(),
   };
-  console.debug('Analytics session manually reset');
+
 };
 
 // Check if product đã được click trong session

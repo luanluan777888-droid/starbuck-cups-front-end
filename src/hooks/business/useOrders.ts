@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -144,7 +144,7 @@ export function useOrders(options: UseOrdersOptions = {}): UseOrdersReturn {
       const errorMsg = "Có lỗi xảy ra khi tải danh sách đơn hàng";
       setError(errorMsg);
       toast.error(errorMsg);
-      console.error("Error fetching orders:", err);
+
     } finally {
       setLoading(false);
     }

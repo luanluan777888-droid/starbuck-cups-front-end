@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from "react";
+﻿import { useEffect, useCallback, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   checkAuthStatus,
@@ -23,7 +23,7 @@ export function useAuthRefresh() {
 
     // Prevent multiple concurrent checks
     if (isCheckingRef.current) {
-      console.log("Auth check already in progress, skipping...");
+
       return;
     }
 
@@ -35,7 +35,7 @@ export function useAuthRefresh() {
       if (!storedToken) {
         // Kiểm tra có refresh token cookie không
         if (!document.cookie.includes("admin_refresh_token")) {
-          console.log("No access token and no refresh token cookie found");
+
           if (isAuthenticated) {
             dispatch(logout());
           }
@@ -44,12 +44,12 @@ export function useAuthRefresh() {
 
         // Không có access token, thử check session bằng refresh token trong cookie
         try {
-          console.log("No access token found, checking session...");
+
           const sessionResult = await dispatch(checkAuthStatus()).unwrap();
-          console.log("Session restored successfully");
+
           return sessionResult;
         } catch {
-          console.log("No valid session found");
+
           if (isAuthenticated) {
             dispatch(logout());
           }
@@ -60,7 +60,7 @@ export function useAuthRefresh() {
       try {
         // Kiểm tra token có hết hạn không
         if (isTokenExpired(storedToken)) {
-          console.log("Token expired, attempting silent refresh...");
+
           AuthDebug.logEvent("Token Expired", { storedToken: !!storedToken });
           TokenRefreshNotification.showTokenExpiring();
 
@@ -71,10 +71,10 @@ export function useAuthRefresh() {
 
             TokenRefreshNotification.showRefreshSuccess();
             AuthDebug.logEvent("Token Refresh Success", { method: "expired" });
-            console.log("Token refreshed silently");
+
             return result;
           } catch (error) {
-            console.error("Silent token refresh failed:", error);
+
             AuthDebug.logEvent("Token Refresh Failed", { method: "expired", error });
             TokenRefreshNotification.showRefreshError();
             dispatch(logout());
@@ -90,16 +90,16 @@ export function useAuthRefresh() {
 
           if (timeUntilExpiry < 600) {
             // 10 phút = 600 giây - refresh sớm hơn để đảm bảo mượt mà
-            console.log("Token expiring soon, attempting silent refresh...");
+
             TokenRefreshNotification.showTokenExpiring();
 
             try {
               const result = await dispatch(refreshAuthToken()).unwrap();
               TokenRefreshNotification.showRefreshSuccess();
-              console.log("Token refreshed silently");
+
               return result;
             } catch (error) {
-              console.error("Proactive silent token refresh failed:", error);
+
               TokenRefreshNotification.showRefreshError();
               dispatch(logout());
               throw error;
@@ -112,12 +112,12 @@ export function useAuthRefresh() {
           await dispatch(checkAuthStatus()).unwrap();
         }
       } catch (error) {
-        console.error("Auth check failed:", error);
+
         TokenRefreshNotification.showRefreshError();
         dispatch(logout());
       }
     } catch (error) {
-      console.error("Auth check failed:", error);
+
       TokenRefreshNotification.showRefreshError();
       dispatch(logout());
     } finally {

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
@@ -102,19 +102,16 @@ const ToolbarPlugin = () => {
 
 
   const handleLineHeightChange = (newLineHeight: string) => {
-    console.log("📏 Line height change requested:", newLineHeight);
+
     setLineHeight(newLineHeight);
 
     editor.update(() => {
       const selection = $getSelection();
-      console.log("📍 Current selection:", selection);
 
       if ($isRangeSelection(selection)) {
-        console.log("✅ Valid range selection found");
 
         // Tìm tất cả các paragraph node trong selection
         const selectedNodes = selection.getNodes();
-        console.log("📋 Selected nodes:", selectedNodes.length, selectedNodes.map(n => n.getType()));
 
         const paragraphNodes = new Set();
 
@@ -124,27 +121,24 @@ const ToolbarPlugin = () => {
           while (currentNode) {
             if (currentNode.getType() === 'paragraph') {
               paragraphNodes.add(currentNode);
-              console.log("📝 Found paragraph node:", currentNode.getKey());
+
               break;
             }
             currentNode = currentNode.getParent();
           }
         });
 
-        console.log("📄 Total paragraph nodes to update:", paragraphNodes.size);
-
         // Áp dụng style cho từng paragraph
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         paragraphNodes.forEach((paragraphNode: any) => {
           const writableNode = paragraphNode.getWritable();
           const currentStyle = writableNode.getStyle() || '';
-          console.log("🎨 Current style before change:", currentStyle);
 
           if (newLineHeight === 'normal') {
             // Remove line-height style when "normal" is selected
             const newStyle = currentStyle.replace(/line-height:\s*[^;]+;?/g, '').trim();
             writableNode.setStyle(newStyle);
-            console.log("🧹 Removed line-height, new style:", newStyle);
+
           } else {
             // Apply specific line-height value
             const styleWithoutLineHeight = currentStyle.replace(/line-height:\s*[^;]+;?/g, '').trim();
@@ -152,13 +146,12 @@ const ToolbarPlugin = () => {
               `${styleWithoutLineHeight}; line-height: ${newLineHeight}` :
               `line-height: ${newLineHeight}`;
             writableNode.setStyle(newStyle);
-            console.log("✨ Applied line-height, new style:", newStyle);
+
           }
         });
 
-        console.log("🎯 Line height change completed successfully!");
       } else {
-        console.log("❌ No valid range selection - cannot apply line height");
+
       }
     });
   };
@@ -170,36 +163,31 @@ const ToolbarPlugin = () => {
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    console.log("📁 File selected:", file?.name, file?.type);
 
     if (file && file.type.startsWith('image/')) {
       setIsUploading(true);
-      console.log("⏳ Starting upload process...");
 
       try {
         // Tạo URL tạm thời cho preview ngay lập tức
         const tempSrc = URL.createObjectURL(file);
-        console.log("🔗 Temporary URL created:", tempSrc);
 
         // Insert image với URL tạm thời trước
-        console.log("➕ Inserting image into editor...");
+
         editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
           src: tempSrc,
           altText: `Đang tải lên ${file.name}...`,
         });
 
         // Upload lên AWS ngay
-        console.log("☁️ Uploading to AWS...");
+
         const response = await uploadAPI.uploadSingle(file, 'uploads');
-        console.log("📡 Upload response:", response);
 
         if (response.success) {
           const awsUrl = response.data?.url;
-          console.log("✅ AWS URL received:", awsUrl);
 
           if (awsUrl) {
             // Đơn giản hóa: Insert image mới với AWS URL
-            console.log("🔄 Replacing temp image with AWS URL...");
+
             editor.update(() => {
               // Xóa image cũ với blob URL và insert image mới với AWS URL
               const root = $getRoot();
@@ -213,7 +201,7 @@ const ToolbarPlugin = () => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   paragraphChildren.forEach((grandChild: any) => {
                     if ($isImageNode(grandChild) && grandChild.getSrc() === tempSrc) {
-                      console.log("🗑️ Removing temp image node");
+
                       grandChild.remove();
 
                       // Insert image mới với AWS URL
@@ -222,7 +210,7 @@ const ToolbarPlugin = () => {
                         altText: file.name,
                       });
                       child.append(newImageNode);
-                      console.log("✅ Inserted new image with AWS URL");
+
                     }
                   });
                 }
@@ -232,18 +220,17 @@ const ToolbarPlugin = () => {
             // Cleanup URL tạm thời sau khi đã thay thế
             setTimeout(() => {
               URL.revokeObjectURL(tempSrc);
-              console.log("🧹 Cleaned up temporary URL");
+
             }, 100);
 
-            console.log('🎉 Image upload process completed successfully!');
           }
         }
       } catch (error) {
-        console.error('❌ Upload failed:', error);
+
         // Có thể thêm toast notification ở đây
       } finally {
         setIsUploading(false);
-        console.log("🏁 Upload process finished");
+
       }
 
       // Reset input

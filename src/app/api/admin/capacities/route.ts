@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getApiUrl } from "@/lib/api-config";
 
 // Helper function to forward auth headers
@@ -7,11 +7,11 @@ function getAuthHeaders(request: NextRequest): Record<string, string> {
 
   // Forward authorization header from client request
   const authHeader = request.headers.get("authorization");
-  console.log("[DEBUG] Capacities API - Authorization header:", authHeader ? "Present" : "Missing");
-  console.log("[DEBUG] Capacities API - Request timestamp:", new Date().toISOString());
+
+
   if (authHeader) {
     headers["authorization"] = authHeader;
-    console.log("[DEBUG] Capacities API - Token preview:", authHeader.substring(0, 20) + "...");
+
   }
 
   return headers;
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error("Capacities API error:", error);
+
     return NextResponse.json(
       { success: false, message: "Failed to fetch capacities" },
       { status: 500 }
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error("Create capacity API error:", error);
+
     return NextResponse.json(
       { success: false, message: "Failed to create capacity" },
       { status: 500 }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
         router.push("/admin/dashboard");
       }
     } catch (error) {
-      console.error("Login failed:", error);
+
       toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
     }
   };

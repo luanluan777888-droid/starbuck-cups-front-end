@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import {
@@ -99,7 +99,7 @@ export function CustomerInfoManager({
       onCustomerUpdate?.();
       setIsEditing(false);
     } catch (error) {
-      console.error("Error updating customer:", error);
+
       alert(
         error instanceof Error ? error.message : "Failed to update customer"
       );

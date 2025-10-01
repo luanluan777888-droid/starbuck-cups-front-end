@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -44,7 +44,6 @@ export default function ProductModal({
   const { uploadProductImages } = useUpload();
 
   // Debug log
-  console.log("ProductModal props:", { categories, colors, capacities });
 
   // Prepare initial data for hook
   const initialData = product
@@ -203,7 +202,7 @@ export default function ProductModal({
           setImageUrls(finalImageUrls);
         }
       } catch (error: unknown) {
-        console.error("Upload error:", error);
+
         toast.error(
           error instanceof Error ? error.message : "Lỗi khi tải lên hình ảnh"
         );

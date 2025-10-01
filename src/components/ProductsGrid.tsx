@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
@@ -147,7 +147,7 @@ export default function ProductsGrid({
           setPaginationData(null);
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
+
         setProducts([]);
         setPaginationData(null);
       } finally {

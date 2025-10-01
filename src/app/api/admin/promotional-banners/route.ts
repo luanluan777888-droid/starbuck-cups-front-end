@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getApiUrl } from "@/lib/api-config";
 
 // Helper function to forward auth headers
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data);
   } catch (error: unknown) {
-    console.error("Error fetching promotional banners:", error);
+
     return NextResponse.json(
       {
         success: false,
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: 201 });
   } catch (error: unknown) {
-    console.error("Error creating promotional banner:", error);
+
     return NextResponse.json(
       {
         success: false,

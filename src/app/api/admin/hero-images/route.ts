@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getApiUrl } from "@/lib/api-config";
 
 // Helper function to forward auth headers
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error("Admin hero images API error:", error);
+
     return NextResponse.json(
       { success: false, message: "Failed to fetch hero images" },
       { status: 500 }
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error("Create hero image API error:", error);
+
     return NextResponse.json(
       { success: false, message: "Failed to create hero image" },
       { status: 500 }

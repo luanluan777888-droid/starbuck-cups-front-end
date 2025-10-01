@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { getApiUrl } from "@/lib/api-config";
 
 export interface ConsultationOrderData {
@@ -65,7 +65,6 @@ export async function POST(request: NextRequest) {
       error: null,
     });
   } catch (error) {
-    console.error("Consultation API Error:", error);
 
     return NextResponse.json(
       {

@@ -1,4 +1,4 @@
-import { MetadataRoute } from "next";
+﻿import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hasron.vn";
@@ -53,28 +53,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
               priority: 0.8,
             })
           );
-          console.log(
-            `Generated ${productPages.length} product pages for sitemap`
-          );
         } else {
-          console.warn(
-            "data.data.items is not an array:",
-            typeof products,
-            products
-          );
         }
       } else {
-        console.warn("API response unsuccessful or no data.items:", data);
       }
     } else {
-      console.error(
-        "API response not ok:",
-        response.status,
-        response.statusText
-      );
     }
-  } catch (error) {
-    console.error("Error fetching products for sitemap:", error);
+  } catch {
     // Fallback to empty array if API fails
   }
 

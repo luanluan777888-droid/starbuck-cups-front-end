@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import type { Category } from "@/types";
 
@@ -104,11 +104,11 @@ export function useCategories(): UseCategoriesReturn {
       if (data.success) {
         setCategories(data.data?.items || []);
       } else {
-        console.error("API Error:", data);
+
         toast.error(data.message || "Không thể tải danh sách danh mục");
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+
       toast.error("Có lỗi xảy ra khi tải danh mục");
     } finally {
       setLoading(false);
@@ -168,7 +168,7 @@ export function useCategories(): UseCategoriesReturn {
         toast.error(data.message || "Có lỗi xảy ra");
       }
     } catch (error) {
-      console.error("Error saving category:", error);
+
       toast.error("Có lỗi xảy ra khi lưu danh mục");
     } finally {
       setActionLoading(null);
@@ -225,7 +225,7 @@ export function useCategories(): UseCategoriesReturn {
         }
       }
     } catch (error) {
-      console.error("Error deleting category:", error);
+
       toast.error("Có lỗi xảy ra khi xóa danh mục");
     } finally {
       setActionLoading(null);
@@ -286,7 +286,7 @@ export function useCategories(): UseCategoriesReturn {
     } catch (error) {
       // Rollback on network error
       setCategories(categories);
-      console.error("Error toggling status:", error);
+
       toast.error("Có lỗi xảy ra khi cập nhật trạng thái");
     } finally {
       setActionLoading(null);

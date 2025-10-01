@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { useAppDispatch } from "@/store";
@@ -34,7 +34,7 @@ export default function ProductGrid({
           setProducts([]);
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
+
         setProducts([]);
       } finally {
         setLoading(false);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import type { Capacity } from "@/types";
 
@@ -115,11 +115,11 @@ export function useCapacities(): UseCapacitiesReturn {
       if (data.success) {
         setCapacities(data.data?.items || []);
       } else {
-        console.error("API Error:", data);
+
         toast.error(data.message || "Không thể tải danh sách dung tích");
       }
     } catch (error) {
-      console.error("Error fetching capacities:", error);
+
       toast.error("Có lỗi xảy ra khi tải dung tích");
     } finally {
       setLoading(false);
@@ -181,7 +181,7 @@ export function useCapacities(): UseCapacitiesReturn {
         toast.error(data.message || "Có lỗi xảy ra");
       }
     } catch (error) {
-      console.error("Error saving capacity:", error);
+
       toast.error("Có lỗi xảy ra khi lưu dung tích");
     } finally {
       setActionLoading(null);
@@ -227,7 +227,7 @@ export function useCapacities(): UseCapacitiesReturn {
         toast.error(data.message || "Có lỗi xảy ra khi xóa");
       }
     } catch (error) {
-      console.error("Error deleting capacity:", error);
+
       toast.error("Có lỗi xảy ra khi xóa dung tích");
     } finally {
       setActionLoading(null);
@@ -290,7 +290,7 @@ export function useCapacities(): UseCapacitiesReturn {
     } catch (error) {
       // Rollback on network error
       setCapacities(capacities);
-      console.error("Error toggling status:", error);
+
       toast.error("Có lỗi xảy ra khi cập nhật trạng thái");
     } finally {
       setActionLoading(null);

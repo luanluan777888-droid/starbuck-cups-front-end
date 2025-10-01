@@ -1,4 +1,4 @@
-import axios from "axios";
+﻿import axios from "axios";
 import type { AxiosInstance, AxiosResponse } from "axios";
 import type {
   ApiResponse,
@@ -43,14 +43,7 @@ class ApiService {
 
           // Debug log for cookie tracking
           if (config.url?.includes('auth') || config.url?.includes('refresh')) {
-            console.log("API Request Debug:", {
-              url: config.url,
-              method: config.method,
-              hasToken: !!token,
-              cookies: document.cookie,
-              hasRefreshToken: document.cookie.includes('admin_refresh_token'),
-              withCredentials: config.withCredentials
-            });
+
           }
         }
         return config;
@@ -67,7 +60,7 @@ class ApiService {
           typeof window !== "undefined" &&
           !this.isRefreshing
         ) {
-          console.log("Server indicated token refresh needed, refreshing...");
+
           try {
             this.isRefreshing = true;
             this.refreshPromise = this.performTokenRefresh();
@@ -76,7 +69,7 @@ class ApiService {
               TokenRefreshNotification.showRefreshSuccess(); // Silent refresh
             }
           } catch (error) {
-            console.error("Background token refresh failed:", error);
+
           } finally {
             this.isRefreshing = false;
             this.refreshPromise = null;
@@ -118,7 +111,7 @@ class ApiService {
               }
             }
           } catch (refreshError) {
-            console.error("Token refresh failed:", refreshError);
+
             TokenRefreshNotification.showRefreshErrorWithRedirect(
               "/admin/login"
             );
@@ -158,11 +151,9 @@ class ApiService {
         .find((row) => row.startsWith("admin_refresh_token="));
 
       if (!refreshTokenCookie) {
-        console.error("No admin_refresh_token cookie found");
+
         throw new Error("No refresh token available");
       }
-
-      console.log("Attempting token refresh with cookie present");
 
       // Backend có thể lấy refresh token từ cookie hoặc body
       // Gửi empty body để dựa vào cookie
@@ -188,13 +179,7 @@ class ApiService {
       }
     } catch (error: unknown) {
       const axiosError = error as { response?: { status: number; statusText?: string; data?: unknown }; message?: string };
-      console.error("Token refresh error details:", {
-        status: axiosError.response?.status,
-        statusText: axiosError.response?.statusText,
-        data: axiosError.response?.data,
-        message: axiosError.message,
-        cookiePresent: document.cookie.includes("admin_refresh_token"),
-      });
+
       throw error;
     }
   }
@@ -497,10 +482,7 @@ class ApiService {
       token: string;
     }>
   > {
-    console.log(
-      "ApiService checkSession called, current cookies:",
-      document.cookie
-    );
+
     const response = await this.api.get("/auth/admin/session");
     return response.data;
   }

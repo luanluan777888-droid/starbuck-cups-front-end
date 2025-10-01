@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store";
 import { OrderFormData, Product } from "@/types/orders";
@@ -309,13 +309,6 @@ export function useOrderCreation() {
         deliveryAddress,
       };
 
-      console.log("Creating order with data:", orderData);
-      console.log("Shipping details:", {
-        originalShippingCost: formData.originalShippingCost,
-        shippingDiscount: formData.shippingDiscount,
-        shippingCost: formData.shippingCost,
-        isFreeShipping: isFreeShipping(),
-      });
 
       // Include authorization header
       const headers: HeadersInit = {
@@ -336,14 +329,14 @@ export function useOrderCreation() {
       const data = await response.json();
 
       if (data.success) {
-        console.log("Order created successfully:", data.data);
+
         toast.success("Đơn hàng đã được tạo thành công!");
         router.push("/admin/orders");
       } else {
         throw new Error(data.message || "Failed to create order");
       }
     } catch (error) {
-      console.error("Error creating order:", error);
+
       const errorMessage =
         error instanceof Error
           ? `Có lỗi xảy ra: ${error.message}`

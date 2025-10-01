@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { useAppSelector } from "@/store";
@@ -91,8 +91,7 @@ export function useConsultations(): UseConsultationsReturn {
       });
 
       const headers = getAuthHeaders();
-      console.log("Auth headers:", headers);
-      console.log("Fetching URL:", `/api/admin/consultations?${params}`);
+
 
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
@@ -100,7 +99,6 @@ export function useConsultations(): UseConsultationsReturn {
         headers,
       });
       const data = await response.json();
-      console.log("Fetched consultations:", data);
 
       if (data.success) {
         setConsultations(data.data?.items || []);
@@ -108,11 +106,11 @@ export function useConsultations(): UseConsultationsReturn {
           setPagination(data.data.pagination);
         }
       } else {
-        console.error("API Error:", data);
+
         toast.error(data.message || "Không thể tải danh sách tư vấn");
       }
     } catch (error) {
-      console.error("Error fetching consultations:", error);
+
       toast.error("Có lỗi xảy ra khi tải danh sách tư vấn");
     } finally {
       setLoading(false);
@@ -135,8 +133,6 @@ export function useConsultations(): UseConsultationsReturn {
         notes: adminResponse.trim() || null,
       };
 
-      console.log("Updating consultation:", selectedConsultation.id);
-      console.log("Update data:", updateData);
 
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
@@ -152,14 +148,7 @@ export function useConsultations(): UseConsultationsReturn {
         }
       );
 
-      console.log("Update response:", {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-      });
-
       const data = await response.json();
-      console.log("Update data:", data);
 
       if (data.success) {
         toast.success("Cập nhật consultation thành công!");
@@ -171,7 +160,7 @@ export function useConsultations(): UseConsultationsReturn {
         toast.error(data.message || "Có lỗi xảy ra");
       }
     } catch (error) {
-      console.error("Error updating consultation:", error);
+
       toast.error("Có lỗi xảy ra khi cập nhật consultation");
     } finally {
       setActionLoading(null);
@@ -236,7 +225,7 @@ export function useConsultations(): UseConsultationsReturn {
         toast.error(data.message || "Có lỗi xảy ra khi xóa consultation");
       }
     } catch (error) {
-      console.error("Error deleting consultation:", error);
+
       toast.error("Có lỗi xảy ra khi xóa consultation");
     } finally {
       setActionLoading(null);

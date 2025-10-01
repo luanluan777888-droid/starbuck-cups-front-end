@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+﻿import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import type { Product } from "@/types";
 
 // Types
@@ -50,26 +50,19 @@ export const fetchProductBySlug = createAsyncThunk(
   "products/fetchProductBySlug",
   async (slug: string, { rejectWithValue }) => {
     try {
-      console.log("🔥 Fetching product with slug:", slug);
+
       const response = await fetch(`/api/products/public/${slug}`);
-      console.log("🔥 Response status:", response.status);
+
       const data = await response.json();
-      console.log("🔥 Response data:", data);
 
       if (!data.success || !data.data) {
-        console.log(
-          "❌ Product not found - data.success:",
-          data.success,
-          "data.data:",
-          !!data.data
-        );
+
         return rejectWithValue("Product not found");
       }
 
-      console.log("✅ Successfully fetched product:", data.data.name);
       return data.data as Product;
     } catch (error) {
-      console.log("❌ Fetch error:", error);
+
       return rejectWithValue("Failed to fetch product");
     }
   }
@@ -211,7 +204,6 @@ export const fetchRelatedProducts = createAsyncThunk(
         `/api/products/public?${searchParams.toString()}`
       );
       const data = await response.json();
-      console.log("🔥 Related products response data:", data);
 
       if (!data.success) {
         return rejectWithValue("Failed to fetch related products");

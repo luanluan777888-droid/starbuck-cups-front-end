@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { getApiUrl } from "@/lib/api-config";
 
 export async function GET() {
@@ -20,7 +20,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching colors:", error);
+
     return NextResponse.json(
       { error: "Failed to fetch colors" },
       { status: 500 }
