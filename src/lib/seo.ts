@@ -2,13 +2,13 @@ import { Metadata } from "next";
 import { PageSEO, Product } from "@/types";
 
 export const siteConfig = {
-  name: "Starbucks Cups Shop",
+  name: "H's shoucangpu - Collectible Gift Shop",
   description:
-    "Cửa hàng ly Starbucks chính thức với đa dạng màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
+    "Cửa hàng ly St@rbucks chính thức với đa dạng màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com",
   image: "/logo.png",
   keywords:
-    "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam",
+    "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam, ly starbucks chính hãng, ly starbuck chính hãng, ly starbucks auth, starbuck chính hãng, starbucks chính hãng, mua ly starbuck chính hãng, bình starbucks chính hãng, bình giữ nhiệt starbucks, ly giữ nhiệt starbucks, ly sứ starbucks",
 };
 
 export function generateSEO(seo: Partial<PageSEO>): Metadata {
