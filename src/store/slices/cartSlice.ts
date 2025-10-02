@@ -6,8 +6,9 @@ interface CartState {
   items: CartItem[];
   isOpen: boolean;
   lastAction?: {
-    type: 'added' | 'already_exists' | 'removed';
+    type: "added" | "already_exists" | "removed";
     productName?: string;
+    colorRequest?: string;
   };
 }
 
@@ -18,7 +19,6 @@ const loadCartFromStorage = (): CartItem[] => {
     const saved = localStorage.getItem("starbucks-cart");
     return saved ? JSON.parse(saved) : [];
   } catch (error) {
-
     return [];
   }
 };
@@ -27,9 +27,7 @@ const saveCartToStorage = (items: CartItem[]) => {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem("starbucks-cart", JSON.stringify(items));
-  } catch (error) {
-
-  }
+  } catch (error) {}
 };
 
 const initialState: CartState = {
@@ -44,35 +42,48 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (
       state,
-      action: PayloadAction<{ product: Product }>
+      action: PayloadAction<{ product: Product; colorRequest?: string }>
     ) => {
-      const { product } = action.payload;
-      const existingItem = state.items.find(
-        (item) => item.product.id === product.id
+      const { product, colorRequest } = action.payload;
+
+      // Check if exact same product with same color already exists
+      const exactMatch = state.items.find(
+        (item) =>
+          item.product.id === product.id && item.colorRequest === colorRequest
       );
 
-      if (!existingItem) {
-        state.items.push({ product });
+      if (exactMatch) {
+        // Same product with same color already exists
         state.lastAction = {
-          type: 'added',
-          productName: product.name
+          type: "already_exists",
+          productName: product.name,
+          colorRequest,
         };
-        saveCartToStorage(state.items);
-      } else {
-        state.lastAction = {
-          type: 'already_exists',
-          productName: product.name
-        };
+        return;
       }
-    },
 
-    removeFromCart: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter(
-        (item) => item.product.id !== action.payload
-      );
+      // Add new product variant to cart (different colors are treated as separate items)
+      state.items.push({ product, colorRequest });
+      state.lastAction = {
+        type: "added",
+        productName: product.name,
+        colorRequest,
+      };
+
       saveCartToStorage(state.items);
     },
 
+    removeFromCart: (
+      state,
+      action: PayloadAction<{ productId: string; colorRequest?: string }>
+    ) => {
+      const { productId, colorRequest } = action.payload;
+      state.items = state.items.filter(
+        (item) =>
+          !(item.product.id === productId && item.colorRequest === colorRequest)
+      );
+      saveCartToStorage(state.items);
+    },
 
     clearCart: (state) => {
       state.items = [];

@@ -52,8 +52,8 @@ interface UseProductsReturn {
     search?: string;
     category?: string;
     color?: string;
-    capacityMin?: number;
-    capacityMax?: number;
+    minCapacity?: number;
+    maxCapacity?: number;
     sort?: string;
     page?: number;
   }) => void;
@@ -75,8 +75,8 @@ export function useProducts(): UseProductsReturn {
     searchParams.get("color") || ""
   );
   const [capacityRange, setCapacityRange] = useState<CapacityRange>({
-    min: parseInt(searchParams.get("capacityMin") || "0"),
-    max: parseInt(searchParams.get("capacityMax") || "9999"),
+    min: parseInt(searchParams.get("minCapacity") || "0"),
+    max: parseInt(searchParams.get("maxCapacity") || "9999"),
   });
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
@@ -154,9 +154,9 @@ export function useProducts(): UseProductsReturn {
         if (selectedCategory) params.append("category", selectedCategory);
         if (selectedColor) params.append("color", selectedColor);
         if (capacityRange.min > 0)
-          params.append("capacityMin", capacityRange.min.toString());
+          params.append("minCapacity", capacityRange.min.toString());
         if (capacityRange.max < 9999)
-          params.append("capacityMax", capacityRange.max.toString());
+          params.append("maxCapacity", capacityRange.max.toString());
         params.append("page", currentPage.toString());
         params.append("limit", "20");
 
@@ -236,26 +236,26 @@ export function useProducts(): UseProductsReturn {
     search?: string;
     category?: string;
     color?: string;
-    capacityMin?: number;
-    capacityMax?: number;
+    minCapacity?: number;
+    maxCapacity?: number;
     sort?: string;
     page?: number;
   }) => {
     const params = new URLSearchParams();
 
-    const search = newFilters.search ?? searchQuery;
-    const category = newFilters.category ?? selectedCategory;
-    const color = newFilters.color ?? selectedColor;
-    const capacityMin = newFilters.capacityMin ?? capacityRange.min;
-    const capacityMax = newFilters.capacityMax ?? capacityRange.max;
-    const sort = newFilters.sort ?? sortBy;
-    const page = newFilters.page ?? currentPage;
+    const search = 'search' in newFilters ? newFilters.search : searchQuery;
+    const category = 'category' in newFilters ? newFilters.category : selectedCategory;
+    const color = 'color' in newFilters ? newFilters.color : selectedColor;
+    const minCapacity = 'minCapacity' in newFilters ? newFilters.minCapacity : capacityRange.min;
+    const maxCapacity = 'maxCapacity' in newFilters ? newFilters.maxCapacity : capacityRange.max;
+    const sort = 'sort' in newFilters ? newFilters.sort : sortBy;
+    const page = 'page' in newFilters ? newFilters.page : currentPage;
 
     if (search) params.set("search", search);
     if (category) params.set("category", category);
     if (color) params.set("color", color);
-    if (capacityMin > 0) params.set("capacityMin", capacityMin.toString());
-    if (capacityMax < 9999) params.set("capacityMax", capacityMax.toString());
+    if (minCapacity !== undefined && minCapacity > 0) params.set("minCapacity", minCapacity.toString());
+    if (maxCapacity !== undefined && maxCapacity < 9999) params.set("maxCapacity", maxCapacity.toString());
     if (sort && sort !== "newest") params.set("sort", sort);
     if (page && page !== 1) params.set("page", page.toString());
 

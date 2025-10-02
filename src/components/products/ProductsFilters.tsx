@@ -159,7 +159,7 @@ export function ProductsFilters({
                 <input
                   type="number"
                   placeholder="Min"
-                  value={capacityRange.min || ""}
+                  value={capacityRange.min > 0 ? capacityRange.min : ""}
                   onChange={(e) => {
                     const newRange = {
                       ...capacityRange,
@@ -175,7 +175,7 @@ export function ProductsFilters({
                 <input
                   type="number"
                   placeholder="Max"
-                  value={capacityRange.max || ""}
+                  value={capacityRange.max < 9999 ? capacityRange.max : ""}
                   onChange={(e) => {
                     const newRange = {
                       ...capacityRange,

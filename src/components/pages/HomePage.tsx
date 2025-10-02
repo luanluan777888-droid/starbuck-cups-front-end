@@ -76,6 +76,8 @@ const HomePage: React.FC<HomePageProps> = ({
       {/* Categories Section */}
       <section className="py-8">
         <div className="container mx-auto px-6">
+          {/* product title*/}
+          <div className="text-2xl font-semibold">Sản phẩm mới nhất</div>
           <Suspense
             fallback={
               <LoadingSkeleton className="h-12 bg-zinc-800 rounded-lg mb-6" />

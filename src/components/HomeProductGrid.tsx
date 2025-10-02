@@ -5,6 +5,8 @@ import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { useAppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 // CSS cho skeleton được import ở app level để tránh duplicate
 
 interface HomeProductGridProps {
@@ -17,16 +19,14 @@ export default function HomeProductGrid({
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleRows, setVisibleRows] = useState<Set<number>>(new Set());
+  const [allAnimationsComplete, setAllAnimationsComplete] = useState(false);
+  const [showViewAllButton, setShowViewAllButton] = useState(false);
   const [randomDelays, setRandomDelays] = useState<Map<string, number>>(
     new Map()
   );
   const dispatch = useAppDispatch();
 
   // Debug logs
-
-
-
-
 
   // Generate random delays for products when they're loaded
   useEffect(() => {
@@ -39,6 +39,31 @@ export default function HomeProductGrid({
     }
   }, [products]);
 
+  // Check if all animations are complete
+  useEffect(() => {
+    if (products.length > 0 && !loading) {
+      const totalRows = Math.ceil(products.length / 4);
+      if (visibleRows.size >= totalRows) {
+        // Delay to ensure animations have time to complete
+        const timer = setTimeout(() => {
+          setAllAnimationsComplete(true);
+        }, 1000); // Wait 1 second after last row becomes visible
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [visibleRows.size, products.length, loading]);
+
+  // Show view all button with additional delay after animations complete
+  useEffect(() => {
+    if (allAnimationsComplete) {
+      const timer = setTimeout(() => {
+        setShowViewAllButton(true);
+      }, 500); // Additional 500ms delay for button to appear
+      return () => clearTimeout(timer);
+    } else {
+      setShowViewAllButton(false);
+    }
+  }, [allAnimationsComplete]);
 
   // Intersection Observer for scroll-triggered animations
   useEffect(() => {
@@ -84,9 +109,10 @@ export default function HomeProductGrid({
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-
         setLoading(true);
         setVisibleRows(new Set());
+        setAllAnimationsComplete(false);
+        setShowViewAllButton(false);
 
         let url = "/api/products?sortBy=createdAt&sortOrder=desc&limit=36";
         if (selectedCategory) {
@@ -96,21 +122,16 @@ export default function HomeProductGrid({
         const response = await fetch(url);
         const data = await response.json();
 
-
-
         if (data.success && data.data?.items) {
           setProducts(data.data.items);
-
         } else {
           setProducts([]);
-
         }
       } catch (error) {
-
+        console.error("Error fetching products:", error);
         setProducts([]);
       } finally {
         setLoading(false);
-
       }
     };
 
@@ -166,49 +187,76 @@ export default function HomeProductGrid({
   }
 
   return (
-    <div className="space-y-6">
-      {productRows.map((row, rowIndex) => (
-        <div
-          key={rowIndex}
-          data-row={rowIndex}
-          className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 transition-all duration-700 ${
-            visibleRows.has(rowIndex)
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-8"
-          }`}
-        >
-          {row.map((product, productIndex) => {
-            // Get stable random delay for this product
-            const randomDelay = randomDelays.get(product.id) || 0;
-            // Calculate global index để xác định priority
-            const globalIndex = rowIndex * PRODUCTS_PER_ROW + productIndex;
+    <>
+      <div className="space-y-6">
+        {productRows.map((row, rowIndex) => (
+          <div
+            key={rowIndex}
+            data-row={rowIndex}
+            className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 transition-all duration-700 ${
+              visibleRows.has(rowIndex)
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            {row.map((product, productIndex) => {
+              // Get stable random delay for this product
+              const randomDelay = randomDelays.get(product.id) || 0;
+              // Calculate global index để xác định priority
+              const globalIndex = rowIndex * PRODUCTS_PER_ROW + productIndex;
 
-            return (
-              <div
-                key={product.id}
-                className={`transition-all duration-1000 ease-out ${
-                  visibleRows.has(rowIndex)
-                    ? "opacity-100 translate-y-0 scale-100"
-                    : "opacity-0 translate-y-8 scale-95"
-                }`}
-                style={{
-                  transitionDelay: visibleRows.has(rowIndex)
-                    ? `${randomDelay}ms`
-                    : "0ms",
-                  transitionTimingFunction:
-                    "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-                }}
-              >
-                <ProductCard
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  priority={globalIndex < 4} // Đánh dấu 4 sản phẩm đầu làm priority để tối ưu LCP
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={product.id}
+                  className={`transition-all duration-1000 ease-out ${
+                    visibleRows.has(rowIndex)
+                      ? "opacity-100 translate-y-0 scale-100"
+                      : "opacity-0 translate-y-8 scale-95"
+                  }`}
+                  style={{
+                    transitionDelay: visibleRows.has(rowIndex)
+                      ? `${randomDelay}ms`
+                      : "0ms",
+                    transitionTimingFunction:
+                      "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  }}
+                >
+                  <ProductCard
+                    product={product}
+                    onAddToCart={handleAddToCart}
+                    priority={globalIndex < 4} // Đánh dấu 4 sản phẩm đầu làm priority để tối ưu LCP
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {/* View All Products Button */}
+      {!loading && products.length > 0 && showViewAllButton && (
+        <div className="flex justify-center mt-12">
+          <div className="animate-zoom-in">
+            <Link
+              href={
+                selectedCategory
+                  ? `/products?category=${selectedCategory}`
+                  : "/products"
+              }
+              className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900 text-white font-semibold rounded-2xl relative overflow-hidden group transition-colors duration-300"
+            >
+              {/* Hover effect layer */}
+              <div className="absolute inset-0 bg-zinc-800 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+
+              {/* Content */}
+              <span className="relative z-10 flex items-center gap-2">
+                Xem tất cả sản phẩm
+                <ArrowRight className="w-5 h-5" />
+              </span>
+            </Link>
+          </div>
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }

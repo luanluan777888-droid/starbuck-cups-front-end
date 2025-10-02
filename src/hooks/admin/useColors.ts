@@ -102,14 +102,11 @@ export function useColors(): UseColorsReturn {
       const data = await response.json();
 
       if (data.success) {
-
         setColors(data.data?.items || []);
       } else {
-
         toast.error(data.message || "Không thể tải danh sách màu sắc");
       }
-    } catch (error) {
-
+    } catch {
       toast.error("Có lỗi xảy ra khi tải màu sắc");
     } finally {
       setLoading(false);
@@ -157,7 +154,6 @@ export function useColors(): UseColorsReturn {
 
       const data = await response.json();
 
-
       if (data.success) {
         toast.success(
           editingColor ? "Cập nhật màu thành công" : "Tạo màu thành công"
@@ -183,8 +179,7 @@ export function useColors(): UseColorsReturn {
           toast.error(data.error?.message || data.message || "Có lỗi xảy ra");
         }
       }
-    } catch (error) {
-
+    } catch {
       toast.error("Có lỗi xảy ra khi lưu màu");
     } finally {
       setActionLoading(null);
@@ -211,7 +206,6 @@ export function useColors(): UseColorsReturn {
   };
 
   const performDelete = async (color: ColorWithCount) => {
-
     setActionLoading(`delete-${color.id}`);
     try {
       const response = await fetch(`/api/admin/colors/${color.id}`, {
@@ -228,7 +222,6 @@ export function useColors(): UseColorsReturn {
         toast.error(data.message || "Có lỗi xảy ra khi xóa");
       }
     } catch (error) {
-
       toast.error("Có lỗi xảy ra khi xóa màu");
     } finally {
       setActionLoading(null);

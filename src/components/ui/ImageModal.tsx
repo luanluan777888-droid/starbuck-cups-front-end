@@ -108,14 +108,13 @@ export function ImageModal({
       </button>
 
       {/* Main image */}
-      <div className="relative w-full h-full flex items-center justify-center p-4">
-        <div className="relative max-w-7xl max-h-full">
+      <div className="relative w-full h-full flex items-center justify-center p-4 pb-32">
+        <div className="relative w-full h-full max-w-5xl">
           <Image
             src={images[activeIndex]}
             alt={`Hình ${activeIndex + 1}`}
-            width={1200}
-            height={800}
-            className="max-w-full max-h-full object-contain mx-auto"
+            fill
+            className="object-contain"
             key={activeIndex} // Add key to force re-render when index changes
             onError={(e) => {
               e.currentTarget.src = "/images/placeholder-product.jpg";

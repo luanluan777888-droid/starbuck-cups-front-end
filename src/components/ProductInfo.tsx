@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter, notFound } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
@@ -32,9 +32,11 @@ interface ProductCategory {
 
 export default function ProductInfo() {
   const params = useParams();
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
+
+  // Selected color state
+  const [selectedColor, setSelectedColor] = useState<ProductColor | null>(null);
 
   // Get product data from Redux store
   const {
@@ -43,25 +45,15 @@ export default function ProductInfo() {
     currentProductError: error,
   } = useAppSelector((state) => state.products);
 
-
   // Debug logs
-
-
-
-
-
-
 
   // Fetch product data
   useEffect(() => {
-
     const slug = params.slug;
     if (typeof slug === "string" && !hasAttemptedFetch) {
-
       setHasAttemptedFetch(true);
       dispatch(fetchProductBySlug(slug));
     } else {
-
     }
   }, [params.slug, dispatch, hasAttemptedFetch]);
 
@@ -84,15 +76,57 @@ export default function ProductInfo() {
     }
   }, [product]);
 
+  // Auto-select first color when product is loaded
+  useEffect(() => {
+    if (
+      product?.productColors &&
+      product.productColors.length > 0 &&
+      !selectedColor
+    ) {
+      console.log("🎨 AUTO-SELECTING FIRST COLOR:", {
+        productName: product.name,
+        availableColors: product.productColors.map((pc) => ({
+          id: pc.color.id,
+          name: pc.color.name,
+          hexCode: pc.color.hexCode,
+        })),
+        selectedColor: product.productColors[0].color,
+      });
+      setSelectedColor(product.productColors[0]);
+    }
+  }, [product, selectedColor]);
+
   // Show error page if product not found AFTER we tried to fetch
   if (error && !loading && hasAttemptedFetch) {
-
     notFound();
   }
 
   const handleAddToCart = () => {
     if (product && product.stockQuantity > 0) {
-      dispatch(addToCart({ product }));
+      // Get selected color information
+      const colorRequest = selectedColor?.color?.name;
+
+      console.log("🛒 ADDING TO CART:", {
+        productId: product.id,
+        productName: product.name,
+        selectedColor: selectedColor
+          ? {
+              id: selectedColor.color.id,
+              name: selectedColor.color.name,
+              hexCode: selectedColor.color.hexCode,
+            }
+          : null,
+        colorRequest,
+        capacity: product.capacity?.name,
+        categories: product.productCategories?.map((pc) => pc.category.name),
+      });
+
+      dispatch(
+        addToCart({
+          product,
+          colorRequest,
+        })
+      );
 
       // GA4 tracking
       trackAddToCart({
@@ -114,38 +148,34 @@ export default function ProductInfo() {
     }
   };
 
-
-  const handleCategoryClick = (categorySlug: string) => {
-    if (categorySlug) {
-      router.push(`/products?category=${categorySlug}`);
-    }
-  };
-
-  const handleCapacityClick = () => {
-    if (product?.capacity?.volumeMl) {
-      const volume = product.capacity.volumeMl;
-      router.push(`/products?capacityMin=${volume}&capacityMax=${volume}`);
-    }
-  };
-
   const handleColorClick = (colorSlug: string) => {
-
-    if (colorSlug) {
-      router.push(`/products?color=${colorSlug}`);
-    } else {
-
+    // Find the selected color object
+    const color = product?.productColors?.find(
+      (pc: ProductColor) => pc.color.slug === colorSlug
+    );
+    if (color) {
+      console.log("🎨 USER SELECTED COLOR:", {
+        productName: product?.name,
+        previousColor: selectedColor?.color?.name,
+        newColor: color.color.name,
+        colorDetails: {
+          id: color.color.id,
+          name: color.color.name,
+          slug: color.color.slug,
+          hexCode: color.color.hexCode,
+        },
+      });
+      setSelectedColor(color);
     }
   };
 
   // Only redirect to 404 if we've attempted fetch and got error, or if no product after successful fetch
   if (!product && !loading && hasAttemptedFetch && !error) {
-
     return notFound();
   }
 
   // Show skeleton loading if we haven't attempted fetch yet or if loading
   if (!hasAttemptedFetch || loading) {
-
     return (
       <SkeletonTheme baseColor="#18181b" highlightColor="#27272a">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -238,7 +268,6 @@ export default function ProductInfo() {
   }
 
   if (!product) {
-
     return (
       <div className="text-center text-white py-8">
         <p>Không tìm thấy sản phẩm</p>
@@ -271,12 +300,16 @@ export default function ProductInfo() {
             </label>
             <div className="flex flex-wrap gap-2">
               {product.productColors?.map((pc: ProductColor) => {
-
+                const isSelected = selectedColor?.color.id === pc.color.id;
                 return (
                   <button
                     key={pc.color.id}
                     onClick={() => handleColorClick(pc.color.slug)}
-                    className="inline-flex items-center gap-2 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg hover:bg-zinc-700 hover:border-zinc-600 transition-colors cursor-pointer"
+                    className={`inline-flex items-center gap-2 px-3 py-2 border rounded-lg transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-white border-white ring-2 ring-zinc-400"
+                        : "bg-zinc-800 border-zinc-700 hover:bg-zinc-700 hover:border-zinc-600"
+                    }`}
                   >
                     <div
                       className="w-4 h-4 rounded-full border border-zinc-600 flex-shrink-0"
@@ -284,7 +317,7 @@ export default function ProductInfo() {
                         backgroundColor: pc.color.hexCode || "#000000",
                       }}
                     />
-                    <span className="text-white font-medium">
+                    <span className={`font-medium ${isSelected ? "text-black" : "text-white"}`}>
                       {pc.color.name}
                     </span>
                   </button>
@@ -299,14 +332,11 @@ export default function ProductInfo() {
             <label className="block text-sm font-medium text-zinc-300 mb-2">
               Dung tích
             </label>
-            <button
-              onClick={handleCapacityClick}
-              className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg hover:bg-zinc-700 hover:border-zinc-600 transition-colors cursor-pointer"
-            >
+            <div className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg">
               <span className="text-white font-medium">
                 {product.capacity?.name || "Không xác định"}
               </span>
-            </button>
+            </div>
           </div>
 
           <div>
@@ -315,15 +345,14 @@ export default function ProductInfo() {
             </label>
             <div className="flex flex-wrap gap-2">
               {product.productCategories?.map((pc: ProductCategory) => (
-                <button
+                <div
                   key={pc.category.id}
-                  onClick={() => handleCategoryClick(pc.category.slug)}
-                  className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg hover:bg-zinc-700 hover:border-zinc-600 transition-colors cursor-pointer"
+                  className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg"
                 >
                   <span className="text-white font-medium">
                     {pc.category.name}
                   </span>
-                </button>
+                </div>
               )) || (
                 <span className="text-zinc-400 text-sm">Không xác định</span>
               )}
@@ -347,7 +376,6 @@ export default function ProductInfo() {
 
         {/* Add to Cart */}
         <div className="space-y-4">
-
           <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <button
               onClick={handleAddToCart}

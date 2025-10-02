@@ -1,5 +1,7 @@
 import ProductsGrid from "@/components/ProductsGrid";
-import type { CapacityRange } from "@/types";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { FilterBadges } from "@/components/products/FilterBadges";
+import type { CapacityRange, Category, Color, Capacity } from "@/types";
 
 interface ProductsContentProps {
   searchQuery: string;
@@ -8,7 +10,16 @@ interface ProductsContentProps {
   capacityRange: CapacityRange;
   sortBy: string;
   currentPage: number;
+  categories: Category[];
+  colors: Color[];
+  capacities: Capacity[];
   onPageChange: (page: number) => void;
+  onRemoveSearch: () => void;
+  onRemoveCategory: () => void;
+  onRemoveColor: () => void;
+  onRemoveCapacity: () => void;
+  onRemoveSort: () => void;
+  onClearAll: () => void;
 }
 
 export function ProductsContent({
@@ -18,10 +29,45 @@ export function ProductsContent({
   capacityRange,
   sortBy,
   currentPage,
+  categories,
+  colors,
+  capacities,
   onPageChange,
+  onRemoveSearch,
+  onRemoveCategory,
+  onRemoveColor,
+  onRemoveCapacity,
+  onRemoveSort,
+  onClearAll,
 }: ProductsContentProps) {
   return (
-    <div className="lg:w-full">
+    <div className="lg:w-full space-y-6">
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { label: "Trang chủ", href: "/" },
+          { label: "Sản phẩm" },
+        ]}
+      />
+
+      {/* Filter Badges */}
+      <FilterBadges
+        searchQuery={searchQuery}
+        selectedCategory={selectedCategory}
+        selectedColor={selectedColor}
+        capacityRange={capacityRange}
+        sortBy={sortBy}
+        categories={categories}
+        colors={colors}
+        capacities={capacities}
+        onRemoveSearch={onRemoveSearch}
+        onRemoveCategory={onRemoveCategory}
+        onRemoveColor={onRemoveColor}
+        onRemoveCapacity={onRemoveCapacity}
+        onRemoveSort={onRemoveSort}
+        onClearAll={onClearAll}
+      />
+
       {/* Products Grid */}
       <ProductsGrid
         searchQuery={searchQuery}

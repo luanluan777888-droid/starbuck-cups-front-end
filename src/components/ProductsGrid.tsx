@@ -112,9 +112,9 @@ export default function ProductsGrid({
         if (selectedCategory) params.append("category", selectedCategory);
         if (selectedColor) params.append("color", selectedColor);
         if (capacityRange.min > 0)
-          params.append("capacityMin", capacityRange.min.toString());
+          params.append("minCapacity", capacityRange.min.toString());
         if (capacityRange.max < 9999)
-          params.append("capacityMax", capacityRange.max.toString());
+          params.append("maxCapacity", capacityRange.max.toString());
         if (sortBy) {
           let field, order;
           if (sortBy === "newest") {

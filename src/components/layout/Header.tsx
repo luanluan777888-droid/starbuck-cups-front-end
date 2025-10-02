@@ -33,7 +33,7 @@ export function Header({ className = "" }: HeaderProps) {
 
   const handleMenuClick = () => {
     setIsSidebarOpen(true);
-    trackMobileMenu('open');
+    trackMobileMenu("open");
   };
 
   const handleSearchClick = () => {
@@ -97,14 +97,26 @@ export function Header({ className = "" }: HeaderProps) {
 
         {/* Desktop Layout */}
         <div className="hidden md:flex container mx-auto px-6 py-4 items-center justify-between">
-          {/* Menu Button */}
-          <button
-            onClick={handleMenuClick}
-            className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors"
-          >
-            <MenuIcon className="w-4 h-4" />
-            Menu
-          </button>
+          {/* Logo thay thế Menu Button */}
+          <Link href="/" className="flex items-center gap-3">
+            {isHydrated && (
+              <Image
+                src="/logo.png"
+                alt="Starbucks Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 brightness-0 invert"
+                onError={(e) => {
+                  // Fallback to text if image fails
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                }}
+              />
+            )}
+            <span className="text-lg font-semibold text-white">
+              H&apos;s shoucangpu
+            </span>
+          </Link>
 
           <div className="flex items-center gap-6">
             <Link
@@ -125,6 +137,16 @@ export function Header({ className = "" }: HeaderProps) {
             >
               Sản phẩm
             </Link>
+            <Link
+              href="/contacts"
+              className={`font-light tracking-wider transition-colors ${
+                pathname === "/contacts"
+                  ? "text-sm text-white"
+                  : "text-sm text-zinc-400 hover:text-zinc-300"
+              }`}
+            >
+              Liên hệ
+            </Link>
           </div>
 
           <div className="flex items-center gap-4">
@@ -139,7 +161,7 @@ export function Header({ className = "" }: HeaderProps) {
             <button
               onClick={() => {
                 dispatch(openCart());
-                trackCartAction('open');
+                trackCartAction("open");
               }}
               className="text-sm font-medium text-white hover:text-zinc-300 transition-colors"
             >
@@ -158,7 +180,7 @@ export function Header({ className = "" }: HeaderProps) {
           className="fixed inset-0 backdrop-blur-sm bg-opacity-50 z-50"
           onClick={() => {
             setIsSidebarOpen(false);
-            trackMobileMenu('close');
+            trackMobileMenu("close");
           }}
         />
       )}
@@ -189,7 +211,7 @@ export function Header({ className = "" }: HeaderProps) {
                 />
               )}
               <div className="text-lg font-bold text-white tracking-wider">
-                STARBUCKS
+                H&apos;s shoucangpu
               </div>
             </div>
             <button
@@ -243,6 +265,26 @@ export function Header({ className = "" }: HeaderProps) {
                   />
                 </svg>
                 Sản phẩm
+              </div>
+            </Link>
+            <Link
+              href="/contacts"
+              onClick={() => setIsSidebarOpen(false)}
+              className={`block py-3 px-4 rounded-lg transition-colors ${
+                pathname === "/contacts"
+                  ? "bg-zinc-800 text-white"
+                  : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+                Liên hệ
               </div>
             </Link>
           </div>
