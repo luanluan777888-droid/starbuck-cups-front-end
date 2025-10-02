@@ -33,7 +33,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             src={firstImage.url}
             alt={product.name}
             fill
-            className="object-cover opacity-100 group-hover:opacity-0 transition-opacity duration-300"
+            className={`object-cover transition-opacity duration-300 ${
+              secondImage ? "opacity-100 group-hover:opacity-0" : "opacity-100"
+            }`}
             priority={priority}
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : "auto"}

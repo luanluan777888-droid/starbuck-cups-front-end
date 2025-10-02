@@ -10,11 +10,11 @@ import { ArrowRight } from "lucide-react";
 // CSS cho skeleton được import ở app level để tránh duplicate
 
 interface HomeProductGridProps {
-  selectedCategory: string | null;
+  selectedCategory?: string | null;
 }
 
 export default function HomeProductGrid({
-  selectedCategory,
+  selectedCategory = null,
 }: HomeProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,7 +105,7 @@ export default function HomeProductGrid({
     };
   }, [products.length, selectedCategory]);
 
-  // Fetch products by category or newest products
+  // Fetch newest products only
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -114,10 +114,7 @@ export default function HomeProductGrid({
         setAllAnimationsComplete(false);
         setShowViewAllButton(false);
 
-        let url = "/api/products?sortBy=createdAt&sortOrder=desc&limit=36";
-        if (selectedCategory) {
-          url = `/api/products?category=${selectedCategory}&limit=36`;
-        }
+        const url = "/api/products?sortBy=createdAt&sortOrder=desc&limit=36";
 
         const response = await fetch(url);
         const data = await response.json();
@@ -136,7 +133,7 @@ export default function HomeProductGrid({
     };
 
     fetchProducts();
-  }, [selectedCategory]);
+  }, []);
 
   const handleAddToCart = (product: Product) => {
     dispatch(addToCart({ product }));
@@ -238,11 +235,7 @@ export default function HomeProductGrid({
         <div className="flex justify-center mt-12">
           <div className="animate-zoom-in">
             <Link
-              href={
-                selectedCategory
-                  ? `/products?category=${selectedCategory}`
-                  : "/products"
-              }
+              href="/products"
               className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900 text-white font-semibold rounded-2xl relative overflow-hidden group transition-colors duration-300"
             >
               {/* Hover effect layer */}
