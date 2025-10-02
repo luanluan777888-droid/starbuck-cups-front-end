@@ -1,6 +1,7 @@
 "use client";
 
 import { Facebook, Mail, Phone, MapPin } from "lucide-react";
+import Link from "next/link";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -13,8 +14,39 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-4">H&#39;s shoucangpu</h3>
             <p className="text-zinc-400 text-sm mb-4">
-              Chuyên cung cấp các sản phẩm ly St@rbucks chính hãng với đa dạng
-              màu sắc và dung tích.
+              Ly ST@RBUCKS CHÍNH HÃNG các nước
+              <br />
+              95% MẪU TRÊN WEB là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍
+              <br />
+              <br />
+              Quà tặng cao cấp Luxury
+              <br />
+              Có dịch vụ gói quà
+              <br />
+              <br />
+              Tiệm sưu tầm của H
+              <br />
+              PAGE:{" "}
+              <Link
+                href="https://www.facebook.com/p/Hs%E6%94%B6%E8%97%8F%E9%8B%AA-Hs-shoucangpu-61560973846348/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-zinc-300 transition-colors underline"
+              >
+                H&#39;s shoucangpu
+              </Link>
+              <br />
+              FB:{" "}
+              <Link
+                href="https://www.facebook.com/hasron.luong"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-zinc-300 transition-colors underline"
+              >
+                Hasron Leung
+              </Link>
+              <br />
+              Dịch vụ ship hoả tốc 24/7
             </p>
             <div className="flex items-center gap-3">
               <a
