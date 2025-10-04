@@ -98,7 +98,6 @@ export default function ProductsGrid({
     };
   }, [isMounted]);
 
-
   useEffect(() => {
     // Don't fetch on server or before component is mounted
     if (!isMounted) return;
@@ -132,6 +131,12 @@ export default function ProductsGrid({
         params.append("page", currentPage.toString());
         params.append("limit", gridConfig.productsPerPage.toString());
 
+        console.log("🎯 [ProductsGrid] Request params:", {
+          limit: gridConfig.productsPerPage,
+          gridConfig: gridConfig,
+          queryString: params.toString(),
+        });
+
         const response = await fetch(`/api/products?${params.toString()}`);
         const data = await response.json();
 
@@ -147,7 +152,6 @@ export default function ProductsGrid({
           setPaginationData(null);
         }
       } catch (error) {
-
         setProducts([]);
         setPaginationData(null);
       } finally {
