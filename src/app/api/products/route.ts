@@ -25,9 +25,21 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
+    
+    console.log("📊 [Products API] Response debug:", {
+      status: response.status,
+      success: data.success,
+      totalItems: data.data?.totalItems || data.data?.pagination?.total_items,
+      itemsCount: data.data?.items?.length,
+      hasItems: !!data.data?.items,
+      queryParams: query.toString(),
+      backendUrl,
+      paginationInfo: data.data?.pagination,
+      sampleData: data.data?.items?.slice(0, 2)
+    });
 
     return NextResponse.json(data);
-  } catch (error) {
+  } catch {
 
     return NextResponse.json(
       { error: "Failed to fetch products" },

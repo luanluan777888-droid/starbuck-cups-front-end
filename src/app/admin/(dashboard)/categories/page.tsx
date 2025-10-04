@@ -75,13 +75,17 @@ export default function CategoriesManagement() {
         />
 
         {/* Pagination */}
-        {pagination && !loading && (
+        {pagination && !loading ? (
           <div className="mt-6 flex justify-center">
             <Pagination
               data={pagination}
               onPageChange={onPageChange}
               className="bg-gray-800 rounded-lg"
             />
+          </div>
+        ) : (
+          <div className="mt-6 text-center text-gray-400">
+            {loading ? "Đang tải..." : "Không có dữ liệu phân trang"}
           </div>
         )}
       </div>

@@ -119,6 +119,7 @@ export function useCategories(): UseCategoriesReturn {
 
   const fetchCategories = useCallback(async () => {
     try {
+      console.log("🚀 [Frontend] Fetching categories - page:", currentPage);
       setLoading(true);
 
       const response = await fetch(
@@ -129,22 +130,41 @@ export function useCategories(): UseCategoriesReturn {
       );
 
       const data = await response.json();
+      
+      console.log("📥 [Frontend] Categories response:", {
+        responseOk: response.ok,
+        status: response.status,
+        success: data.success,
+        totalItems: data.data?.pagination?.total_items || data.data?.totalItems,
+        currentPage: data.data?.pagination?.current_page || data.data?.currentPage,
+        totalPages: data.data?.pagination?.total_pages || data.data?.totalPages,
+        itemsCount: data.data?.items?.length,
+        hasData: !!data.data,
+        hasItems: !!data.data?.items,
+        paginationInfo: data.data?.pagination
+      });
 
       if (data.success && data.data) {
         const categoriesList = data.data.items || [];
+        
+        console.log("✅ [Frontend] Setting categories:", categoriesList.length, "items");
 
-        // Set pagination data
-        setPagination({
-          current_page: data.data.currentPage || currentPage,
-          has_next: data.data.currentPage < data.data.totalPages,
-          has_prev: data.data.currentPage > 1,
-          per_page: data.data.size || 20,
-          total_items: data.data.totalItems || categoriesList.length,
-          total_pages: data.data.totalPages || 1,
-        });
+        // Set pagination data from response
+        const paginationInfo = data.data.pagination;
+        if (paginationInfo) {
+          setPagination({
+            current_page: paginationInfo.current_page,
+            has_next: paginationInfo.has_next,
+            has_prev: paginationInfo.has_prev,
+            per_page: paginationInfo.per_page,
+            total_items: paginationInfo.total_items,
+            total_pages: paginationInfo.total_pages,
+          });
+        }
 
         setCategories(categoriesList);
       } else {
+        console.error("❌ [Frontend] API error:", data.message);
         toast.error(data.message || "Không thể tải danh sách danh mục");
       }
     } catch {

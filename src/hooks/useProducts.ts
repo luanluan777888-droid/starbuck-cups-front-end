@@ -185,6 +185,20 @@ export function useProducts(): UseProductsReturn {
 
         const response = await fetch(`/api/products?${params.toString()}`);
         const data = await response.json();
+        
+        console.log("📦 [Products Frontend] Response debug:", {
+          responseOk: response.ok,
+          status: response.status,
+          success: data.success,
+          totalItems: data.data?.totalItems || data.data?.pagination?.total_items,
+          itemsCount: data.data?.items?.length,
+          hasData: !!data.data,
+          hasItems: !!data.data?.items,
+          queryParams: params.toString(),
+          paginationInfo: data.data?.pagination,
+          currentPage,
+          requestedLimit: "20"
+        });
 
         if (data.success) {
           // Normalize products data to handle both old and new image structure
