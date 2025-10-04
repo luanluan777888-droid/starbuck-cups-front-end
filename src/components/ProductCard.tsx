@@ -140,7 +140,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           - {product.capacity?.name || "chưa có"}
         </div>
         <h3
-          className={`text-sm font-medium mb-1 ${
+          className={`text-sm font-medium mb-1 truncate ${
             product.stockQuantity === 0 ? "text-zinc-400" : "text-white"
           }`}
         >
