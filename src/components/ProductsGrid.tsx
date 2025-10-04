@@ -129,7 +129,7 @@ export default function ProductsGrid({
           params.append("sortOrder", order);
         }
         params.append("page", currentPage.toString());
-        params.append("size", gridConfig.productsPerPage.toString());
+        params.append("limit", gridConfig.productsPerPage.toString());
 
         console.log("🎯 [ProductsGrid] Request params:", {
           limit: gridConfig.productsPerPage,
