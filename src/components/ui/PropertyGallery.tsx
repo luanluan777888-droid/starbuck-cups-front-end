@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ImageModal } from "./ImageModal";
 
@@ -11,6 +11,95 @@ interface PropertyGalleryProps {
 export function PropertyGallery({ images, title }: PropertyGalleryProps) {
   const [currentImage, setCurrentImage] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Swipe states for mobile
+  const [isSwipping, setIsSwipping] = useState(false);
+  const [swipeStartX, setSwipeStartX] = useState(0);
+  const [swipeStartY, setSwipeStartY] = useState(0);
+  const [swipeCurrentX, setSwipeCurrentX] = useState(0);
+
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || "ontouchstart" in window);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Navigation functions
+  const nextImage = useCallback(() => {
+    setCurrentImage((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+  }, [images.length]);
+
+  const prevImage = useCallback(() => {
+    setCurrentImage((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+  }, [images.length]);
+
+  // Touch handlers for swipe
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isMobile || e.touches.length !== 1) return;
+
+      const touch = e.touches[0];
+      setIsSwipping(true);
+      setSwipeStartX(touch.clientX);
+      setSwipeStartY(touch.clientY);
+      setSwipeCurrentX(touch.clientX);
+    },
+    [isMobile]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isMobile || !isSwipping || e.touches.length !== 1) return;
+
+      const touch = e.touches[0];
+      setSwipeCurrentX(touch.clientX);
+    },
+    [isMobile, isSwipping]
+  );
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isMobile || !isSwipping) return;
+
+      const deltaX = swipeCurrentX - swipeStartX;
+      const deltaY = Math.abs(e.changedTouches[0]?.clientY - swipeStartY);
+      const distance = Math.abs(deltaX);
+      const SWIPE_THRESHOLD = 50;
+
+      // Check if horizontal swipe with enough distance
+      if (distance > SWIPE_THRESHOLD && Math.abs(deltaX) > deltaY) {
+        if (deltaX > 0) {
+          // Swipe right - previous image
+          prevImage();
+        } else {
+          // Swipe left - next image
+          nextImage();
+        }
+      }
+
+      // Reset swipe states
+      setIsSwipping(false);
+      setSwipeStartX(0);
+      setSwipeStartY(0);
+      setSwipeCurrentX(0);
+    },
+    [
+      isMobile,
+      isSwipping,
+      swipeCurrentX,
+      swipeStartX,
+      swipeStartY,
+      nextImage,
+      prevImage,
+    ]
+  );
 
   // Keyboard navigation
   useEffect(() => {
@@ -40,15 +129,6 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
     );
   }
 
-  const nextImage = () => {
-    setCurrentImage((prev) => (prev < images.length - 1 ? prev + 1 : 0));
-  };
-
-  const prevImage = () => {
-    setCurrentImage((prev) => (prev > 0 ? prev - 1 : images.length - 1));
-  };
-
-
   const handleThumbnailClick = (index: number, event: React.MouseEvent) => {
     setCurrentImage(index);
     // Remove focus from the clicked button to prevent hover state persistence
@@ -72,6 +152,9 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
           <div
             className="relative h-96 w-full group cursor-pointer"
             onClick={openModal}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
             <Image
               src={images[currentImage]}

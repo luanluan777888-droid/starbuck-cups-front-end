@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import { useParams, notFound } from "next/navigation";
+import { useParams, notFound, useRouter } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
@@ -32,6 +32,7 @@ interface ProductCategory {
 
 export default function ProductInfo() {
   const params = useParams();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
@@ -167,6 +168,22 @@ export default function ProductInfo() {
       });
       setSelectedColor(color);
     }
+  };
+
+  // Handle capacity click - navigate to products with capacity filter
+  const handleCapacityClick = (capacity: {
+    id: string;
+    name: string;
+    volumeMl: number;
+  }) => {
+    router.push(
+      `/products?minCapacity=${capacity.volumeMl}&maxCapacity=${capacity.volumeMl}`
+    );
+  };
+
+  // Handle category click - navigate to products with category filter
+  const handleCategoryClick = (categorySlug: string) => {
+    router.push(`/products?category=${categorySlug}`);
   };
 
   // Only redirect to 404 if we've attempted fetch and got error, or if no product after successful fetch
@@ -317,7 +334,11 @@ export default function ProductInfo() {
                         backgroundColor: pc.color.hexCode || "#000000",
                       }}
                     />
-                    <span className={`font-medium ${isSelected ? "text-black" : "text-white"}`}>
+                    <span
+                      className={`font-medium ${
+                        isSelected ? "text-black" : "text-white"
+                      }`}
+                    >
                       {pc.color.name}
                     </span>
                   </button>
@@ -332,11 +353,22 @@ export default function ProductInfo() {
             <label className="block text-sm font-medium text-zinc-300 mb-2">
               Dung tích
             </label>
-            <div className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg">
-              <span className="text-white font-medium">
-                {product.capacity?.name || "Không xác định"}
-              </span>
-            </div>
+            {product.capacity ? (
+              <button
+                onClick={() => handleCapacityClick(product.capacity!)}
+                className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg hover:bg-zinc-700 hover:border-zinc-600 transition-colors cursor-pointer"
+              >
+                <span className="text-white font-medium">
+                  {product.capacity.name}
+                </span>
+              </button>
+            ) : (
+              <div className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg">
+                <span className="text-zinc-400 font-medium">
+                  Không xác định
+                </span>
+              </div>
+            )}
           </div>
 
           <div>
@@ -345,14 +377,15 @@ export default function ProductInfo() {
             </label>
             <div className="flex flex-wrap gap-2">
               {product.productCategories?.map((pc: ProductCategory) => (
-                <div
+                <button
                   key={pc.category.id}
-                  className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg"
+                  onClick={() => handleCategoryClick(pc.category.slug)}
+                  className="inline-flex items-center px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg hover:bg-zinc-700 hover:border-zinc-600 transition-colors cursor-pointer"
                 >
                   <span className="text-white font-medium">
                     {pc.category.name}
                   </span>
-                </div>
+                </button>
               )) || (
                 <span className="text-zinc-400 text-sm">Không xác định</span>
               )}

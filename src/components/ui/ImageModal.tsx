@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 
@@ -20,10 +20,289 @@ export function ImageModal({
 }: ImageModalProps) {
   const [activeIndex, setActiveIndex] = useState(currentIndex);
 
-  // Sync activeIndex with currentIndex when props change
+  // Zoom states
+  const [scale, setScale] = useState(1);
+  const [translateX, setTranslateX] = useState(0);
+  const [translateY, setTranslateY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [lastTouchDistance, setLastTouchDistance] = useState(0);
+
+  // Swipe states
+  const [isSwipping, setIsSwipping] = useState(false);
+  const [swipeStartX, setSwipeStartX] = useState(0);
+  const [swipeStartY, setSwipeStartY] = useState(0);
+  const [swipeCurrentX, setSwipeCurrentX] = useState(0);
+
+  // Refs
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+
+  const MIN_SCALE = 1;
+  const MAX_SCALE = 5;
+  const SWIPE_THRESHOLD = 50; // px
+
+  // Detect mobile using screen width and touch support
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || "ontouchstart" in window);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Reset zoom khi chuyển ảnh
+  const resetZoom = useCallback(() => {
+    setScale(1);
+    setTranslateX(0);
+    setTranslateY(0);
+  }, []);
+
+  // Zoom function
+  const handleZoom = useCallback(
+    (newScale: number, centerX?: number, centerY?: number) => {
+      const clampedScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+
+      if (clampedScale === MIN_SCALE) {
+        setScale(MIN_SCALE);
+        setTranslateX(0);
+        setTranslateY(0);
+      } else {
+        setScale(clampedScale);
+
+        // Adjust translation để zoom vào điểm click
+        if (
+          centerX !== undefined &&
+          centerY !== undefined &&
+          imageContainerRef.current
+        ) {
+          const rect = imageContainerRef.current.getBoundingClientRect();
+          const scaleRatio = clampedScale / scale;
+
+          const newTranslateX =
+            translateX * scaleRatio +
+            (centerX - rect.width / 2) * (1 - scaleRatio);
+          const newTranslateY =
+            translateY * scaleRatio +
+            (centerY - rect.height / 2) * (1 - scaleRatio);
+
+          setTranslateX(newTranslateX);
+          setTranslateY(newTranslateY);
+        }
+      }
+    },
+    [scale, translateX, translateY, MIN_SCALE, MAX_SCALE]
+  );
+
+  // Double click to zoom - disabled on mobile
+  const handleDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (isMobile) return; // Disable on mobile
+
+      if (scale === MIN_SCALE) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const centerX = e.clientX - rect.left;
+        const centerY = e.clientY - rect.top;
+        handleZoom(2, centerX, centerY);
+      } else {
+        resetZoom();
+      }
+    },
+    [scale, MIN_SCALE, handleZoom, resetZoom, isMobile]
+  );
+
+  // Mouse wheel zoom - disabled on mobile
+  const handleWheel = useCallback(
+    (e: React.WheelEvent) => {
+      if (isMobile) return; // Disable on mobile
+
+      e.preventDefault();
+      const rect = e.currentTarget.getBoundingClientRect();
+      const centerX = e.clientX - rect.left;
+      const centerY = e.clientY - rect.top;
+
+      const delta = e.deltaY > 0 ? -0.2 : 0.2;
+      handleZoom(scale + delta, centerX, centerY);
+    },
+    [scale, handleZoom, isMobile]
+  );
+
+  // Touch distance for pinch zoom
+  const getTouchDistance = (touches: React.TouchList) => {
+    if (touches.length < 2) return 0;
+    const touch1 = touches[0];
+    const touch2 = touches[1];
+    return Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) +
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+    );
+  };
+
+  // Touch start - only swipe on mobile, zoom+swipe on desktop
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (isMobile) {
+        // Mobile: Only handle swipe for navigation
+        if (e.touches.length === 1) {
+          const touch = e.touches[0];
+          setIsSwipping(true);
+          setSwipeStartX(touch.clientX);
+          setSwipeStartY(touch.clientY);
+          setSwipeCurrentX(touch.clientX);
+          setIsDragging(false);
+        }
+      } else {
+        // Desktop: Handle zoom and swipe
+        if (e.touches.length === 2) {
+          // Pinch zoom start
+          setLastTouchDistance(getTouchDistance(e.touches));
+          setIsSwipping(false);
+        } else if (e.touches.length === 1) {
+          const touch = e.touches[0];
+
+          if (scale > MIN_SCALE) {
+            // Pan start when zoomed
+            setIsDragging(true);
+            dragStartRef.current = {
+              x: touch.clientX - translateX,
+              y: touch.clientY - translateY,
+            };
+            setIsSwipping(false);
+          } else {
+            // Swipe start when not zoomed
+            setIsSwipping(true);
+            setSwipeStartX(touch.clientX);
+            setSwipeStartY(touch.clientY);
+            setSwipeCurrentX(touch.clientX);
+            setIsDragging(false);
+          }
+        }
+      }
+    },
+    [scale, MIN_SCALE, translateX, translateY, isMobile]
+  );
+
+  // Touch move - only swipe on mobile, zoom+swipe on desktop
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      e.preventDefault();
+
+      if (isMobile) {
+        // Mobile: Only handle swipe for navigation
+        if (e.touches.length === 1 && isSwipping) {
+          const touch = e.touches[0];
+          setSwipeCurrentX(touch.clientX);
+        }
+      } else {
+        // Desktop: Handle zoom and swipe
+        if (e.touches.length === 2) {
+          // Pinch zoom
+          const distance = getTouchDistance(e.touches);
+          if (lastTouchDistance > 0) {
+            const scaleChange = distance / lastTouchDistance;
+            handleZoom(scale * scaleChange);
+          }
+          setLastTouchDistance(distance);
+          setIsSwipping(false);
+        } else if (e.touches.length === 1) {
+          const touch = e.touches[0];
+
+          if (isDragging && scale > MIN_SCALE) {
+            // Pan when zoomed
+            setTranslateX(touch.clientX - dragStartRef.current.x);
+            setTranslateY(touch.clientY - dragStartRef.current.y);
+          } else if (isSwipping && scale === MIN_SCALE) {
+            // Swipe for navigation when not zoomed
+            setSwipeCurrentX(touch.clientX);
+          }
+        }
+      }
+    },
+    [
+      scale,
+      lastTouchDistance,
+      isDragging,
+      isSwipping,
+      MIN_SCALE,
+      handleZoom,
+      isMobile,
+    ]
+  );
+
+  // Navigation functions
+  const nextImage = useCallback(() => {
+    const newIndex = activeIndex < images.length - 1 ? activeIndex + 1 : 0;
+    setActiveIndex(newIndex);
+    resetZoom();
+  }, [activeIndex, images.length, resetZoom]);
+
+  const prevImage = useCallback(() => {
+    const newIndex = activeIndex > 0 ? activeIndex - 1 : images.length - 1;
+    setActiveIndex(newIndex);
+    resetZoom();
+  }, [activeIndex, images.length, resetZoom]);
+
+  // Touch end - handle swipe detection
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (isSwipping) {
+        const deltaX = swipeCurrentX - swipeStartX;
+        const deltaY = Math.abs(e.changedTouches[0]?.clientY - swipeStartY);
+        const distance = Math.abs(deltaX);
+
+        // Check if horizontal swipe with enough distance
+        if (distance > SWIPE_THRESHOLD && Math.abs(deltaX) > deltaY) {
+          if (deltaX > 0) {
+            // Swipe right - previous image
+            prevImage();
+          } else {
+            // Swipe left - next image
+            nextImage();
+          }
+        }
+      }
+
+      // Reset states
+      setIsDragging(false);
+      setIsSwipping(false);
+      setLastTouchDistance(0);
+      setSwipeStartX(0);
+      setSwipeStartY(0);
+      setSwipeCurrentX(0);
+    },
+    [
+      isSwipping,
+      swipeCurrentX,
+      swipeStartX,
+      swipeStartY,
+      SWIPE_THRESHOLD,
+      prevImage,
+      nextImage,
+    ]
+  );
+
+  // Mouse drag
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (scale > MIN_SCALE) {
+        setIsDragging(true);
+        dragStartRef.current = {
+          x: e.clientX - translateX,
+          y: e.clientY - translateY,
+        };
+      }
+    },
+    [scale, MIN_SCALE, translateX, translateY]
+  );
+
+  // Sync activeIndex với currentIndex và reset zoom
   useEffect(() => {
     setActiveIndex(currentIndex);
-  }, [currentIndex, isOpen]); // Add isOpen to dependencies
+    resetZoom(); // Reset zoom khi chuyển ảnh
+  }, [currentIndex, isOpen, resetZoom]);
 
   useEffect(() => {
     if (isOpen) {
@@ -36,6 +315,30 @@ export function ImageModal({
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
+
+  // Global mouse events cho dragging
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (isDragging && scale > MIN_SCALE) {
+        setTranslateX(e.clientX - dragStartRef.current.x);
+        setTranslateY(e.clientY - dragStartRef.current.y);
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+      document.addEventListener("mouseup", handleGlobalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleGlobalMouseMove);
+      document.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
+  }, [isDragging, scale, MIN_SCALE]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -68,18 +371,9 @@ export function ImageModal({
 
   if (!isOpen) return null;
 
-  const nextImage = () => {
-    const newIndex = activeIndex < images.length - 1 ? activeIndex + 1 : 0;
-    setActiveIndex(newIndex);
-  };
-
-  const prevImage = () => {
-    const newIndex = activeIndex > 0 ? activeIndex - 1 : images.length - 1;
-    setActiveIndex(newIndex);
-  };
-
   const handleThumbnailClick = (index: number, event: React.MouseEvent) => {
     setActiveIndex(index);
+    resetZoom();
     // Remove focus from the clicked button to prevent hover state persistence
     (event.target as HTMLElement).blur();
   };
@@ -107,19 +401,120 @@ export function ImageModal({
         </svg>
       </button>
 
+      {/* Zoom controls - hidden on mobile */}
+      {!isMobile && (
+        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+          <button
+            onClick={() => handleZoom(scale + 0.5)}
+            disabled={scale >= MAX_SCALE}
+            className="p-2 bg-black bg-opacity-50 text-white rounded hover:bg-opacity-70 disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Zoom in"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </button>
+
+          <button
+            onClick={() => handleZoom(scale - 0.5)}
+            disabled={scale <= MIN_SCALE}
+            className="p-2 bg-black bg-opacity-50 text-white rounded hover:bg-opacity-70 disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Zoom out"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20 12H4"
+              />
+            </svg>
+          </button>
+
+          {scale > MIN_SCALE && (
+            <button
+              onClick={resetZoom}
+              className="p-2 bg-black bg-opacity-50 text-white rounded hover:bg-opacity-70"
+              aria-label="Reset zoom"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+          )}
+
+          {/* Zoom indicator */}
+          <div className="px-2 py-1 bg-black bg-opacity-50 text-white text-xs rounded text-center">
+            {Math.round(scale * 100)}%
+          </div>
+        </div>
+      )}
+
       {/* Main image */}
       <div className="relative w-full h-full flex items-center justify-center p-4 pb-32">
-        <div className="relative w-full h-full max-w-5xl">
-          <Image
-            src={images[activeIndex]}
-            alt={`Hình ${activeIndex + 1}`}
-            fill
-            className="object-contain"
-            key={activeIndex} // Add key to force re-render when index changes
-            onError={(e) => {
-              e.currentTarget.src = "/images/placeholder-product.jpg";
+        <div
+          ref={imageContainerRef}
+          className="relative w-full h-full max-w-5xl overflow-hidden cursor-pointer"
+          onDoubleClick={handleDoubleClick}
+          onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            cursor:
+              scale > MIN_SCALE
+                ? isDragging
+                  ? "grabbing"
+                  : "grab"
+                : "zoom-in",
+          }}
+        >
+          <div
+            className="w-full h-full transition-transform duration-200"
+            style={{
+              transform: `scale(${scale}) translate(${translateX / scale}px, ${
+                translateY / scale
+              }px)`,
+              transformOrigin: "center center",
             }}
-          />
+          >
+            <Image
+              src={images[activeIndex]}
+              alt={`Hình ${activeIndex + 1}`}
+              fill
+              className="object-contain pointer-events-none"
+              key={activeIndex}
+              onError={(e) => {
+                e.currentTarget.src = "/images/placeholder-product.jpg";
+              }}
+            />
+          </div>
         </div>
 
         {/* Navigation arrows */}
@@ -175,6 +570,12 @@ export function ImageModal({
           <p className="text-sm text-zinc-300 text-center">
             {`Hình ${activeIndex + 1} / ${images.length}`}
           </p>
+          {/* Help text - only show on desktop */}
+          {!isMobile && (
+            <p className="text-xs text-zinc-400 text-center mt-1">
+              Nhấp đôi để zoom • Cuộn chuột để zoom • Kéo để di chuyển
+            </p>
+          )}
         </div>
 
         {/* Thumbnail gallery */}
