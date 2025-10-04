@@ -51,12 +51,9 @@ export function ClientLayout({ children }: ClientLayoutProps) {
     if (lastAction) {
       switch (lastAction.type) {
         case "added":
-          toast.success(
-            `Đã thêm ${lastAction.productName} (tất cả màu) vào giỏ tư vấn`,
-            {
-              duration: 3000,
-            }
-          );
+          toast.success(`Đã thêm ${lastAction.productName} vào giỏ tư vấn`, {
+            duration: 3000,
+          });
           break;
         case "already_exists":
           toast.info(`${lastAction.productName} đã có trong giỏ tư vấn`, {
