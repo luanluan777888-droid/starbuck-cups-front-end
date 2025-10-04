@@ -13,12 +13,12 @@ export interface GridConfig {
  * Reduced for larger, more readable product cards
  */
 export const getColumnsForWidth = (width: number): number => {
-  if (width >= 1536) return 6;      // 2xl screens - reduced from 8
-  if (width >= 1280) return 5;      // xl screens - reduced from 7
-  if (width >= 1024) return 4;      // lg screens - reduced from 6
-  if (width >= 768) return 3;       // md screens - reduced from 4
-  if (width >= 640) return 2;       // sm screens
-  return 2;                         // mobile default
+  if (width >= 1536) return 6; // 2xl screens - reduced from 8
+  if (width >= 1280) return 5; // xl screens - reduced from 7
+  if (width >= 1024) return 4; // lg screens - reduced from 6
+  if (width >= 768) return 3; // md screens - reduced from 4
+  if (width >= 640) return 2; // sm screens
+  return 2; // mobile default
 };
 
 /**
@@ -39,14 +39,14 @@ export const getRowsForHeight = (height: number): number => {
  */
 export const calculateOptimalProductsPerPage = (): GridConfig => {
   // Default values for SSR or when window is not available
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return getSSRSafeGridConfig();
   }
 
   const { innerWidth: width, innerHeight: height } = window;
   const columns = getColumnsForWidth(width);
   const rows = getRowsForHeight(height);
-  
+
   // Temporarily limit to max 6 for testing pagination with 7 products
   const calculatedProducts = Math.min(columns * rows, 6);
 
@@ -74,18 +74,18 @@ export const getSSRSafeGridConfig = (): GridConfig => {
  * Updated for larger, more readable product cards
  */
 export const getResponsiveGridClasses = (
-  layout: 'products' | 'homepage' | 'related' = 'products'
+  layout: "products" | "homepage" | "related" = "products"
 ): string => {
   switch (layout) {
-    case 'homepage':
-      return 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4';
+    case "homepage":
+      return "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4";
 
-    case 'related':
-      return 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
+    case "related":
+      return "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
 
-    case 'products':
+    case "products":
     default:
-      return 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4';
+      return "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4";
   }
 };
 
@@ -97,7 +97,7 @@ export const useResponsiveProductsPerPage = (
   callback: (config: GridConfig) => void
 ) => {
   // Ensure we're only running on client-side
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return () => {}; // No-op for SSR
   }
 
@@ -118,11 +118,11 @@ export const useResponsiveProductsPerPage = (
     window.resizeTimeout = setTimeout(updateLayout, 150);
   };
 
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 
   // Return cleanup function
   return () => {
-    window.removeEventListener('resize', handleResize);
+    window.removeEventListener("resize", handleResize);
     if (window.resizeTimeout) {
       clearTimeout(window.resizeTimeout);
     }

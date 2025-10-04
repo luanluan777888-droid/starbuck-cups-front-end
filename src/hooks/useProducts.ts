@@ -135,9 +135,7 @@ export function useProducts(): UseProductsReturn {
         ) {
           setCapacities(capacitiesData.data.items);
         }
-      } catch (error) {
-
-      }
+      } catch (error) {}
     };
 
     fetchFilterOptions();
@@ -185,19 +183,20 @@ export function useProducts(): UseProductsReturn {
 
         const response = await fetch(`/api/products?${params.toString()}`);
         const data = await response.json();
-        
+
         console.log("📦 [Products Frontend] Response debug:", {
           responseOk: response.ok,
           status: response.status,
           success: data.success,
-          totalItems: data.data?.totalItems || data.data?.pagination?.total_items,
+          totalItems:
+            data.data?.totalItems || data.data?.pagination?.total_items,
           itemsCount: data.data?.items?.length,
           hasData: !!data.data,
           hasItems: !!data.data?.items,
           queryParams: params.toString(),
           paginationInfo: data.data?.pagination,
           currentPage,
-          requestedLimit: "20"
+          requestedLimit: "20",
         });
 
         if (data.success) {
@@ -216,11 +215,9 @@ export function useProducts(): UseProductsReturn {
           setTotalItems(data.data?.pagination?.total_items || 0);
           setPaginationData(data.data?.pagination || null);
         } else {
-
           setProducts([]);
         }
       } catch (error) {
-
         setProducts([]);
       } finally {
         setLoading(false);
@@ -257,19 +254,24 @@ export function useProducts(): UseProductsReturn {
   }) => {
     const params = new URLSearchParams();
 
-    const search = 'search' in newFilters ? newFilters.search : searchQuery;
-    const category = 'category' in newFilters ? newFilters.category : selectedCategory;
-    const color = 'color' in newFilters ? newFilters.color : selectedColor;
-    const minCapacity = 'minCapacity' in newFilters ? newFilters.minCapacity : capacityRange.min;
-    const maxCapacity = 'maxCapacity' in newFilters ? newFilters.maxCapacity : capacityRange.max;
-    const sort = 'sort' in newFilters ? newFilters.sort : sortBy;
-    const page = 'page' in newFilters ? newFilters.page : currentPage;
+    const search = "search" in newFilters ? newFilters.search : searchQuery;
+    const category =
+      "category" in newFilters ? newFilters.category : selectedCategory;
+    const color = "color" in newFilters ? newFilters.color : selectedColor;
+    const minCapacity =
+      "minCapacity" in newFilters ? newFilters.minCapacity : capacityRange.min;
+    const maxCapacity =
+      "maxCapacity" in newFilters ? newFilters.maxCapacity : capacityRange.max;
+    const sort = "sort" in newFilters ? newFilters.sort : sortBy;
+    const page = "page" in newFilters ? newFilters.page : currentPage;
 
     if (search) params.set("search", search);
     if (category) params.set("category", category);
     if (color) params.set("color", color);
-    if (minCapacity !== undefined && minCapacity > 0) params.set("minCapacity", minCapacity.toString());
-    if (maxCapacity !== undefined && maxCapacity < 9999) params.set("maxCapacity", maxCapacity.toString());
+    if (minCapacity !== undefined && minCapacity > 0)
+      params.set("minCapacity", minCapacity.toString());
+    if (maxCapacity !== undefined && maxCapacity < 9999)
+      params.set("maxCapacity", maxCapacity.toString());
     if (sort && sort !== "newest") params.set("sort", sort);
     if (page && page !== 1) params.set("page", page.toString());
 

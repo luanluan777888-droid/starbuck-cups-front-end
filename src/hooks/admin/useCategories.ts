@@ -130,24 +130,29 @@ export function useCategories(): UseCategoriesReturn {
       );
 
       const data = await response.json();
-      
+
       console.log("📥 [Frontend] Categories response:", {
         responseOk: response.ok,
         status: response.status,
         success: data.success,
         totalItems: data.data?.pagination?.total_items || data.data?.totalItems,
-        currentPage: data.data?.pagination?.current_page || data.data?.currentPage,
+        currentPage:
+          data.data?.pagination?.current_page || data.data?.currentPage,
         totalPages: data.data?.pagination?.total_pages || data.data?.totalPages,
         itemsCount: data.data?.items?.length,
         hasData: !!data.data,
         hasItems: !!data.data?.items,
-        paginationInfo: data.data?.pagination
+        paginationInfo: data.data?.pagination,
       });
 
       if (data.success && data.data) {
         const categoriesList = data.data.items || [];
-        
-        console.log("✅ [Frontend] Setting categories:", categoriesList.length, "items");
+
+        console.log(
+          "✅ [Frontend] Setting categories:",
+          categoriesList.length,
+          "items"
+        );
 
         // Set pagination data from response
         const paginationInfo = data.data.pagination;

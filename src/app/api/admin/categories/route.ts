@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     );
 
     const data = await response.json();
-    
+
     console.log("📊 [API Debug] Categories response:", {
       status: response.status,
       success: data.success,
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       itemsCount: data.data?.items?.length,
       hasItems: !!data.data?.items,
       requestUrl: `admin/categories?page=${page}&size=${size}`,
-      sampleData: data.data?.items?.slice(0, 3)
+      sampleData: data.data?.items?.slice(0, 3),
     });
 
     return NextResponse.json(data, { status: response.status });

@@ -11,12 +11,14 @@ export async function GET(request: NextRequest) {
       query.append(key, value);
     });
 
-    const backendUrl = `${getApiUrl("products/public")}${query.toString() ? "?" + query.toString() : ""}`;
+    const backendUrl = `${getApiUrl("products/public")}${
+      query.toString() ? "?" + query.toString() : ""
+    }`;
 
     console.log("🔍 [Products API] Making request to:", {
       backendUrl,
       queryParams: query.toString(),
-      allParams: [...query.entries()]
+      allParams: [...query.entries()],
     });
 
     const response = await fetch(backendUrl, {
@@ -31,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    
+
     console.log("📊 [Products API] Response debug:", {
       status: response.status,
       success: data.success,
@@ -41,12 +43,11 @@ export async function GET(request: NextRequest) {
       queryParams: query.toString(),
       backendUrl,
       paginationInfo: data.data?.pagination,
-      sampleData: data.data?.items?.slice(0, 2)
+      sampleData: data.data?.items?.slice(0, 2),
     });
 
     return NextResponse.json(data);
   } catch {
-
     return NextResponse.json(
       { error: "Failed to fetch products" },
       { status: 500 }
