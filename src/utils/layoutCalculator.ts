@@ -46,12 +46,14 @@ export const calculateOptimalProductsPerPage = (): GridConfig => {
   const { innerWidth: width, innerHeight: height } = window;
   const columns = getColumnsForWidth(width);
   const rows = getRowsForHeight(height);
-  const productsPerPage = columns * rows;
+  
+  // Temporarily limit to max 6 for testing pagination with 7 products
+  const calculatedProducts = Math.min(columns * rows, 6);
 
   return {
     columns,
     rows,
-    productsPerPage,
+    productsPerPage: calculatedProducts,
   };
 };
 
