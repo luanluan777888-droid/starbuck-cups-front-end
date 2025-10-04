@@ -35,13 +35,13 @@ interface HomePageProps {
 export const metadata: Metadata = generateSEO({
   title: "Trang chủ",
   description:
-    "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
+    "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury. Có dịch vụ gói quà. FB: Hasron Leung. Dịch vụ ship hoả tốc 24/7",
   keywords:
     "ly starbucks, tumbler starbucks, cốc starbucks, ly giữ nhiệt, starbucks vietnam, mua ly starbucks, ly gai starbucks, shoucangpu, hasron.com, hasron, hasron starbucks chính hãng, hasron starbucks, hasron ly starbucks chính hãng, h's, h's shoucangpu, hasron leung",
   openGraph: {
     title: "H’s shoucangpu - Trang chủ",
     description:
-      "Khám phá bộ sưu tập ly Starbucks đa dạng với nhiều màu sắc và dung tích. Giao hàng toàn quốc.",
+      "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury. Có dịch vụ gói quà. FB: Hasron Leung",
     image: "/images/placeholder.png",
     url: "/",
     type: "website",

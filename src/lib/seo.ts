@@ -4,7 +4,7 @@ import { PageSEO, Product } from "@/types";
 export const siteConfig = {
   name: "H's shoucangpu - Collectible Gift Shop",
   description:
-    "Cửa hàng ly St@rbucks chính thức với đa dạng màu sắc và dung tích. Tư vấn miễn phí qua Messenger.",
+    "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury. Có dịch vụ gói quà. FB: Hasron Leung. Dịch vụ ship hoả tốc 24/7",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com",
   image: "/logo.png",
   keywords:

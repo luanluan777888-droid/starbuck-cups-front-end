@@ -9,13 +9,13 @@ export const metadata: Metadata = {
   ...generateSEO({
     title: "H's shoucangpu - Collectible Gift Shop",
     description:
-      "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Zalo 0896686008.",
+      "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury. Có dịch vụ gói quà. FB: Hasron Leung. Dịch vụ ship hoả tốc 24/7",
     keywords:
       "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam, ly starbucks chính hãng, ly starbuck chính hãng, ly starbucks auth, starbuck chính hãng,  starbucks chính hãng, mua ly starbuck chính hãng, bình starbucks chính hãng, bình giữ nhiệt starbucks, ly giữ nhiệt starbucks, ly sứ starbucks, hasron.com, hasron, hasron starbucks chính hãng, hasron starbucks, hasron ly starbucks chính hãng, h's, h's shoucangpu, hasron leung",
     openGraph: {
       title: "H's shoucangpu - Collectible Gift Shop",
       description:
-        "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích",
+        "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury. Có dịch vụ gói quà",
       image: "/images/placeholder.png",
       url: "/",
       type: "website",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "H's shoucangpu - Cửa hàng ly St@rbucks",
     description:
-      "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích",
+      "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury",
     images: ["/images/placeholder.png"],
   },
   icons: {

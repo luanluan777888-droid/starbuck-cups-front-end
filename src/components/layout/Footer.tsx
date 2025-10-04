@@ -16,7 +16,7 @@ export function Footer() {
             <p className="text-zinc-400 text-sm mb-4">
               Ly ST@RBUCKS CHÍNH HÃNG các nước
               <br />
-              95% MẪU TRÊN WEB là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍
+              95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍
               <br />
               <br />
               Quà tặng cao cấp Luxury

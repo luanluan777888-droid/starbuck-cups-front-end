@@ -18,7 +18,7 @@ const loadCartFromStorage = (): CartItem[] => {
   try {
     const saved = localStorage.getItem("starbucks-cart");
     return saved ? JSON.parse(saved) : [];
-  } catch (error) {
+  } catch {
     return [];
   }
 };
@@ -27,7 +27,7 @@ const saveCartToStorage = (items: CartItem[]) => {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem("starbucks-cart", JSON.stringify(items));
-  } catch (error) {}
+  } catch {}
 };
 
 const initialState: CartState = {
