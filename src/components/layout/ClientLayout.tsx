@@ -51,27 +51,17 @@ export function ClientLayout({ children }: ClientLayoutProps) {
     if (lastAction) {
       switch (lastAction.type) {
         case "added":
-          {
-            const colorText = lastAction.colorRequest
-              ? ` (màu ${lastAction.colorRequest})`
-              : "";
-            toast.success(
-              `Đã thêm ${lastAction.productName} vào giỏ tư vấn${colorText}`,
-              {
-                duration: 3000,
-              }
-            );
-          }
+          toast.success(
+            `Đã thêm ${lastAction.productName} (tất cả màu) vào giỏ tư vấn`,
+            {
+              duration: 3000,
+            }
+          );
           break;
         case "already_exists":
-          {
-            const colorText = lastAction.colorRequest
-              ? ` với màu ${lastAction.colorRequest}`
-              : "";
-            toast.info(`${lastAction.productName} đã có trong giỏ hàng${colorText}`, {
-              duration: 3000,
-            });
-          }
+          toast.info(`${lastAction.productName} đã có trong giỏ tư vấn`, {
+            duration: 3000,
+          });
           break;
       }
       dispatch(clearLastAction());

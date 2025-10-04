@@ -44,30 +44,29 @@ const cartSlice = createSlice({
       state,
       action: PayloadAction<{ product: Product; colorRequest?: string }>
     ) => {
-      const { product, colorRequest } = action.payload;
+      const { product } = action.payload; // Remove colorRequest usage
 
-      // Check if exact same product with same color already exists
-      const exactMatch = state.items.find(
-        (item) =>
-          item.product.id === product.id && item.colorRequest === colorRequest
+      // Check if product already exists (ignore color - all colors included)
+      const existingItem = state.items.find(
+        (item) => item.product.id === product.id
       );
 
-      if (exactMatch) {
-        // Same product with same color already exists
+      if (existingItem) {
+        // Product already exists in cart (with all colors)
         state.lastAction = {
           type: "already_exists",
           productName: product.name,
-          colorRequest,
+          colorRequest: undefined, // No specific color since all colors included
         };
         return;
       }
 
-      // Add new product variant to cart (different colors are treated as separate items)
-      state.items.push({ product, colorRequest });
+      // Add product to cart (includes all available colors)
+      state.items.push({ product, colorRequest: undefined });
       state.lastAction = {
         type: "added",
         productName: product.name,
-        colorRequest,
+        colorRequest: undefined, // No specific color since all colors included
       };
 
       saveCartToStorage(state.items);
@@ -77,10 +76,9 @@ const cartSlice = createSlice({
       state,
       action: PayloadAction<{ productId: string; colorRequest?: string }>
     ) => {
-      const { productId, colorRequest } = action.payload;
+      const { productId } = action.payload; // Remove colorRequest usage
       state.items = state.items.filter(
-        (item) =>
-          !(item.product.id === productId && item.colorRequest === colorRequest)
+        (item) => item.product.id !== productId // Only check product ID
       );
       saveCartToStorage(state.items);
     },

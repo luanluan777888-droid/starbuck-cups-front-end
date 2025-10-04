@@ -21,8 +21,8 @@ export function Cart({ className = "" }: CartProps) {
 
   const totalItems = items.length;
 
-  const handleRemoveItem = (productId: string, colorRequest?: string) => {
-    dispatch(removeFromCart({ productId, colorRequest }));
+  const handleRemoveItem = (productId: string) => {
+    dispatch(removeFromCart({ productId }));
   };
 
   const handleClearCart = () => {
@@ -121,17 +121,11 @@ export function Cart({ className = "" }: CartProps) {
               {/* Cart Items */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {items.map((item, index) => {
-                  // Create unique key for each variant
-                  const uniqueKey = `${item.product.id}-${
-                    item.colorRequest || "no-color"
-                  }-${index}`;
                   return (
                     <CartItemCard
-                      key={uniqueKey}
+                      key={`${item.product.id}-${index}`}
                       item={item}
-                      onRemove={() =>
-                        handleRemoveItem(item.product.id, item.colorRequest)
-                      }
+                      onRemove={() => handleRemoveItem(item.product.id)}
                     />
                   );
                 })}
@@ -206,24 +200,35 @@ function CartItemCard({ item, onRemove }: CartItemCardProps) {
         </Link>
 
         <div className="flex items-center gap-2 mb-2">
-          {item.colorRequest ? (
+          {product.productColors && product.productColors.length > 0 ? (
             <div className="flex items-center gap-1">
-              <div
-                className="w-3 h-3 rounded-full border border-zinc-600"
-                style={{
-                  backgroundColor:
-                    product.productColors?.find(
-                      (pc) => pc.color.name === item.colorRequest
-                    )?.color.hexCode || "#ffffff",
-                }}
-              />
+              <div className="flex -space-x-1">
+                {product.productColors.slice(0, 3).map((pc) => (
+                  <div
+                    key={pc.color.id}
+                    className="w-3 h-3 rounded-full border border-zinc-600"
+                    style={{
+                      backgroundColor: pc.color.hexCode || "#ffffff",
+                    }}
+                    title={pc.color.name}
+                  />
+                ))}
+                {product.productColors.length > 3 && (
+                  <div className="w-3 h-3 rounded-full border border-zinc-600 bg-zinc-700 flex items-center justify-center">
+                    <span className="text-[8px] text-zinc-300">
+                      +{product.productColors.length - 3}
+                    </span>
+                  </div>
+                )}
+              </div>
               <span className="text-xs text-zinc-400">
-                {item.colorRequest} • {product.capacity?.name || "Chưa có"}
+                {product.productColors.length} màu •{" "}
+                {product.capacity?.name || "Chưa có"}
               </span>
             </div>
           ) : (
             <span className="text-xs text-zinc-400">
-              Chưa chọn màu • {product.capacity?.name || "Chưa có"}
+              Chưa có màu • {product.capacity?.name || "Chưa có"}
             </span>
           )}
         </div>

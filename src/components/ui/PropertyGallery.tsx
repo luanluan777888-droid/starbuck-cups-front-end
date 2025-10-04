@@ -12,24 +12,11 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
   const [currentImage, setCurrentImage] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Swipe states for mobile
+  // Swipe states for all devices
   const [isSwipping, setIsSwipping] = useState(false);
   const [swipeStartX, setSwipeStartX] = useState(0);
   const [swipeStartY, setSwipeStartY] = useState(0);
   const [swipeCurrentX, setSwipeCurrentX] = useState(0);
-
-  // Mobile detection
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768 || "ontouchstart" in window);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   // Navigation functions
   const nextImage = useCallback(() => {
@@ -40,33 +27,30 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
     setCurrentImage((prev) => (prev > 0 ? prev - 1 : images.length - 1));
   }, [images.length]);
 
-  // Touch handlers for swipe
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      if (!isMobile || e.touches.length !== 1) return;
+  // Touch handlers for swipe - enabled for all devices
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
 
-      const touch = e.touches[0];
-      setIsSwipping(true);
-      setSwipeStartX(touch.clientX);
-      setSwipeStartY(touch.clientY);
-      setSwipeCurrentX(touch.clientX);
-    },
-    [isMobile]
-  );
+    const touch = e.touches[0];
+    setIsSwipping(true);
+    setSwipeStartX(touch.clientX);
+    setSwipeStartY(touch.clientY);
+    setSwipeCurrentX(touch.clientX);
+  }, []);
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
-      if (!isMobile || !isSwipping || e.touches.length !== 1) return;
+      if (!isSwipping || e.touches.length !== 1) return;
 
       const touch = e.touches[0];
       setSwipeCurrentX(touch.clientX);
     },
-    [isMobile, isSwipping]
+    [isSwipping]
   );
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
-      if (!isMobile || !isSwipping) return;
+      if (!isSwipping) return;
 
       const deltaX = swipeCurrentX - swipeStartX;
       const deltaY = Math.abs(e.changedTouches[0]?.clientY - swipeStartY);
@@ -90,15 +74,52 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
       setSwipeStartY(0);
       setSwipeCurrentX(0);
     },
-    [
-      isMobile,
-      isSwipping,
-      swipeCurrentX,
-      swipeStartX,
-      swipeStartY,
-      nextImage,
-      prevImage,
-    ]
+    [isSwipping, swipeCurrentX, swipeStartX, swipeStartY, nextImage, prevImage]
+  );
+
+  // Mouse handlers for swipe on laptops
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    setIsSwipping(true);
+    setSwipeStartX(e.clientX);
+    setSwipeStartY(e.clientY);
+    setSwipeCurrentX(e.clientX);
+  }, []);
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isSwipping) return;
+      setSwipeCurrentX(e.clientX);
+    },
+    [isSwipping]
+  );
+
+  const handleMouseUp = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isSwipping) return;
+
+      const deltaX = swipeCurrentX - swipeStartX;
+      const deltaY = Math.abs(e.clientY - swipeStartY);
+      const distance = Math.abs(deltaX);
+      const SWIPE_THRESHOLD = 50;
+
+      // Check if horizontal swipe with enough distance
+      if (distance > SWIPE_THRESHOLD && Math.abs(deltaX) > deltaY) {
+        if (deltaX > 0) {
+          // Swipe right - previous image
+          prevImage();
+        } else {
+          // Swipe left - next image
+          nextImage();
+        }
+      }
+
+      // Reset swipe states
+      setIsSwipping(false);
+      setSwipeStartX(0);
+      setSwipeStartY(0);
+      setSwipeCurrentX(0);
+    },
+    [isSwipping, swipeCurrentX, swipeStartX, swipeStartY, nextImage, prevImage]
   );
 
   // Keyboard navigation
@@ -155,6 +176,9 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
           >
             <Image
               src={images[currentImage]}

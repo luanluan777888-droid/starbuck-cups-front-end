@@ -36,9 +36,6 @@ export default function ProductInfo() {
   const dispatch = useAppDispatch();
   const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
-  // Selected color state
-  const [selectedColor, setSelectedColor] = useState<ProductColor | null>(null);
-
   // Get product data from Redux store
   const {
     currentProduct: product,
@@ -77,26 +74,6 @@ export default function ProductInfo() {
     }
   }, [product]);
 
-  // Auto-select first color when product is loaded
-  useEffect(() => {
-    if (
-      product?.productColors &&
-      product.productColors.length > 0 &&
-      !selectedColor
-    ) {
-      console.log("🎨 AUTO-SELECTING FIRST COLOR:", {
-        productName: product.name,
-        availableColors: product.productColors.map((pc) => ({
-          id: pc.color.id,
-          name: pc.color.name,
-          hexCode: pc.color.hexCode,
-        })),
-        selectedColor: product.productColors[0].color,
-      });
-      setSelectedColor(product.productColors[0]);
-    }
-  }, [product, selectedColor]);
-
   // Show error page if product not found AFTER we tried to fetch
   if (error && !loading && hasAttemptedFetch) {
     notFound();
@@ -104,28 +81,18 @@ export default function ProductInfo() {
 
   const handleAddToCart = () => {
     if (product && product.stockQuantity > 0) {
-      // Get selected color information
-      const colorRequest = selectedColor?.color?.name;
-
-      console.log("🛒 ADDING TO CART:", {
+      console.log("🛒 ADDING PRODUCT TO CART:", {
         productId: product.id,
         productName: product.name,
-        selectedColor: selectedColor
-          ? {
-              id: selectedColor.color.id,
-              name: selectedColor.color.name,
-              hexCode: selectedColor.color.hexCode,
-            }
-          : null,
-        colorRequest,
-        capacity: product.capacity?.name,
-        categories: product.productCategories?.map((pc) => pc.category.name),
+        capacity: product.capacity,
+        categories: product.productCategories?.map((pc) => pc.category),
       });
 
+      // Add to cart without specific color selection
       dispatch(
         addToCart({
           product,
-          colorRequest,
+          colorRequest: undefined, // No specific color selected
         })
       );
 
@@ -142,6 +109,8 @@ export default function ProductInfo() {
         name: product.name,
         category: product.productCategories?.[0]?.category?.name,
       });
+
+      // Toast will be handled by ClientLayout based on cart lastAction
     } else {
       toast.error("Sản phẩm hiện đã hết hàng", {
         duration: 3000,
@@ -150,24 +119,8 @@ export default function ProductInfo() {
   };
 
   const handleColorClick = (colorSlug: string) => {
-    // Find the selected color object
-    const color = product?.productColors?.find(
-      (pc: ProductColor) => pc.color.slug === colorSlug
-    );
-    if (color) {
-      console.log("🎨 USER SELECTED COLOR:", {
-        productName: product?.name,
-        previousColor: selectedColor?.color?.name,
-        newColor: color.color.name,
-        colorDetails: {
-          id: color.color.id,
-          name: color.color.name,
-          slug: color.color.slug,
-          hexCode: color.color.hexCode,
-        },
-      });
-      setSelectedColor(color);
-    }
+    // Navigate to products page with color filter
+    router.push(`/products?color=${colorSlug}`);
   };
 
   // Handle capacity click - navigate to products with capacity filter
@@ -317,16 +270,11 @@ export default function ProductInfo() {
             </label>
             <div className="flex flex-wrap gap-2">
               {product.productColors?.map((pc: ProductColor) => {
-                const isSelected = selectedColor?.color.id === pc.color.id;
                 return (
                   <button
                     key={pc.color.id}
                     onClick={() => handleColorClick(pc.color.slug)}
-                    className={`inline-flex items-center gap-2 px-3 py-2 border rounded-lg transition-all cursor-pointer ${
-                      isSelected
-                        ? "bg-white border-white ring-2 ring-zinc-400"
-                        : "bg-zinc-800 border-zinc-700 hover:bg-zinc-700 hover:border-zinc-600"
-                    }`}
+                    className="inline-flex items-center gap-2 px-3 py-2 border bg-zinc-800 border-zinc-700 hover:bg-zinc-700 hover:border-zinc-600 rounded-lg transition-all cursor-pointer"
                   >
                     <div
                       className="w-4 h-4 rounded-full border border-zinc-600 flex-shrink-0"
@@ -334,11 +282,7 @@ export default function ProductInfo() {
                         backgroundColor: pc.color.hexCode || "#000000",
                       }}
                     />
-                    <span
-                      className={`font-medium ${
-                        isSelected ? "text-black" : "text-white"
-                      }`}
-                    >
+                    <span className="font-medium text-white">
                       {pc.color.name}
                     </span>
                   </button>

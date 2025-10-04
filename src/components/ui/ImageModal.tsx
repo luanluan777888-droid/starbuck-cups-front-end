@@ -97,28 +97,9 @@ export function ImageModal({
     [scale, translateX, translateY, MIN_SCALE, MAX_SCALE]
   );
 
-  // Double click to zoom - disabled on mobile
-  const handleDoubleClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (isMobile) return; // Disable on mobile
-
-      if (scale === MIN_SCALE) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const centerX = e.clientX - rect.left;
-        const centerY = e.clientY - rect.top;
-        handleZoom(2, centerX, centerY);
-      } else {
-        resetZoom();
-      }
-    },
-    [scale, MIN_SCALE, handleZoom, resetZoom, isMobile]
-  );
-
-  // Mouse wheel zoom - disabled on mobile
+  // Mouse wheel zoom - enabled for all devices
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
-      if (isMobile) return; // Disable on mobile
-
       e.preventDefault();
       const rect = e.currentTarget.getBoundingClientRect();
       const centerX = e.clientX - rect.left;
@@ -127,7 +108,7 @@ export function ImageModal({
       const delta = e.deltaY > 0 ? -0.2 : 0.2;
       handleZoom(scale + delta, centerX, centerY);
     },
-    [scale, handleZoom, isMobile]
+    [scale, handleZoom]
   );
 
   // Touch distance for pinch zoom
@@ -141,95 +122,65 @@ export function ImageModal({
     );
   };
 
-  // Touch start - only swipe on mobile, zoom+swipe on desktop
+  // Touch start - handle both mobile and desktop
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
-      if (isMobile) {
-        // Mobile: Only handle swipe for navigation
-        if (e.touches.length === 1) {
-          const touch = e.touches[0];
+      if (e.touches.length === 2) {
+        // Pinch zoom start (desktop)
+        setLastTouchDistance(getTouchDistance(e.touches));
+        setIsSwipping(false);
+      } else if (e.touches.length === 1) {
+        const touch = e.touches[0];
+
+        if (scale > MIN_SCALE) {
+          // Pan start when zoomed
+          setIsDragging(true);
+          dragStartRef.current = {
+            x: touch.clientX - translateX,
+            y: touch.clientY - translateY,
+          };
+          setIsSwipping(false);
+        } else {
+          // Swipe start when not zoomed - enabled for all devices
           setIsSwipping(true);
           setSwipeStartX(touch.clientX);
           setSwipeStartY(touch.clientY);
           setSwipeCurrentX(touch.clientX);
           setIsDragging(false);
         }
-      } else {
-        // Desktop: Handle zoom and swipe
-        if (e.touches.length === 2) {
-          // Pinch zoom start
-          setLastTouchDistance(getTouchDistance(e.touches));
-          setIsSwipping(false);
-        } else if (e.touches.length === 1) {
-          const touch = e.touches[0];
-
-          if (scale > MIN_SCALE) {
-            // Pan start when zoomed
-            setIsDragging(true);
-            dragStartRef.current = {
-              x: touch.clientX - translateX,
-              y: touch.clientY - translateY,
-            };
-            setIsSwipping(false);
-          } else {
-            // Swipe start when not zoomed
-            setIsSwipping(true);
-            setSwipeStartX(touch.clientX);
-            setSwipeStartY(touch.clientY);
-            setSwipeCurrentX(touch.clientX);
-            setIsDragging(false);
-          }
-        }
       }
     },
-    [scale, MIN_SCALE, translateX, translateY, isMobile]
+    [scale, MIN_SCALE, translateX, translateY]
   );
 
-  // Touch move - only swipe on mobile, zoom+swipe on desktop
+  // Touch move - handle both mobile and desktop
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
       e.preventDefault();
 
-      if (isMobile) {
-        // Mobile: Only handle swipe for navigation
-        if (e.touches.length === 1 && isSwipping) {
-          const touch = e.touches[0];
-          setSwipeCurrentX(touch.clientX);
+      if (e.touches.length === 2) {
+        // Pinch zoom (desktop)
+        const distance = getTouchDistance(e.touches);
+        if (lastTouchDistance > 0) {
+          const scaleChange = distance / lastTouchDistance;
+          handleZoom(scale * scaleChange);
         }
-      } else {
-        // Desktop: Handle zoom and swipe
-        if (e.touches.length === 2) {
-          // Pinch zoom
-          const distance = getTouchDistance(e.touches);
-          if (lastTouchDistance > 0) {
-            const scaleChange = distance / lastTouchDistance;
-            handleZoom(scale * scaleChange);
-          }
-          setLastTouchDistance(distance);
-          setIsSwipping(false);
-        } else if (e.touches.length === 1) {
-          const touch = e.touches[0];
+        setLastTouchDistance(distance);
+        setIsSwipping(false);
+      } else if (e.touches.length === 1) {
+        const touch = e.touches[0];
 
-          if (isDragging && scale > MIN_SCALE) {
-            // Pan when zoomed
-            setTranslateX(touch.clientX - dragStartRef.current.x);
-            setTranslateY(touch.clientY - dragStartRef.current.y);
-          } else if (isSwipping && scale === MIN_SCALE) {
-            // Swipe for navigation when not zoomed
-            setSwipeCurrentX(touch.clientX);
-          }
+        if (isDragging && scale > MIN_SCALE) {
+          // Direct, immediate pan for smoothest touch dragging
+          setTranslateX(touch.clientX - dragStartRef.current.x);
+          setTranslateY(touch.clientY - dragStartRef.current.y);
+        } else if (isSwipping && scale === MIN_SCALE) {
+          // Swipe for navigation when not zoomed
+          setSwipeCurrentX(touch.clientX);
         }
       }
     },
-    [
-      scale,
-      lastTouchDistance,
-      isDragging,
-      isSwipping,
-      MIN_SCALE,
-      handleZoom,
-      isMobile,
-    ]
+    [scale, lastTouchDistance, isDragging, isSwipping, MIN_SCALE, handleZoom]
   );
 
   // Navigation functions
@@ -284,19 +235,30 @@ export function ImageModal({
     ]
   );
 
-  // Mouse drag
+  // Mouse drag and swipe for laptops
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      e.preventDefault(); // Prevent text selection and other default behaviors
+
       if (scale > MIN_SCALE) {
+        // Pan when zoomed
         setIsDragging(true);
         dragStartRef.current = {
           x: e.clientX - translateX,
           y: e.clientY - translateY,
         };
+      } else {
+        // Swipe for navigation when not zoomed
+        setIsSwipping(true);
+        setSwipeStartX(e.clientX);
+        setSwipeStartY(e.clientY);
+        setSwipeCurrentX(e.clientX);
       }
     },
     [scale, MIN_SCALE, translateX, translateY]
   );
+
+  // Remove local mouse move/up handlers since we use global ones
 
   // Sync activeIndex với currentIndex và reset zoom
   useEffect(() => {
@@ -316,29 +278,76 @@ export function ImageModal({
     };
   }, [isOpen]);
 
-  // Global mouse events cho dragging
+  // Global mouse events for smooth dragging
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (isDragging && scale > MIN_SCALE) {
+        // Direct, immediate update for smoothest possible dragging
+        e.preventDefault();
         setTranslateX(e.clientX - dragStartRef.current.x);
         setTranslateY(e.clientY - dragStartRef.current.y);
+      } else if (isSwipping && scale === MIN_SCALE) {
+        // Track swipe movement
+        setSwipeCurrentX(e.clientX);
       }
     };
 
-    const handleGlobalMouseUp = () => {
+    const handleGlobalMouseUp = (e: MouseEvent) => {
+      if (isSwipping && scale === MIN_SCALE) {
+        const deltaX = swipeCurrentX - swipeStartX;
+        const deltaY = Math.abs(e.clientY - swipeStartY);
+        const distance = Math.abs(deltaX);
+
+        // Check if horizontal swipe with enough distance
+        if (distance > SWIPE_THRESHOLD && Math.abs(deltaX) > deltaY) {
+          if (deltaX > 0) {
+            // Swipe right - previous image
+            prevImage();
+          } else {
+            // Swipe left - next image
+            nextImage();
+          }
+        }
+      }
+
+      // Reset states
       setIsDragging(false);
+      setIsSwipping(false);
+      setSwipeStartX(0);
+      setSwipeStartY(0);
+      setSwipeCurrentX(0);
     };
 
-    if (isDragging) {
-      document.addEventListener("mousemove", handleGlobalMouseMove);
+    if (isDragging || isSwipping) {
+      // Add global listeners for smooth dragging
+      document.addEventListener("mousemove", handleGlobalMouseMove, {
+        passive: false,
+      });
       document.addEventListener("mouseup", handleGlobalMouseUp);
+
+      // Prevent text selection during drag
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = isDragging ? "grabbing" : "default";
     }
 
     return () => {
       document.removeEventListener("mousemove", handleGlobalMouseMove);
       document.removeEventListener("mouseup", handleGlobalMouseUp);
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
     };
-  }, [isDragging, scale, MIN_SCALE]);
+  }, [
+    isDragging,
+    isSwipping,
+    scale,
+    MIN_SCALE,
+    swipeCurrentX,
+    swipeStartX,
+    swipeStartY,
+    SWIPE_THRESHOLD,
+    prevImage,
+    nextImage,
+  ]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -480,7 +489,6 @@ export function ImageModal({
         <div
           ref={imageContainerRef}
           className="relative w-full h-full max-w-5xl overflow-hidden cursor-pointer"
-          onDoubleClick={handleDoubleClick}
           onWheel={handleWheel}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
@@ -496,12 +504,13 @@ export function ImageModal({
           }}
         >
           <div
-            className="w-full h-full transition-transform duration-200"
+            className="w-full h-full"
             style={{
               transform: `scale(${scale}) translate(${translateX / scale}px, ${
                 translateY / scale
               }px)`,
               transformOrigin: "center center",
+              willChange: isDragging ? "transform" : "auto", // Optimize for dragging
             }}
           >
             <Image
@@ -573,7 +582,7 @@ export function ImageModal({
           {/* Help text - only show on desktop */}
           {!isMobile && (
             <p className="text-xs text-zinc-400 text-center mt-1">
-              Nhấp đôi để zoom • Cuộn chuột để zoom • Kéo để di chuyển
+              Cuộn chuột để zoom • Kéo để di chuyển
             </p>
           )}
         </div>
