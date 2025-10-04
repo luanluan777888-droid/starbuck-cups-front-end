@@ -2,19 +2,8 @@
 
 import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
-import { useAppDispatch } from "@/store"          setProducts(data.data.items);
-          setPaginationData({
-            totalPages: data.data.pagination?.total_pages || 1,
-            limit: data.data.pagination?.per_page || 20,
-            totalItems: data.data.pagination?.total_items || data.data.items.length,
-          });
-          
-          console.log("🔢 [ProductsGrid] Pagination data set:", {
-            totalPages: data.data.pagination?.total_pages || 1,
-            limit: data.data.pagination?.per_page || 20,
-            totalItems: data.data.pagination?.total_items || data.data.items.length,
-            shouldShowPagination: (data.data.pagination?.total_pages || 1) > 1
-          });ort { addToCart } from "@/store/slices/cartSlice";
+import { useAppDispatch } from "@/store";
+import { addToCart } from "@/store/slices/cartSlice";
 import type { Product, CapacityRange } from "@/types";
 import { trackAddToCart, trackPagination } from "@/lib/analytics";
 import { Pagination } from "@/components/ui/Pagination";
@@ -142,29 +131,11 @@ export default function ProductsGrid({
         }
         params.append("page", currentPage.toString());
         params.append("limit", gridConfig.productsPerPage.toString());
-        
-        console.log("🎯 [ProductsGrid] Request params:", {
-          currentPage,
-          limit: gridConfig.productsPerPage,
-          gridConfig,
-          screenSize: typeof window !== 'undefined' ? {
-            width: window.innerWidth,
-            height: window.innerHeight
-          } : 'SSR',
-          allParams: params.toString()
-        });
 
         const response = await fetch(`/api/products?${params.toString()}`);
         const data = await response.json();
 
         if (data.success && data.data?.items) {
-          console.log("📦 [ProductsGrid] Setting products:", {
-            itemsReceived: data.data.items.length,
-            totalItems: data.data.pagination?.total_items,
-            currentLimit: gridConfig.productsPerPage,
-            sampleItems: data.data.items.slice(0, 3).map((p: Product) => p.name)
-          });
-          
           setProducts(data.data.items);
           setPaginationData({
             totalPages: data.data.pagination?.total_pages || 1,
@@ -267,26 +238,19 @@ export default function ProductsGrid({
       </div>
 
       {/* Pagination */}
-      {paginationData && (
+      {paginationData && paginationData.totalPages > 1 && (
         <div className="flex justify-center">
-          <div className="text-center">
-            <div className="text-gray-600 mb-4">
-              Hiển thị {products.length} / {paginationData.totalItems} sản phẩm
-            </div>
-            {paginationData.totalPages > 1 && (
-              <Pagination
-                data={{
-                  current_page: currentPage,
-                  has_next: currentPage < paginationData.totalPages,
-                  has_prev: currentPage > 1,
-                  per_page: paginationData.limit,
-                  total_items: paginationData.totalItems,
-                  total_pages: paginationData.totalPages,
-                }}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </div>
+          <Pagination
+            data={{
+              current_page: currentPage,
+              has_next: currentPage < paginationData.totalPages,
+              has_prev: currentPage > 1,
+              per_page: paginationData.limit,
+              total_items: paginationData.totalItems,
+              total_pages: paginationData.totalPages,
+            }}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
     </div>
