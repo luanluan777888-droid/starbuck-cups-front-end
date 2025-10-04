@@ -29,9 +29,9 @@ export const getRowsForHeight = (height: number): number => {
   const headerFooterHeight = 300; // Header, filters, pagination, etc.
   const availableHeight = height - headerFooterHeight;
 
-  // Calculate how many rows can fit, with minimum of 3 rows
+  // Calculate how many rows can fit, with minimum of 4 rows
   const calculatedRows = Math.ceil(availableHeight / cardHeight);
-  return Math.max(3, Math.min(calculatedRows, 6)); // Max 6 rows to avoid too many products
+  return Math.max(4, Math.min(calculatedRows, 8)); // Max 8 rows for more products
 };
 
 /**
@@ -62,8 +62,8 @@ export const calculateOptimalProductsPerPage = (): GridConfig => {
 export const getSSRSafeGridConfig = (): GridConfig => {
   return {
     columns: 3,
-    rows: 4,
-    productsPerPage: 12, // Conservative number for larger cards
+    rows: 2,
+    productsPerPage: 6, // Temporary: reduce to 6 to test pagination with 7 products
   };
 };
 
