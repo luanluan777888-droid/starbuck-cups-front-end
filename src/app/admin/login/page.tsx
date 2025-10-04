@@ -180,21 +180,6 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-gray-700 border border-gray-600 rounded-lg">
-            <h4 className="text-sm font-medium text-white mb-2">
-              Thông tin đăng nhập demo:
-            </h4>
-            <div className="text-sm text-white space-y-1">
-              <p>
-                <strong>Email:</strong> admin@starbucks.com
-              </p>
-              <p>
-                <strong>Password:</strong> admin123
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
