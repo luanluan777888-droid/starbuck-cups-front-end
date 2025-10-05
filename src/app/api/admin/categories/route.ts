@@ -17,14 +17,10 @@ function getAuthHeaders(request: NextRequest): Record<string, string> {
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("🔍 [API] Fetching categories from backend...");
-
     // Extract query parameters for pagination
     const { searchParams } = new URL(request.url);
     const page = searchParams.get("page") || "1";
     const limit = searchParams.get("limit") || searchParams.get("size") || "20";
-
-    console.log("📄 [API] Pagination params:", { page, limit });
 
     const response = await fetch(
       getApiUrl(`admin/categories?page=${page}&limit=${limit}`),
@@ -38,18 +34,6 @@ export async function GET(request: NextRequest) {
     );
 
     const data = await response.json();
-
-    console.log("📊 [API Debug] Categories response:", {
-      status: response.status,
-      success: data.success,
-      totalItems: data.data?.totalItems,
-      currentPage: data.data?.currentPage,
-      totalPages: data.data?.totalPages,
-      itemsCount: data.data?.items?.length,
-      hasItems: !!data.data?.items,
-      requestUrl: `admin/categories?page=${page}&limit=${limit}`,
-      sampleData: data.data?.items?.slice(0, 3),
-    });
 
     return NextResponse.json(data, { status: response.status });
   } catch {

@@ -119,7 +119,6 @@ export function useCategories(): UseCategoriesReturn {
 
   const fetchCategories = useCallback(async () => {
     try {
-      console.log("🚀 [Frontend] Fetching categories - page:", currentPage);
       setLoading(true);
 
       const response = await fetch(
@@ -131,28 +130,8 @@ export function useCategories(): UseCategoriesReturn {
 
       const data = await response.json();
 
-      console.log("📥 [Frontend] Categories response:", {
-        responseOk: response.ok,
-        status: response.status,
-        success: data.success,
-        totalItems: data.data?.pagination?.total_items || data.data?.totalItems,
-        currentPage:
-          data.data?.pagination?.current_page || data.data?.currentPage,
-        totalPages: data.data?.pagination?.total_pages || data.data?.totalPages,
-        itemsCount: data.data?.items?.length,
-        hasData: !!data.data,
-        hasItems: !!data.data?.items,
-        paginationInfo: data.data?.pagination,
-      });
-
       if (data.success && data.data) {
         const categoriesList = data.data.items || [];
-
-        console.log(
-          "✅ [Frontend] Setting categories:",
-          categoriesList.length,
-          "items"
-        );
 
         // Set pagination data from response
         const paginationInfo = data.data.pagination;
@@ -169,11 +148,9 @@ export function useCategories(): UseCategoriesReturn {
 
         setCategories(categoriesList);
       } else {
-        console.error("❌ [Frontend] API error:", data.message);
         toast.error(data.message || "Không thể tải danh sách danh mục");
       }
     } catch {
-      console.error("💥 [Frontend] Exception during fetch:", "Unknown error");
       toast.error("Có lỗi xảy ra khi tải danh mục");
     } finally {
       setLoading(false);
@@ -349,7 +326,6 @@ export function useCategories(): UseCategoriesReturn {
     } catch {
       // Rollback on network error
       setCategories(categories);
-
       toast.error("Có lỗi xảy ra khi cập nhật trạng thái");
     } finally {
       setActionLoading(null);
