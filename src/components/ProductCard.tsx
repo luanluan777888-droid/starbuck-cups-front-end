@@ -83,7 +83,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         trackProductClick({
           id: product.id,
           name: product.name,
-          category: product.productCategories?.[0]?.category?.name
+          category: product.productCategories?.[0]?.category?.name,
         });
       }}
     >
@@ -109,7 +109,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     trackAddToCartClick({
                       id: product.id,
                       name: product.name,
-                      category: product.productCategories?.[0]?.category?.name
+                      category: product.productCategories?.[0]?.category?.name,
                     });
                     onAddToCart(product);
                   }
@@ -133,12 +133,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product info */}
       <div className="mt-3">
-        <div className="text-xs text-zinc-500 font-mono mb-1">
-          {product.productCategories
-            ?.map((pc: { category: { name: string } }) => pc.category.name)
-            .join(", ") || "N/A"}{" "}
-          - {product.capacity?.name || "chưa có"}
-        </div>
         <h3
           className={`text-sm font-medium mb-1 truncate ${
             product.stockQuantity === 0 ? "text-zinc-400" : "text-white"
@@ -146,6 +140,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         >
           {product.name}
         </h3>
+        <div className="text-xs text-zinc-500 font-mono mb-1">
+          {product.productCategories
+            ?.map((pc: { category: { name: string } }) => pc.category.name)
+            .join(", ") || "N/A"}{" "}
+          - {product.capacity?.name || "chưa có"}
+        </div>
         {product.stockQuantity === 0 && (
           <div className="flex items-center">
             <span className="text-xs text-zinc-400">Hết hàng</span>
