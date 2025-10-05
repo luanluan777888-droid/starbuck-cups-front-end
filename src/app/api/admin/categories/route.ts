@@ -22,12 +22,12 @@ export async function GET(request: NextRequest) {
     // Extract query parameters for pagination
     const { searchParams } = new URL(request.url);
     const page = searchParams.get("page") || "1";
-    const size = searchParams.get("size") || searchParams.get("limit") || "20";
+    const limit = searchParams.get("limit") || searchParams.get("size") || "20";
 
-    console.log("📄 [API] Pagination params:", { page, size });
+    console.log("📄 [API] Pagination params:", { page, limit });
 
     const response = await fetch(
-      getApiUrl(`admin/categories?page=${page}&size=${size}`),
+      getApiUrl(`admin/categories?page=${page}&limit=${limit}`),
       {
         method: "GET",
         headers: {
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       totalPages: data.data?.totalPages,
       itemsCount: data.data?.items?.length,
       hasItems: !!data.data?.items,
-      requestUrl: `admin/categories?page=${page}&size=${size}`,
+      requestUrl: `admin/categories?page=${page}&limit=${limit}`,
       sampleData: data.data?.items?.slice(0, 3),
     });
 

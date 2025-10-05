@@ -20,10 +20,10 @@ export async function GET(request: NextRequest) {
     // Extract query parameters for pagination
     const { searchParams } = new URL(request.url);
     const page = searchParams.get("page") || "1";
-    const size = searchParams.get("size") || searchParams.get("limit") || "20";
+    const limit = searchParams.get("limit") || searchParams.get("size") || "20";
 
     const response = await fetch(
-      getApiUrl(`admin/colors?page=${page}&size=${size}`),
+      getApiUrl(`admin/colors?page=${page}&limit=${limit}`),
       {
         method: "GET",
         headers: {
