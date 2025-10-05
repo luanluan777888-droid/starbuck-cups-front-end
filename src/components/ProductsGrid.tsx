@@ -8,10 +8,8 @@ import type { Product, CapacityRange } from "@/types";
 import { trackAddToCart, trackPagination } from "@/lib/analytics";
 import { Pagination } from "@/components/ui/Pagination";
 import {
-  calculateOptimalProductsPerPage,
   getResponsiveGridClasses,
-  getSSRSafeGridConfig,
-  type GridConfig,
+  getProductsPageLimit,
 } from "@/utils/layoutCalculator";
 
 interface PaginationData {
@@ -42,9 +40,6 @@ export default function ProductsGrid({
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
-  const [gridConfig, setGridConfig] = useState<GridConfig>(
-    getSSRSafeGridConfig()
-  );
   const [paginationData, setPaginationData] = useState<PaginationData | null>(
     null
   );
@@ -54,49 +49,6 @@ export default function ProductsGrid({
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  // Setup responsive products per page calculation after mounting
-  useEffect(() => {
-    if (!isMounted) return;
-
-    // Ensure we're only running on client-side
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const updateLayout = () => {
-      const config = calculateOptimalProductsPerPage();
-      setGridConfig((prevConfig) => {
-        // Only update if config actually changed
-        if (prevConfig.productsPerPage !== config.productsPerPage) {
-          return config;
-        }
-        return prevConfig;
-      });
-    };
-
-    // Initial calculation (only on client)
-    updateLayout();
-
-    // Setup resize listener with debouncing
-    const handleResize = () => {
-      // Debounce resize events
-      if (window.resizeTimeout) {
-        clearTimeout(window.resizeTimeout);
-      }
-      window.resizeTimeout = setTimeout(updateLayout, 150);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Return cleanup function
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      if (window.resizeTimeout) {
-        clearTimeout(window.resizeTimeout);
-      }
-    };
-  }, [isMounted]);
 
   useEffect(() => {
     // Don't fetch on server or before component is mounted
@@ -129,9 +81,10 @@ export default function ProductsGrid({
           params.append("sortOrder", order);
         }
         params.append("page", currentPage.toString());
-        params.append("limit", gridConfig.productsPerPage.toString());
-
-
+        
+        // Use special limit for products page (36 on laptop)
+        const productsLimit = getProductsPageLimit();
+        params.append("limit", productsLimit.toString());
 
         const response = await fetch(`/api/products?${params.toString()}`);
         const data = await response.json();
@@ -163,7 +116,6 @@ export default function ProductsGrid({
     capacityRange,
     sortBy,
     currentPage,
-    gridConfig.productsPerPage,
     isMounted, // Only fetch after client mount
   ]);
 
@@ -190,10 +142,11 @@ export default function ProductsGrid({
 
   // Skeleton loading
   if (loading) {
+    const skeletonCount = isMounted ? getProductsPageLimit() : 6;
     return (
       <div className="space-y-6">
         <div className={getResponsiveGridClasses("products")}>
-          {[...Array(gridConfig.productsPerPage)].map((_, index) => (
+          {[...Array(skeletonCount)].map((_, index) => (
             <div
               key={index}
               className="animate-pulse bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden"

@@ -127,6 +127,14 @@ export const useResponsiveProductsPerPage = (
   };
 };
 
+/**
+ * Get fixed limit for products page
+ * Returns 36 products per page for consistent pagination
+ */
+export const getProductsPageLimit = (): number => {
+  return 36;
+};
+
 // Extend Window interface for TypeScript
 declare global {
   interface Window {
