@@ -17,13 +17,21 @@ function getAuthHeaders(request: NextRequest): Record<string, string> {
 
 export async function GET(request: NextRequest) {
   try {
-    const response = await fetch(getApiUrl("admin/colors"), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(request),
-      },
-    });
+    // Extract query parameters for pagination
+    const { searchParams } = new URL(request.url);
+    const page = searchParams.get("page") || "1";
+    const size = searchParams.get("size") || searchParams.get("limit") || "20";
+
+    const response = await fetch(
+      getApiUrl(`admin/colors?page=${page}&size=${size}`),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(request),
+        },
+      }
+    );
 
     const data = await response.json();
 

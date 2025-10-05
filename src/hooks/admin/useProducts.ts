@@ -200,9 +200,9 @@ export function useProducts(): UseProductsReturn {
       const headers = getAuthHeaders();
 
       const [categoriesRes, colorsRes, capacitiesRes] = await Promise.all([
-        fetch("/api/admin/categories", { headers }),
-        fetch("/api/admin/colors", { headers }),
-        fetch("/api/admin/capacities", { headers }),
+        fetch("/api/admin/categories?limit=1000", { headers }),
+        fetch("/api/admin/colors?limit=1000", { headers }),
+        fetch("/api/admin/capacities?limit=1000", { headers }),
       ]);
 
       const [categoriesData, colorsData, capacitiesData] = await Promise.all([
