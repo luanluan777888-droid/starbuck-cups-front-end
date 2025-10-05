@@ -46,17 +46,7 @@ export const calculateOptimalProductsPerPage = (): GridConfig => {
   const { innerWidth: width, innerHeight: height } = window;
   const columns = getColumnsForWidth(width);
   const rows = getRowsForHeight(height);
-
-  // Increase limit to test if backend pagination issue is fixed
-  const productsPerPage = 12;
-
-  console.log('🧮 calculateOptimalProductsPerPage - Testing backend pagination:', {
-    width,
-    height,
-    columns,
-    rows,
-    productsPerPage
-  });
+  const productsPerPage = columns * rows;
 
   return {
     columns,
@@ -70,11 +60,10 @@ export const calculateOptimalProductsPerPage = (): GridConfig => {
  * Updated for larger cards with fewer columns
  */
 export const getSSRSafeGridConfig = (): GridConfig => {
-  console.log('🧮 getSSRSafeGridConfig - Testing SSR with increased limit');
   return {
     columns: 3,
     rows: 2,
-    productsPerPage: 12, // Increase to test backend pagination
+    productsPerPage: 6,
   };
 };
 
