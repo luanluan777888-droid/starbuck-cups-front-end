@@ -16,10 +16,20 @@ import { TopConversionProducts } from "@/components/admin/analytics/TopConversio
 
 export default function StatisticsPage() {
   const [period, setPeriod] = useState<"week" | "month" | "year">("month");
+  const [clickedProductsPage, setClickedProductsPage] = useState(1);
+  const [conversionProductsPage, setConversionProductsPage] = useState(1);
   const { data, loading, error, fetchStatistics } = useStatistics(period);
 
   const handlePeriodChange = (newPeriod: "week" | "month" | "year") => {
     setPeriod(newPeriod);
+  };
+
+  const handleClickedProductsPageChange = (page: number) => {
+    setClickedProductsPage(page);
+  };
+
+  const handleConversionProductsPageChange = (page: number) => {
+    setConversionProductsPage(page);
   };
 
   if (loading) {
@@ -124,14 +134,14 @@ export default function StatisticsPage() {
           {/* Top Clicked Products & Top Conversion Products */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <TopClickedProducts
-              page={1}
-              onPageChange={() => {}}
+              page={clickedProductsPage}
+              onPageChange={handleClickedProductsPageChange}
               products={data.productAnalytics.topClickedProducts}
               loading={false}
             />
             <TopConversionProducts
-              page={1}
-              onPageChange={() => {}}
+              page={conversionProductsPage}
+              onPageChange={handleConversionProductsPageChange}
               products={data.productAnalytics.topConversionProducts}
               loading={false}
             />
