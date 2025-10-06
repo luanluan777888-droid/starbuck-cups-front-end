@@ -13,12 +13,24 @@ import { RevenueTrend } from "@/components/admin/statistics/RevenueTrend";
 import { AnalyticsOverview } from "@/components/admin/analytics/AnalyticsOverview";
 import { TopClickedProducts } from "@/components/admin/analytics/TopClickedProducts";
 import { TopConversionProducts } from "@/components/admin/analytics/TopConversionProducts";
+import { useTopClickedProducts, useTopConversionProducts } from "@/hooks/admin/useProductAnalytics";
 
 export default function StatisticsPage() {
   const [period, setPeriod] = useState<"week" | "month" | "year">("month");
   const [clickedProductsPage, setClickedProductsPage] = useState(1);
   const [conversionProductsPage, setConversionProductsPage] = useState(1);
   const { data, loading, error, fetchStatistics } = useStatistics(period);
+
+  // Fetch paginated analytics data
+  const {
+    products: clickedProducts,
+    loading: clickedLoading,
+  } = useTopClickedProducts(10, clickedProductsPage);
+
+  const {
+    products: conversionProducts,
+    loading: conversionLoading,
+  } = useTopConversionProducts(10, conversionProductsPage);
 
   const handlePeriodChange = (newPeriod: "week" | "month" | "year") => {
     setPeriod(newPeriod);
@@ -136,14 +148,14 @@ export default function StatisticsPage() {
             <TopClickedProducts
               page={clickedProductsPage}
               onPageChange={handleClickedProductsPageChange}
-              products={data.productAnalytics.topClickedProducts}
-              loading={false}
+              products={clickedProducts}
+              loading={clickedLoading}
             />
             <TopConversionProducts
               page={conversionProductsPage}
               onPageChange={handleConversionProductsPageChange}
-              products={data.productAnalytics.topConversionProducts}
-              loading={false}
+              products={conversionProducts}
+              loading={conversionLoading}
             />
           </div>
         </>
