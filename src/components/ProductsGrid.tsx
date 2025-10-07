@@ -123,7 +123,6 @@ export default function ProductsGrid({
     sortBy,
     currentPage,
     isMounted,
-    onPageChange, // Add onPageChange to dependencies
   ]);
 
   const handleAddToCart = (product: Product) => {

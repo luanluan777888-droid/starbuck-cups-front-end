@@ -2,30 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useAppDispatch } from "@/store";
-import { addToCart } from "@/store/slices/cartSlice";
 import type {
-  Product,
   Category,
   Color,
   Capacity,
   CapacityRange,
-  PaginationMeta,
 } from "@/types";
-import { toast } from "sonner";
 
 interface UseProductsReturn {
-  // Data
-  products: Product[];
+  // Filter options data
   categories: Category[];
   colors: Color[];
   capacities: Capacity[];
-  totalItems: number;
-  paginationData: PaginationMeta | null;
-  totalPages: number;
 
   // State
-  loading: boolean;
   isHydrated: boolean;
   searchQuery: string;
   selectedCategory: string;
@@ -46,7 +36,6 @@ interface UseProductsReturn {
   setShowFilters: React.Dispatch<React.SetStateAction<boolean>>;
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  handleAddToCart: (product: Product) => void;
   clearFilters: () => void;
   updateURL: (newFilters: {
     search?: string;
@@ -62,7 +51,6 @@ interface UseProductsReturn {
 export function useProducts(): UseProductsReturn {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const dispatch = useAppDispatch();
 
   // Local state
   const [searchQuery, setSearchQuery] = useState(
@@ -83,18 +71,12 @@ export function useProducts(): UseProductsReturn {
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get("page") || "1")
   );
-  const [loading, setLoading] = useState(true);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Real data from API
-  const [products, setProducts] = useState<Product[]>([]);
+  // Filter options data from API
   const [categories, setCategories] = useState<Category[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [capacities, setCapacities] = useState<Capacity[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [paginationData, setPaginationData] = useState<PaginationMeta | null>(
-    null
-  );
 
   // Fetch filter options (categories, colors, capacities)
   useEffect(() => {
@@ -141,102 +123,6 @@ export function useProducts(): UseProductsReturn {
     fetchFilterOptions();
   }, []);
 
-  // Fetch products when filters change
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams();
-
-        if (searchQuery) params.append("search", searchQuery);
-        if (selectedCategory) params.append("category", selectedCategory);
-        if (selectedColor) params.append("color", selectedColor);
-        if (capacityRange.min > 0)
-          params.append("minCapacity", capacityRange.min.toString());
-        if (capacityRange.max < 9999)
-          params.append("maxCapacity", capacityRange.max.toString());
-        params.append("page", currentPage.toString());
-        params.append("limit", "20");
-
-        // Enhanced sorting options
-        switch (sortBy) {
-          case "name_asc":
-            params.append("sortBy", "name");
-            params.append("sortOrder", "asc");
-            break;
-          case "name_desc":
-            params.append("sortBy", "name");
-            params.append("sortOrder", "desc");
-            break;
-          case "newest":
-            params.append("sortBy", "createdAt");
-            params.append("sortOrder", "desc");
-            break;
-          case "oldest":
-            params.append("sortBy", "createdAt");
-            params.append("sortOrder", "asc");
-            break;
-          default:
-            params.append("sortBy", "name");
-            params.append("sortOrder", "asc");
-        }
-
-        const response = await fetch(`/api/products?${params.toString()}`);
-        const data = await response.json();
-
-        console.log("📦 [Products Frontend] Response debug:", {
-          responseOk: response.ok,
-          status: response.status,
-          success: data.success,
-          totalItems:
-            data.data?.totalItems || data.data?.pagination?.total_items,
-          itemsCount: data.data?.items?.length,
-          hasData: !!data.data,
-          hasItems: !!data.data?.items,
-          queryParams: params.toString(),
-          paginationInfo: data.data?.pagination,
-          currentPage,
-          requestedLimit: "20",
-        });
-
-        if (data.success) {
-          // Normalize products data to handle both old and new image structure
-          const normalizedProducts = (data.data?.items || []).map(
-            (product: Product) => ({
-              ...product,
-              // Ensure backward compatibility - convert productImages to images array
-              images: product.productImages?.map(
-                (img: { url: string; order: number }) => img.url
-              ),
-            })
-          );
-
-          setProducts(normalizedProducts);
-          setTotalItems(data.data?.pagination?.total_items || 0);
-          setPaginationData(data.data?.pagination || null);
-        } else {
-          setProducts([]);
-        }
-      } catch (error) {
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [
-    searchQuery,
-    selectedCategory,
-    selectedColor,
-    capacityRange,
-    currentPage,
-    sortBy,
-  ]);
-
-  // Get pagination info from API response
-  const totalPages = paginationData?.total_pages || 1;
-
   // Wait for hydration to avoid mismatch
   useEffect(() => {
     setIsHydrated(true);
@@ -281,13 +167,6 @@ export function useProducts(): UseProductsReturn {
     router.replace(newURL, { scroll: false });
   };
 
-  const handleAddToCart = (product: Product) => {
-    dispatch(addToCart({ product }));
-    toast.success(`Đã thêm ${product.name} vào giỏ hàng`, {
-      duration: 2000,
-    });
-  };
-
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedCategory("");
@@ -307,17 +186,12 @@ export function useProducts(): UseProductsReturn {
     sortBy !== "newest";
 
   return {
-    // Data
-    products,
+    // Filter options data
     categories,
     colors,
     capacities,
-    totalItems,
-    paginationData,
-    totalPages,
 
     // State
-    loading,
     isHydrated,
     searchQuery,
     selectedCategory,
@@ -338,7 +212,6 @@ export function useProducts(): UseProductsReturn {
     setShowFilters,
     setSortBy,
     setCurrentPage,
-    handleAddToCart,
     clearFilters,
     updateURL,
   };
