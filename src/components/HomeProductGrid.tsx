@@ -42,7 +42,7 @@ export default function HomeProductGrid({
   // Check if all animations are complete
   useEffect(() => {
     if (products.length > 0 && !loading) {
-      const totalRows = Math.ceil(products.length / 4);
+      const totalRows = Math.ceil(products.length / PRODUCTS_PER_ROW);
       if (visibleRows.size >= totalRows) {
         // Delay to ensure animations have time to complete
         const timer = setTimeout(() => {
@@ -64,6 +64,16 @@ export default function HomeProductGrid({
       setShowViewAllButton(false);
     }
   }, [allAnimationsComplete]);
+
+  // Fallback: Always show button after 3 seconds if products are loaded
+  useEffect(() => {
+    if (products.length > 0 && !loading) {
+      const fallbackTimer = setTimeout(() => {
+        setShowViewAllButton(true);
+      }, 3000); // Show button after 3 seconds regardless of animation state
+      return () => clearTimeout(fallbackTimer);
+    }
+  }, [products.length, loading]);
 
   // Intersection Observer for scroll-triggered animations
   useEffect(() => {

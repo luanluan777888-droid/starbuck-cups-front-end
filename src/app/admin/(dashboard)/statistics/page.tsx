@@ -108,7 +108,7 @@ export default function StatisticsPage() {
       <OverviewCards
         data={data.overview}
         period={period}
-        lowStockCount={data.lowStockProducts.length}
+        lowStockCount={data.lowStockProducts?.length || 0}
       />
 
       {/* Revenue Trend */}
@@ -121,7 +121,7 @@ export default function StatisticsPage() {
       </div>
 
       {/* Low Stock Products Alert */}
-      <LowStockAlert products={data.lowStockProducts} />
+      <LowStockAlert />
 
       {/* Product Analytics Section */}
       {data.productAnalytics && (
