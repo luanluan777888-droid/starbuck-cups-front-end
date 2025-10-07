@@ -114,7 +114,7 @@ export default function HomeProductGrid({
         setAllAnimationsComplete(false);
         setShowViewAllButton(false);
 
-        const url = "/api/products?sortBy=createdAt&sortOrder=desc&limit=36";
+        const url = "/api/products?sortBy=createdAt&sortOrder=desc&limit=12";
 
         const response = await fetch(url);
         const data = await response.json();

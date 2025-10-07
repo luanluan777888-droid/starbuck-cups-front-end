@@ -81,7 +81,7 @@ export default function ProductsGrid({
           params.append("sortOrder", order);
         }
         params.append("page", currentPage.toString());
-        
+
         // Use special limit for products page (36 on laptop)
         const productsLimit = getProductsPageLimit();
         params.append("limit", productsLimit.toString());
@@ -91,11 +91,17 @@ export default function ProductsGrid({
 
         if (data.success && data.data?.items) {
           setProducts(data.data.items);
+          const totalPages = data.data.pagination?.total_pages || 1;
           setPaginationData({
-            totalPages: data.data.pagination?.total_pages || 1,
+            totalPages,
             limit: data.data.pagination?.per_page || 20,
             totalItems: data.data.pagination?.total_items || 0,
           });
+
+          // Auto-reset to page 1 if current page exceeds total pages
+          if (currentPage > totalPages) {
+            onPageChange(1);
+          }
         } else {
           setProducts([]);
           setPaginationData(null);
@@ -116,7 +122,8 @@ export default function ProductsGrid({
     capacityRange,
     sortBy,
     currentPage,
-    isMounted, // Only fetch after client mount
+    isMounted,
+    onPageChange, // Add onPageChange to dependencies
   ]);
 
   const handleAddToCart = (product: Product) => {
