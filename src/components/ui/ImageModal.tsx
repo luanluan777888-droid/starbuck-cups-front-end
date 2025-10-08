@@ -412,7 +412,11 @@ export function ImageModal({
 
       {/* Zoom controls - hidden on mobile */}
       {!isMobile && (
-        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+        <div
+          className={`absolute top-4 flex flex-col gap-2 z-10 ${
+            images.length > 1 ? "left-28 md:left-32" : "left-4"
+          }`}
+        >
           <button
             onClick={() => handleZoom(scale + 0.5)}
             disabled={scale >= MAX_SCALE}
@@ -484,8 +488,8 @@ export function ImageModal({
         </div>
       )}
 
-      {/* Thumbnail gallery - left side vertical */}
-      {images.length > 1 && (
+      {/* Thumbnail gallery - left side vertical (hidden on mobile) */}
+      {images.length > 1 && !isMobile && (
         <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
           <div className="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-hide bg-black bg-opacity-50 rounded-lg p-2">
             {images.map((image, index) => (
@@ -515,10 +519,14 @@ export function ImageModal({
       )}
 
       {/* Main image */}
-      <div className="relative w-full h-full flex items-center justify-center p-4">
+      <div
+        className={`relative w-full h-full flex items-center justify-center py-4 pb-20 ${
+          !isMobile && images.length > 1 ? "pl-28 md:pl-32 pr-4" : "px-4"
+        }`}
+      >
         <div
           ref={imageContainerRef}
-          className="relative w-full h-full max-w-5xl overflow-hidden cursor-pointer"
+          className="relative w-full h-full max-w-4xl max-h-[80vh] overflow-hidden cursor-pointer"
           onWheel={handleWheel}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
@@ -549,6 +557,8 @@ export function ImageModal({
               fill
               className="object-contain pointer-events-none"
               key={activeIndex}
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
               onError={(e) => {
                 e.currentTarget.src = "/images/placeholder-product.jpg";
               }}
@@ -561,7 +571,9 @@ export function ImageModal({
           <>
             <button
               onClick={prevImage}
-              className="absolute left-28 md:left-32 top-1/2 transform -translate-y-1/2 text-white hover:text-zinc-300 p-3"
+              className={`absolute top-1/2 transform -translate-y-1/2 text-white hover:text-zinc-300 p-3 ${
+                !isMobile ? "left-28 md:left-32" : "left-4"
+              }`}
               aria-label="Hình trước"
             >
               <svg
