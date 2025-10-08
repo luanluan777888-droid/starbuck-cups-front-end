@@ -484,8 +484,38 @@ export function ImageModal({
         </div>
       )}
 
+      {/* Thumbnail gallery - left side vertical */}
+      {images.length > 1 && (
+        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+          <div className="flex flex-col gap-2 max-h-96 overflow-y-auto scrollbar-hide bg-black bg-opacity-50 rounded-lg p-2">
+            {images.map((image, index) => (
+              <button
+                key={index}
+                onClick={(e) => handleThumbnailClick(index, e)}
+                className={`relative h-12 w-16 md:h-16 md:w-20 flex-shrink-0 rounded overflow-hidden border-2 transition-all focus:outline-none ${
+                  index === activeIndex
+                    ? "border-white scale-110"
+                    : "border-zinc-500 hover:border-zinc-300 focus:border-zinc-200"
+                }`}
+              >
+                <Image
+                  src={image}
+                  alt={`Thumbnail ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="80px"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/placeholder-product.jpg";
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Main image */}
-      <div className="relative w-full h-full flex items-center justify-center p-4 pb-32">
+      <div className="relative w-full h-full flex items-center justify-center p-4">
         <div
           ref={imageContainerRef}
           className="relative w-full h-full max-w-5xl overflow-hidden cursor-pointer"
@@ -531,7 +561,7 @@ export function ImageModal({
           <>
             <button
               onClick={prevImage}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-zinc-300 p-3"
+              className="absolute left-28 md:left-32 top-1/2 transform -translate-y-1/2 text-white hover:text-zinc-300 p-3"
               aria-label="Hình trước"
             >
               <svg
@@ -572,50 +602,20 @@ export function ImageModal({
         )}
       </div>
 
-      {/* Image info bar with thumbnail gallery */}
+      {/* Image info bar */}
       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-90 text-white">
         {/* Image counter */}
-        <div className="px-4 py-2 border-b border-zinc-600">
-          <p className="text-sm text-zinc-300 text-center">
+        <div className="px-4 py-3 text-center">
+          <p className="text-sm text-zinc-300">
             {`Hình ${activeIndex + 1} / ${images.length}`}
           </p>
           {/* Help text - only show on desktop */}
           {!isMobile && (
-            <p className="text-xs text-zinc-400 text-center mt-1">
+            <p className="text-xs text-zinc-400 mt-1">
               Cuộn chuột để zoom • Kéo để di chuyển
             </p>
           )}
         </div>
-
-        {/* Thumbnail gallery */}
-        {images.length > 1 && (
-          <div className="p-3">
-            <div className="flex gap-2 overflow-x-auto max-w-full scrollbar-hide">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={(e) => handleThumbnailClick(index, e)}
-                  className={`relative h-12 w-16 md:h-16 md:w-20 flex-shrink-0 rounded overflow-hidden border-2 transition-all focus:outline-none ${
-                    index === activeIndex
-                      ? "border-white scale-110"
-                      : "border-zinc-500 hover:border-zinc-300 focus:border-zinc-200"
-                  }`}
-                >
-                  <Image
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="80px"
-                    onError={(e) => {
-                      e.currentTarget.src = "/images/placeholder-product.jpg";
-                    }}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Click outside to close */}
