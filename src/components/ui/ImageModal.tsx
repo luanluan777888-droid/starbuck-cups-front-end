@@ -526,7 +526,7 @@ export function ImageModal({
       >
         <div
           ref={imageContainerRef}
-          className="relative w-full h-full max-w-4xl max-h-[80vh] overflow-hidden cursor-pointer"
+          className="relative w-full h-full max-w-4xl overflow-hidden cursor-pointer"
           onWheel={handleWheel}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
