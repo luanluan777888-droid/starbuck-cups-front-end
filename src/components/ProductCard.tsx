@@ -134,7 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product info */}
       <div className="mt-3">
         <h3
-          className={`text-sm font-medium mb-1 truncate line-clamp-2 ${
+          className={`text-sm font-medium mb-1 line-clamp-2 ${
             product.stockQuantity === 0 ? "text-zinc-400" : "text-white"
           }`}
         >
