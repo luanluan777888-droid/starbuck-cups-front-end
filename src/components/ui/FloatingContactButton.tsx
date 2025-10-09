@@ -44,12 +44,12 @@ export function FloatingContactButton({
 
   const handleMessengerClick = () => {
     const link = getMessengerLink();
-    window.open(link, '_blank', 'noopener,noreferrer');
+    window.open(link, "_blank", "noopener,noreferrer");
   };
 
   const handleZaloClick = () => {
     const link = getZaloLink();
-    window.open(link, '_blank', 'noopener,noreferrer');
+    window.open(link, "_blank", "noopener,noreferrer");
   };
 
   return (
