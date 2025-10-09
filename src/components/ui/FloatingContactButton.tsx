@@ -5,12 +5,10 @@ import { MessageCircle, X } from "lucide-react";
 
 interface FloatingContactButtonProps {
   zaloPhone?: string;
-  messengerLink?: string;
 }
 
 export function FloatingContactButton({
   zaloPhone = "0896686008",
-  messengerLink = "https://m.me/9870524003031490",
 }: FloatingContactButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -25,8 +23,26 @@ export function FloatingContactButton({
     return `https://zalo.me/${zaloPhone.replace(/^0/, "84")}`;
   };
 
+  const getMessengerLink = () => {
+    // Detect if mobile
+    const isMobile =
+      typeof window !== "undefined" &&
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
+    if (isMobile) {
+      // Use Facebook mobile link for mobile devices
+      return "https://m.facebook.com/profile.php?id=9870524003031490";
+    }
+
+    // Use m.me link for desktop/laptop
+    return "https://m.me/9870524003031490";
+  };
+
   const handleMessengerClick = () => {
-    window.open(messengerLink, "_blank", "noopener,noreferrer");
+    const link = getMessengerLink();
+    window.open(link, "_blank", "noopener,noreferrer");
   };
 
   const handleZaloClick = () => {
