@@ -33,11 +33,11 @@ export function FloatingContactButton({
 
     if (isMobile) {
       // Use Facebook mobile link for mobile devices
-      return "https://m.facebook.com/profile.php?id=9870524003031490";
+      return "https://m.facebook.com/hasron.luong";
     }
 
     // Use m.me link for desktop/laptop
-    return "https://m.me/9870524003031490";
+    return "https://m.me/hasron.luong";
   };
 
   const handleMessengerClick = () => {
