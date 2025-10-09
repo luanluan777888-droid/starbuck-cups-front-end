@@ -24,7 +24,7 @@ export function FloatingContactButton({
   };
 
   const getMessengerLink = () => {
-    // Detect if mobile
+    // Detect if mobile device
     const isMobile =
       typeof window !== "undefined" &&
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -32,12 +32,12 @@ export function FloatingContactButton({
       );
 
     if (isMobile) {
-      // Use Facebook mobile link for mobile devices
-      return "https://m.facebook.com/hasron.luong";
+      // Mobile: redirect to Facebook page
+      return "https://www.facebook.com/hasron.luong";
     }
 
-    // Use m.me link for desktop/laptop
-    return "https://m.me/hasron.luong";
+    // Desktop/Laptop: redirect to Facebook messages
+    return "https://www.facebook.com/messages/e2ee/t/9870524003031490";
   };
 
   const handleMessengerClick = () => {
