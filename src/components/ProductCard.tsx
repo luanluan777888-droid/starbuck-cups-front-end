@@ -134,13 +134,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product info */}
       <div className="mt-3">
         <h3
-          className={`text-sm font-medium mb-1 truncate ${
+          className={`text-sm font-medium mb-1 truncate line-clamp-2 ${
             product.stockQuantity === 0 ? "text-zinc-400" : "text-white"
           }`}
         >
           {product.name}
         </h3>
-        <div className="text-xs text-zinc-500 font-mono mb-1">
+        {/* <div className="text-xs text-zinc-500 font-mono mb-1">
           {product.productCategories
             ?.map((pc: { category: { name: string } }) => pc.category.name)
             .join(", ") || "N/A"}{" "}
@@ -150,7 +150,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="flex items-center">
             <span className="text-xs text-zinc-400">Hết hàng</span>
           </div>
-        )}
+        )} */}
       </div>
     </Link>
   );
