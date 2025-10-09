@@ -28,13 +28,17 @@ export function FloatingContactButton({
 
   const getMessengerLink = () => {
     // Detect if mobile
-    const isMobile = typeof window !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
+    const isMobile =
+      typeof window !== "undefined" &&
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
     if (isMobile) {
       // Try to open Messenger app directly on mobile
       return `fb-messenger://user-thread/9870524003031490`;
     }
-    
+
     // Fallback to web messenger for desktop
     return messengerLink;
   };
