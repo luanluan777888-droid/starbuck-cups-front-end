@@ -11,7 +11,7 @@ interface FloatingContactButtonProps {
 
 export function FloatingContactButton({
   zaloPhone = "0896686008",
-  messengerLink = "https://m.me/9870524003031490",
+  messengerLink = "https://m.me/9870524003031490", // Có thể thay bằng các link khác
 }: FloatingContactButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -26,13 +26,26 @@ export function FloatingContactButton({
     return `https://zalo.me/${zaloPhone.replace(/^0/, "84")}`;
   };
 
+  const getMessengerLink = () => {
+    // Detect if mobile
+    const isMobile = typeof window !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Try to open Messenger app directly on mobile
+      return `fb-messenger://user-thread/9870524003031490`;
+    }
+    
+    // Fallback to web messenger for desktop
+    return messengerLink;
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-30">
       {/* Messenger Button - Appears when open */}
       {isOpen && (
         <div className="absolute bottom-34 right-0 animate-in fade-in slide-in-from-bottom-2 duration-200">
           <Link
-            href={messengerLink}
+            href={getMessengerLink()}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center w-14 h-14 bg-black hover:bg-zinc-800 rounded-full shadow-lg transition-all duration-300 hover:scale-105 border border-zinc-700"
