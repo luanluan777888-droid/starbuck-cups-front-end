@@ -11,7 +11,7 @@ interface FloatingContactButtonProps {
 
 export function FloatingContactButton({
   zaloPhone = "0896686008",
-  messengerLink = "https://www.facebook.com/messages/e2ee/t/9870524003031490",
+  messengerLink = "https://m.me/9870524003031490",
 }: FloatingContactButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);

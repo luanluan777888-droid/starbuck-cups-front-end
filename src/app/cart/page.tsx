@@ -78,7 +78,7 @@ export default function CartPage() {
     if (!validateForm()) return;
 
     if (items.length === 0) {
-      toast.error("Giỏ hàng trống! Vui lòng thêm sản phẩm trước.");
+      toast.error("Giỏ tư vấn trống! Vui lòng thêm sản phẩm trước.");
       return;
     }
 
@@ -188,10 +188,10 @@ export default function CartPage() {
           <div className="max-w-4xl mx-auto px-4">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-white mb-4">
-                Giỏ hàng trống
+                Giỏ tư vấn trống
               </h1>
               <p className="text-zinc-400 mb-8">
-                Bạn chưa có sản phẩm nào trong giỏ hàng.
+                Bạn chưa có sản phẩm nào trong giỏ tư vấn.
               </p>
               <button
                 onClick={() => router.push("/products")}
@@ -215,7 +215,7 @@ export default function CartPage() {
         <div className="max-w-6xl mx-auto p-4">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white">Giỏ hàng</h1>
+            <h1 className="text-3xl font-bold text-white">Giỏ tư vấn</h1>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

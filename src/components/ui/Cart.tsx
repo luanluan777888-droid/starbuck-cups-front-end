@@ -31,7 +31,7 @@ export function Cart({ className = "" }: CartProps) {
 
   const handleCreateConsultationOrder = () => {
     if (items.length === 0) {
-      toast.error("Giỏ hàng trống! Vui lòng thêm sản phẩm trước.", {
+      toast.error("Giỏ tư vấn trống! Vui lòng thêm sản phẩm trước.", {
         duration: 3000,
       });
       return;
