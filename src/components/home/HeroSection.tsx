@@ -156,7 +156,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 )}
               </h1>
             </div>
-            <div 
+            <div
               className="text-gray-300 text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: bannerData.description }}
             />
