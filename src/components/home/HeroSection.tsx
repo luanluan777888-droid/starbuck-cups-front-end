@@ -156,9 +156,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 )}
               </h1>
             </div>
-            <p className="text-gray-300 text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed">
-              {bannerData.description}
-            </p>
+            <div 
+              className="text-gray-300 text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: bannerData.description }}
+            />
             <Link
               href={bannerData.buttonLink}
               className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition-all duration-300 w-fit text-sm md:text-base"
