@@ -252,6 +252,7 @@ export default function ProductInfo() {
         <PropertyGallery
           images={product.productImages?.map((img) => img.url) || []}
           title={product.name}
+          isVip={product.isVip}
         />
       </div>
 

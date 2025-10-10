@@ -7,6 +7,7 @@ import { ShoppingCart } from "lucide-react";
 import { Product } from "@/types";
 import { getFirstProductImage, getSecondProductImage } from "@/lib/utils/image";
 import { trackProductClick, trackAddToCartClick } from "@/lib/productAnalytics";
+import { ConditionalVipBadge } from "@/components/ui/VipBadge";
 
 interface ProductCardProps {
   product: Product;
@@ -89,6 +90,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     >
       <div className="bg-zinc-900 rounded-2xl overflow-hidden hover:bg-zinc-800 transition-colors duration-300 relative">
         <div className="aspect-square bg-gradient-to-br from-zinc-800 to-zinc-900 relative overflow-hidden">
+          {/* VIP Badge */}
+          <div className="absolute top-3 right-3 z-10">
+            <ConditionalVipBadge product={product} size="sm" />
+          </div>
+
           {product.productImages && product.productImages.length > 0 ? (
             renderProductVisual()
           ) : (

@@ -13,6 +13,7 @@ export interface UpdateProductFormData {
   images: string[];
   productUrl: string;
   isActive: boolean;
+  isVip: boolean; // ✅ NEW FIELD
   // For file uploads
   newImages?: File[];
   keepExistingImages?: boolean;
@@ -59,6 +60,7 @@ export function useUpdateProduct(
     images: [],
     productUrl: "",
     isActive: true,
+    isVip: false, // ✅ NEW FIELD - default false
     newImages: [],
     keepExistingImages: true,
   });
@@ -66,7 +68,6 @@ export function useUpdateProduct(
   const getAuthHeaders = (): Record<string, string> => {
     if (typeof window === "undefined") return {};
     const token = localStorage.getItem("admin_token");
-
 
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
@@ -108,6 +109,7 @@ export function useUpdateProduct(
           product.productImages?.map((img: { url: string }) => img.url) || [],
         productUrl: product.productUrl || "",
         isActive: product.isActive ?? true,
+        isVip: product.isVip ?? false, // ✅ NEW FIELD - default false
         newImages: [],
         keepExistingImages: true,
       };
@@ -227,9 +229,6 @@ export function useUpdateProduct(
   };
 
   const submitForm = useCallback(async () => {
-
-
-
     if (!validateForm()) {
       toast.error("Vui lòng kiểm tra lại thông tin");
       return;
@@ -240,7 +239,6 @@ export function useUpdateProduct(
 
       // Decide whether to use file upload endpoint or regular update
       const hasNewFiles = formData.newImages && formData.newImages.length > 0;
-
 
       if (hasNewFiles) {
         // Use multipart/form-data endpoint for file uploads
@@ -259,6 +257,8 @@ export function useUpdateProduct(
           "stockQuantity",
           formData.stockQuantity.toString()
         );
+        formDataToSend.append("isActive", formData.isActive.toString());
+        formDataToSend.append("isVip", formData.isVip.toString()); // ✅ NEW FIELD
 
         // Only add productUrl if it's a valid URL or empty
         const productUrlValue = formData.productUrl.trim();
@@ -269,7 +269,6 @@ export function useUpdateProduct(
             formDataToSend.append("productUrl", productUrlValue);
           } catch {
             // If invalid URL, don't include it (will be empty string on backend)
-
           }
         }
 
@@ -298,7 +297,6 @@ export function useUpdateProduct(
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-
           throw new Error(data.message || "Không thể cập nhật sản phẩm");
         }
       } else {
@@ -312,13 +310,13 @@ export function useUpdateProduct(
           stockQuantity: formData.stockQuantity,
           productUrl: formData.productUrl.trim() || "",
           isActive: formData.isActive,
+          isVip: formData.isVip, // ✅ NEW FIELD
           // Include images array for image reordering - convert URLs to proper format
           productImages: formData.images.map((url, index) => ({
             url,
             order: index,
           })),
         };
-
 
         const response = await fetch(`/api/admin/products/${productId}`, {
           method: "PUT",
@@ -332,7 +330,6 @@ export function useUpdateProduct(
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-
           throw new Error(data.message || "Không thể cập nhật sản phẩm");
         }
       }
@@ -349,7 +346,6 @@ export function useUpdateProduct(
       if (onError) {
         onError(errorMsg);
       }
-
     } finally {
       setIsSubmitting(false);
     }

@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import type { Category, Color, Capacity, CapacityRange } from "@/types";
+import type { Category, Color, CapacityRange } from "@/types";
 
 interface FilterBadgesProps {
   searchQuery: string;
@@ -9,7 +9,6 @@ interface FilterBadgesProps {
   sortBy: string;
   categories: Category[];
   colors: Color[];
-  capacities: Capacity[];
   onRemoveSearch: () => void;
   onRemoveCategory: () => void;
   onRemoveColor: () => void;
@@ -26,7 +25,6 @@ export function FilterBadges({
   sortBy,
   categories,
   colors,
-  capacities,
   onRemoveSearch,
   onRemoveCategory,
   onRemoveColor,
@@ -98,7 +96,9 @@ export function FilterBadges({
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white">
           <span>
             Danh mục:{" "}
-            <span className="font-medium">{getCategoryName(selectedCategory)}</span>
+            <span className="font-medium">
+              {getCategoryName(selectedCategory)}
+            </span>
           </span>
           <button
             onClick={onRemoveCategory}
@@ -114,7 +114,8 @@ export function FilterBadges({
       {hasColor && (
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white">
           <span>
-            Màu: <span className="font-medium">{getColorName(selectedColor)}</span>
+            Màu:{" "}
+            <span className="font-medium">{getColorName(selectedColor)}</span>
           </span>
           <button
             onClick={onRemoveColor}

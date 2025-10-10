@@ -90,6 +90,96 @@ export function ProductsFilters({
           </button>
         </div>
 
+        {/* Active Filters Display - Mobile Only */}
+        {hasActiveFilters && (
+          <div className="lg:hidden mb-6 p-4 bg-zinc-800 rounded-lg border border-zinc-700">
+            <h4 className="text-xs font-medium text-zinc-300 mb-3">
+              Đang lọc:
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {searchQuery && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white">
+                  <span>Tìm kiếm: &ldquo;{searchQuery}&rdquo;</span>
+                  <button
+                    onClick={() => onSearchChange("")}
+                    className="text-zinc-400 hover:text-zinc-300"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              {selectedCategory && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white">
+                  <span>
+                    Danh mục:{" "}
+                    {categories.find((c) => c.slug === selectedCategory)
+                      ?.name || selectedCategory}
+                  </span>
+                  <button
+                    onClick={() => onCategoryChange("")}
+                    className="text-zinc-400 hover:text-zinc-300"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              {selectedColor && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white">
+                  <span>
+                    Màu:{" "}
+                    {colors.find((c) => c.slug === selectedColor)?.name ||
+                      selectedColor}
+                  </span>
+                  <button
+                    onClick={() => onColorChange("")}
+                    className="text-zinc-400 hover:text-zinc-300"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              {(capacityRange.min > 0 || capacityRange.max < 9999) && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white">
+                  <span>
+                    Dung tích: {capacityRange.min > 0 ? capacityRange.min : "0"}
+                    -{capacityRange.max < 9999 ? capacityRange.max : "∞"}ml
+                  </span>
+                  <button
+                    onClick={() => onCapacityRangeChange({ min: 0, max: 9999 })}
+                    className="text-zinc-400 hover:text-zinc-300"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              {sortBy !== "newest" && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white">
+                  <span>
+                    Sắp xếp:{" "}
+                    {sortBy === "oldest"
+                      ? "Cũ nhất"
+                      : sortBy === "name_asc"
+                      ? "Tên A → Z"
+                      : sortBy === "name_desc"
+                      ? "Tên Z → A"
+                      : sortBy}
+                  </span>
+                  <button
+                    onClick={() => onSortChange("newest")}
+                    className="text-zinc-400 hover:text-zinc-300"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Search */}
         <div className="mb-6">
           <label className="block text-xs font-medium text-zinc-300 mb-2">

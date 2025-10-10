@@ -167,7 +167,6 @@ export default function ProductsPage() {
               currentPage={currentPage}
               categories={categories}
               colors={colors}
-              capacities={capacities}
               onPageChange={handlePageChange}
               onRemoveSearch={handleRemoveSearch}
               onRemoveCategory={handleRemoveCategory}

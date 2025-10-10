@@ -10,11 +10,13 @@ import { useUpload } from "@/hooks/useUpload";
 import ImageReorder from "./ImageReorder";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
+import { VipToggle } from "./VipRadio";
 
 // Extended product type for admin operations
 interface AdminProduct extends Omit<Product, "stockQuantity"> {
   stockQuantity?: number;
   productUrl?: string;
+  isVip?: boolean;
 }
 
 interface ProductModalProps {
@@ -176,7 +178,9 @@ export default function ProductModal({
         const response = await uploadProductImages(selectedFiles);
 
         if (response.success) {
-          const uploadedUrls = response.data.map((item: { url: string }) => item.url);
+          const uploadedUrls = response.data.map(
+            (item: { url: string }) => item.url
+          );
 
           // Replace blob URLs with actual uploaded URLs
           finalImageUrls = imageUrls.map((url) => {
@@ -202,7 +206,6 @@ export default function ProductModal({
           setImageUrls(finalImageUrls);
         }
       } catch (error: unknown) {
-
         toast.error(
           error instanceof Error ? error.message : "Lỗi khi tải lên hình ảnh"
         );
@@ -461,6 +464,17 @@ export default function ProductModal({
             {errors.images && (
               <p className="text-red-500 text-sm mt-1">{errors.images}</p>
             )}
+          </div>
+
+          {/* VIP Status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Trạng thái VIP
+            </label>
+            <VipToggle
+              value={formData.isVip}
+              onChange={(isVip) => updateField("isVip", isVip)}
+            />
           </div>
 
           {/* Submit Buttons */}

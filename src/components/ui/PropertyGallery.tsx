@@ -2,13 +2,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ImageModal } from "./ImageModal";
+import { VipBadge } from "./VipBadge";
 
 interface PropertyGalleryProps {
   images: string[];
   title: string;
+  isVip?: boolean;
 }
 
-export function PropertyGallery({ images, title }: PropertyGalleryProps) {
+export function PropertyGallery({
+  images,
+  title,
+  isVip = false,
+}: PropertyGalleryProps) {
   const [currentImage, setCurrentImage] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -191,6 +197,13 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
                 target.src = "/images/placeholder-product.jpg";
               }}
             />
+
+            {/* VIP Badge - positioned at top right */}
+            {isVip && (
+              <div className="absolute top-4 right-4 z-10">
+                <VipBadge size="lg" />
+              </div>
+            )}
 
             {/* Navigation buttons - Only show if more than 1 image */}
             {images.length > 1 && (

@@ -82,8 +82,7 @@ export function AddressManager({ customerId }: AddressManagerProps) {
       if (result.success && result.data.addresses) {
         setAddresses(result.data.addresses);
       }
-    } catch (error) {
-
+    } catch {
       setAddresses([]);
     } finally {
       setLoading(false);
@@ -144,7 +143,6 @@ export function AddressManager({ customerId }: AddressManagerProps) {
 
   const handleSave = async () => {
     if (!validateForm() || !token) {
-
       return;
     }
 
@@ -222,8 +220,7 @@ export function AddressManager({ customerId }: AddressManagerProps) {
         isDefault: false,
       });
     } catch (error) {
-
-      toast.error("Có lỗi xảy ra khi lưu địa chỉ");
+      toast.error(`Có lỗi xảy ra khi lưu địa chỉ, ${error}`);
     }
   };
 
@@ -275,8 +272,7 @@ export function AddressManager({ customerId }: AddressManagerProps) {
         toast.success("Đã xóa địa chỉ thành công");
       }
     } catch (error) {
-
-      toast.error("Có lỗi xảy ra khi xóa địa chỉ");
+      toast.error(`Có lỗi xảy ra khi xóa địa chỉ, ${error}`);
     }
   };
 
@@ -324,7 +320,6 @@ export function AddressManager({ customerId }: AddressManagerProps) {
       if (result.success) {
         // Success - the optimistic update was correct, no need to fetch again
         toast.success("Đã đặt làm địa chỉ mặc định thành công");
-
       } else {
         // API returned success: false, rollback
         setAddresses(originalAddresses);
@@ -335,7 +330,7 @@ export function AddressManager({ customerId }: AddressManagerProps) {
       // Network error, rollback to original state
       setAddresses(originalAddresses);
 
-      toast.error("Có lỗi xảy ra khi đặt địa chỉ mặc định");
+      toast.error(`Có lỗi xảy ra khi đặt địa chỉ mặc định, ${error}`);
     } finally {
       setActionLoading(null);
     }

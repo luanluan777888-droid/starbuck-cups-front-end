@@ -36,8 +36,7 @@ export async function GET(request: NextRequest) {
       data: data.data,
       error: null,
     });
-  } catch (error) {
-
+  } catch {
     return NextResponse.json(
       {
         success: false,

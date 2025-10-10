@@ -4,7 +4,7 @@ import { getApiUrl } from "@/lib/api-config";
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
-    
+
     if (!authHeader) {
       return NextResponse.json(
         { success: false, error: "No authorization header" },
@@ -30,8 +30,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(data);
-  } catch (error) {
-
+  } catch {
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 }

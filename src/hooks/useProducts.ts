@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import type {
-  Category,
-  Color,
-  Capacity,
-  CapacityRange,
-} from "@/types";
+import type { Category, Color, Capacity, CapacityRange } from "@/types";
 
 interface UseProductsReturn {
   // Filter options data
@@ -117,7 +112,9 @@ export function useProducts(): UseProductsReturn {
         ) {
           setCapacities(capacitiesData.data.items);
         }
-      } catch (error) {}
+      } catch {
+        // Silently handle fetch errors
+      }
     };
 
     fetchFilterOptions();
@@ -127,6 +124,27 @@ export function useProducts(): UseProductsReturn {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
+
+  // Sync state with URL params when they change
+  useEffect(() => {
+    if (!isHydrated) return; // Wait for hydration
+
+    const search = searchParams.get("search") || "";
+    const category = searchParams.get("category") || "";
+    const color = searchParams.get("color") || "";
+    const minCapacity = parseInt(searchParams.get("minCapacity") || "0");
+    const maxCapacity = parseInt(searchParams.get("maxCapacity") || "9999");
+    const sort = searchParams.get("sort") || "newest";
+    const page = parseInt(searchParams.get("page") || "1");
+
+    // Update state to match URL params
+    setSearchQuery(search);
+    setSelectedCategory(category);
+    setSelectedColor(color);
+    setCapacityRange({ min: minCapacity, max: maxCapacity });
+    setSortBy(sort);
+    setCurrentPage(page);
+  }, [searchParams, isHydrated]);
 
   // Update URL with current filter state
   const updateURL = (newFilters: {

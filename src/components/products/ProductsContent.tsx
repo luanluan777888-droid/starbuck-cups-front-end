@@ -1,7 +1,7 @@
 import ProductsGrid from "@/components/ProductsGrid";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { FilterBadges } from "@/components/products/FilterBadges";
-import type { CapacityRange, Category, Color, Capacity } from "@/types";
+import type { CapacityRange, Category, Color } from "@/types";
 
 interface ProductsContentProps {
   searchQuery: string;
@@ -12,7 +12,6 @@ interface ProductsContentProps {
   currentPage: number;
   categories: Category[];
   colors: Color[];
-  capacities: Capacity[];
   onPageChange: (page: number) => void;
   onRemoveSearch: () => void;
   onRemoveCategory: () => void;
@@ -31,7 +30,6 @@ export function ProductsContent({
   currentPage,
   categories,
   colors,
-  capacities,
   onPageChange,
   onRemoveSearch,
   onRemoveCategory,
@@ -44,10 +42,7 @@ export function ProductsContent({
     <div className="lg:w-full space-y-6">
       {/* Breadcrumb */}
       <Breadcrumb
-        items={[
-          { label: "Trang chủ", href: "/" },
-          { label: "Sản phẩm" },
-        ]}
+        items={[{ label: "Trang chủ", href: "/" }, { label: "Sản phẩm" }]}
       />
 
       {/* Filter Badges */}
@@ -59,7 +54,6 @@ export function ProductsContent({
         sortBy={sortBy}
         categories={categories}
         colors={colors}
-        capacities={capacities}
         onRemoveSearch={onRemoveSearch}
         onRemoveCategory={onRemoveCategory}
         onRemoveColor={onRemoveColor}

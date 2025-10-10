@@ -21,8 +21,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
 
     return NextResponse.json(data, { status: response.status });
-  } catch (error) {
-
+  } catch {
     return NextResponse.json(
       { success: false, message: "Failed to fetch hero images" },
       { status: 500 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAppSelector } from "@/store";
-import type { Product, PaginationMeta } from "@/types";
+import type { PaginationMeta } from "@/types";
 
 export interface LowStockProduct {
   id: string;
@@ -71,7 +71,9 @@ export const useLowStock = (
         );
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch low stock products: ${response.status}`);
+          throw new Error(
+            `Failed to fetch low stock products: ${response.status}`
+          );
         }
 
         const result = await response.json();
@@ -80,10 +82,13 @@ export const useLowStock = (
           setProducts(result.data.items || []);
           setPagination(result.data.pagination || null);
         } else {
-          throw new Error(result.message || "Failed to fetch low stock products");
+          throw new Error(
+            result.message || "Failed to fetch low stock products"
+          );
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "An error occurred";
+        const errorMessage =
+          err instanceof Error ? err.message : "An error occurred";
         setError(errorMessage);
         setProducts([]);
         setPagination(null);

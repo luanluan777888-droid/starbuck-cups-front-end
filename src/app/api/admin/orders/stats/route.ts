@@ -16,7 +16,6 @@ function getAuthHeaders(request: NextRequest): Record<string, string> {
 // GET /api/admin/orders/stats - Get order statistics
 export async function GET(request: NextRequest) {
   try {
-
     const response = await fetch(getApiUrl("admin/orders/stats"), {
       method: "GET",
       headers: getAuthHeaders(request),
@@ -25,8 +24,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
 
     return NextResponse.json(data, { status: response.status });
-  } catch (error) {
-
+  } catch {
     return NextResponse.json(
       { success: false, message: "Failed to fetch order statistics" },
       { status: 500 }

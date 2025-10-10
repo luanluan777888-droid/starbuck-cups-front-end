@@ -42,7 +42,6 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({
-  categories,
   heroImages = [],
   promotionalBanner = null,
   loading = false,

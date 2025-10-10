@@ -33,6 +33,7 @@ export interface Product {
   stockQuantity: number;
   productUrl?: string;
   isActive: boolean;
+  isVip?: boolean; // ✅ NEW FIELD for VIP products
   createdAt: string;
   updatedAt: string;
   productCategories?: { category: Category }[];
