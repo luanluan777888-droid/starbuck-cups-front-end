@@ -13,6 +13,7 @@ interface UseProductsReturn {
   // State
   isHydrated: boolean;
   searchQuery: string;
+  debouncedSearchQuery: string;
   selectedCategory: string;
   selectedColor: string;
   capacityRange: CapacityRange;
@@ -60,6 +61,9 @@ export function useProducts(): UseProductsReturn {
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || ""
   );
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
   const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get("category") || ""
   );
@@ -82,8 +86,9 @@ export function useProducts(): UseProductsReturn {
   const [colors, setColors] = useState<Color[]>([]);
   const [capacities, setCapacities] = useState<Capacity[]>([]);
 
-  // Debounce timer ref
+  // Debounce timer refs
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const searchDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch filter options (categories, colors, capacities)
   useEffect(() => {
@@ -137,6 +142,23 @@ export function useProducts(): UseProductsReturn {
     setIsHydrated(true);
   }, []);
 
+  // Debounce search query for API calls (500ms delay)
+  useEffect(() => {
+    if (searchDebounceTimerRef.current) {
+      clearTimeout(searchDebounceTimerRef.current);
+    }
+
+    searchDebounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+
+    return () => {
+      if (searchDebounceTimerRef.current) {
+        clearTimeout(searchDebounceTimerRef.current);
+      }
+    };
+  }, [searchQuery]);
+
   // Sync state with URL params when they change
   useEffect(() => {
     if (!isHydrated) return; // Wait for hydration
@@ -151,6 +173,7 @@ export function useProducts(): UseProductsReturn {
 
     // Update state to match URL params
     setSearchQuery(search);
+    setDebouncedSearchQuery(search); // Also update debounced version immediately when URL changes
     setSelectedCategory(category);
     setSelectedColor(color);
     setCapacityRange({ min: minCapacity, max: maxCapacity });
@@ -254,6 +277,7 @@ export function useProducts(): UseProductsReturn {
     // State
     isHydrated,
     searchQuery,
+    debouncedSearchQuery,
     selectedCategory,
     selectedColor,
     capacityRange,

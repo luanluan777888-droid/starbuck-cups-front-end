@@ -16,6 +16,7 @@ export default function ProductsPage() {
 
     // State
     searchQuery,
+    debouncedSearchQuery,
     selectedCategory,
     selectedColor,
     capacityRange,
@@ -164,6 +165,7 @@ export default function ProductsPage() {
             {/* Products Grid */}
             <ProductsContent
               searchQuery={searchQuery}
+              debouncedSearchQuery={debouncedSearchQuery}
               selectedCategory={selectedCategory}
               selectedColor={selectedColor}
               capacityRange={capacityRange}

@@ -5,6 +5,7 @@ import type { CapacityRange, Category, Color } from "@/types";
 
 interface ProductsContentProps {
   searchQuery: string;
+  debouncedSearchQuery: string;
   selectedCategory: string;
   selectedColor: string;
   capacityRange: CapacityRange;
@@ -23,6 +24,7 @@ interface ProductsContentProps {
 
 export function ProductsContent({
   searchQuery,
+  debouncedSearchQuery,
   selectedCategory,
   selectedColor,
   capacityRange,
@@ -64,7 +66,7 @@ export function ProductsContent({
 
       {/* Products Grid */}
       <ProductsGrid
-        searchQuery={searchQuery}
+        searchQuery={debouncedSearchQuery}
         selectedCategory={selectedCategory}
         selectedColor={selectedColor}
         capacityRange={capacityRange}
