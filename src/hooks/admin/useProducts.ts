@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import type {
   Product,
@@ -16,6 +16,7 @@ interface ProductListItem extends Product {
 
 interface ProductFilters {
   search: string;
+  category: string;
   color: string;
   minCapacity: string;
   maxCapacity: string;
@@ -115,6 +116,7 @@ export function useProducts(): UseProductsReturn {
 
   const [filters, setFilters] = useState<ProductFilters>({
     search: "",
+    category: "",
     color: "",
     minCapacity: "",
     maxCapacity: "",
@@ -122,6 +124,10 @@ export function useProducts(): UseProductsReturn {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
+
+  // Debounced search query
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const searchDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [pagination, setPagination] = useState<PaginationMeta>({
     current_page: 1,
@@ -137,6 +143,23 @@ export function useProducts(): UseProductsReturn {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
+  // Debounce search query (500ms delay)
+  useEffect(() => {
+    if (searchDebounceTimerRef.current) {
+      clearTimeout(searchDebounceTimerRef.current);
+    }
+
+    searchDebounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(filters.search);
+    }, 500);
+
+    return () => {
+      if (searchDebounceTimerRef.current) {
+        clearTimeout(searchDebounceTimerRef.current);
+      }
+    };
+  }, [filters.search]);
+
   const loadProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -144,7 +167,8 @@ export function useProducts(): UseProductsReturn {
       const params = new URLSearchParams({
         page: pagination.current_page.toString(),
         limit: pagination.per_page.toString(),
-        ...(filters.search && { search: filters.search }),
+        ...(debouncedSearch && { search: debouncedSearch }),
+        ...(filters.category && { categorySlug: filters.category }),
         ...(filters.color && { colorSlug: filters.color }),
         ...(filters.minCapacity && { minCapacity: filters.minCapacity }),
         ...(filters.maxCapacity && { maxCapacity: filters.maxCapacity }),
@@ -193,7 +217,7 @@ export function useProducts(): UseProductsReturn {
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.current_page, pagination.per_page]);
+  }, [debouncedSearch, filters.category, filters.color, filters.minCapacity, filters.maxCapacity, filters.status, filters.sortBy, filters.sortOrder, pagination.current_page, pagination.per_page]);
 
   const loadFilterOptions = useCallback(async () => {
     try {
