@@ -33,13 +33,15 @@ export default function ProductsPage() {
     setSortBy,
     setCurrentPage,
     updateURL,
+    debouncedUpdateURL,
     clearFilters,
   } = useProducts();
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
     setCurrentPage(1);
-    updateURL({ search: value, page: 1 });
+    // Use debounced update for search - wait 300ms after user stops typing
+    debouncedUpdateURL({ search: value, page: 1 });
   };
 
   const handleCategoryChange = (value: string) => {
@@ -57,7 +59,8 @@ export default function ProductsPage() {
   const handleCapacityRangeChange = (range: CapacityRange) => {
     setCapacityRange(range);
     setCurrentPage(1);
-    updateURL({
+    // Use debounced update for capacity - wait 300ms after user stops typing
+    debouncedUpdateURL({
       minCapacity: range.min > 0 ? range.min : undefined,
       maxCapacity: range.max < 9999 ? range.max : undefined,
       page: 1,
@@ -82,6 +85,7 @@ export default function ProductsPage() {
   const handleRemoveSearch = () => {
     setSearchQuery("");
     setCurrentPage(1);
+    // Immediate update when removing filter
     updateURL({ search: "", page: 1 });
   };
 

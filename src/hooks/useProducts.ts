@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { Category, Color, Capacity, CapacityRange } from "@/types";
 
@@ -41,6 +41,15 @@ interface UseProductsReturn {
     sort?: string;
     page?: number;
   }) => void;
+  debouncedUpdateURL: (newFilters: {
+    search?: string;
+    category?: string;
+    color?: string;
+    minCapacity?: number;
+    maxCapacity?: number;
+    sort?: string;
+    page?: number;
+  }) => void;
 }
 
 export function useProducts(): UseProductsReturn {
@@ -72,6 +81,9 @@ export function useProducts(): UseProductsReturn {
   const [categories, setCategories] = useState<Category[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [capacities, setCapacities] = useState<Capacity[]>([]);
+
+  // Debounce timer ref
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch filter options (categories, colors, capacities)
   useEffect(() => {
@@ -147,7 +159,7 @@ export function useProducts(): UseProductsReturn {
   }, [searchParams, isHydrated]);
 
   // Update URL with current filter state
-  const updateURL = (newFilters: {
+  const updateURL = useCallback((newFilters: {
     search?: string;
     category?: string;
     color?: string;
@@ -183,7 +195,37 @@ export function useProducts(): UseProductsReturn {
       ? `/products?${params.toString()}`
       : "/products";
     router.replace(newURL, { scroll: false });
-  };
+  }, [searchQuery, selectedCategory, selectedColor, capacityRange, sortBy, currentPage, router]);
+
+  // Debounced version of updateURL (300ms delay)
+  const debouncedUpdateURL = useCallback((newFilters: {
+    search?: string;
+    category?: string;
+    color?: string;
+    minCapacity?: number;
+    maxCapacity?: number;
+    sort?: string;
+    page?: number;
+  }) => {
+    // Clear previous timeout
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Set new timeout
+    debounceTimerRef.current = setTimeout(() => {
+      updateURL(newFilters);
+    }, 300);
+  }, [updateURL]);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -232,5 +274,6 @@ export function useProducts(): UseProductsReturn {
     setCurrentPage,
     clearFilters,
     updateURL,
+    debouncedUpdateURL,
   };
 }
