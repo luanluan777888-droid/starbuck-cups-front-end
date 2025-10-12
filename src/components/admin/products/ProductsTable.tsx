@@ -11,6 +11,7 @@ import Image from "next/image";
 import type { Product } from "@/types";
 import { ProductStatusBadge } from "@/components/admin/products/ProductStatusBadge";
 import { getFirstProductImage } from "@/lib/utils/image";
+import { ConditionalVipBadge } from "@/components/ui/VipBadge";
 
 interface ProductCategory {
   category: {
@@ -185,7 +186,7 @@ export function ProductsTable({
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-12 w-12">
+                      <div className="flex-shrink-0 h-12 w-12 relative">
                         {firstImage ? (
                           <Image
                             src={firstImage.url}
@@ -210,6 +211,10 @@ export function ProductsTable({
                           }}
                         >
                           <ImageIcon className="w-6 h-6 text-gray-400" />
+                        </div>
+                        {/* VIP Badge */}
+                        <div className="absolute -top-1 -right-1 z-10">
+                          <ConditionalVipBadge product={product} size="sm" />
                         </div>
                       </div>
                       <div className="ml-4">
