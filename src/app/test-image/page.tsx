@@ -1,103 +1,130 @@
 'use client';
 
-import Image from 'next/image';
-import { useState } from 'react';
+import { PropertyGallery } from '@/components/ui/PropertyGallery';
 
 export default function TestImagePage() {
-  const [imageUrl] = useState('https://lh3.googleusercontent.com/d/1NQQnpAWZbuwb1j11l-o19ENLmQnTGpRe=w2000');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Test images from Google Drive
+  const testImages = [
+    {
+      id: 'b07f8c31-5cbb-4f97-baaf-14ce337de659',
+      url: 'https://drive.google.com/uc?export=view&id=1vUnGK7HBcMN-ezuFi83ISKEYNxNVCLGR',
+      altText: 'Ly dion chim sẻ trắng nhủ Collection Wild Nordic-tag CHINA(591ml)',
+      order: 0,
+    },
+    {
+      id: 'f2914cb4-9d97-4afc-90b4-c5d53472c774',
+      url: 'https://drive.google.com/uc?export=view&id=17B-34odkC34R5SB8m8OPUifjmSlYUqfk',
+      altText: 'Ly dion chim sẻ trắng nhủ Collection Wild Nordic-tag CHINA(591ml)',
+      order: 1,
+    },
+    {
+      id: '8c66f1ab-47c2-4b61-b9cc-90725b14565a',
+      url: 'https://drive.google.com/uc?export=view&id=1SzxR5y3Uv4UsM_8zknQvkhP1VU9LRFJB',
+      altText: 'Ly dion chim sẻ trắng nhủ Collection Wild Nordic-tag CHINA(591ml)',
+      order: 2,
+    },
+  ];
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Test Google Drive Image Display</h1>
+    <div className="min-h-screen bg-black text-white">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6 text-white">
+          Test Google Drive Images Gallery
+        </h1>
 
-      <div className="space-y-8">
-        {/* Test với thẻ img thông thường */}
-        <div className="border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">1. HTML img tag (Direct)</h2>
-          <img
-            src={imageUrl}
-            alt="Test Google Drive"
-            className="max-w-full h-auto"
-            onLoad={() => {
-              console.log('HTML img loaded successfully');
-              setLoading(false);
-            }}
-            onError={(e) => {
-              console.error('HTML img failed to load', e);
-              setError('Failed to load with HTML img tag');
-            }}
-          />
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Product Gallery Component */}
+          <div>
+            <h2 className="text-xl font-semibold mb-4 text-white">
+              PropertyGallery Component (như trang sản phẩm)
+            </h2>
+            <PropertyGallery
+              images={testImages.map((img) => img.url)}
+              title="Ly dion chim sẻ trắng nhủ Collection Wild Nordic"
+              isVip={true}
+            />
+          </div>
 
-        {/* Test với Next.js Image component - unoptimized */}
-        <div className="border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">2. Next.js Image (Unoptimized)</h2>
-          <Image
-            src={imageUrl}
-            alt="Test Google Drive"
-            width={800}
-            height={600}
-            unoptimized
-            className="max-w-full h-auto"
-            onLoad={() => console.log('Next.js Image (unoptimized) loaded successfully')}
-            onError={(e) => console.error('Next.js Image (unoptimized) failed to load', e)}
-          />
-        </div>
+          {/* Info Section */}
+          <div className="space-y-4">
+            <div className="border border-zinc-700 p-4 rounded-lg bg-zinc-900">
+              <h2 className="text-xl font-semibold mb-4 text-white">
+                Thông tin Test
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-zinc-400 text-sm mb-2">
+                    Số lượng ảnh: {testImages.length}
+                  </p>
+                </div>
 
-        {/* Test với iframe */}
-        <div className="border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">3. iframe (Direct)</h2>
-          <iframe
-            src={imageUrl}
-            className="w-full h-96 border"
-            title="Google Drive Image"
-          />
-        </div>
-
-        {/* Test với background-image */}
-        <div className="border p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">4. CSS Background Image</h2>
-          <div
-            style={{
-              backgroundImage: `url(${imageUrl})`,
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center'
-            }}
-            className="w-full h-96 border"
-          />
-        </div>
-
-        {/* Thông tin */}
-        <div className="border p-4 rounded-lg bg-gray-50">
-          <h2 className="text-xl font-semibold mb-4">Image URL Info</h2>
-          <p className="mb-2"><strong>URL:</strong></p>
-          <code className="block bg-white p-2 rounded break-all">{imageUrl}</code>
-
-          {error && (
-            <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
-              {error}
+                <div>
+                  <p className="text-zinc-400 text-sm mb-2">URLs được test:</p>
+                  <div className="space-y-2">
+                    {testImages.map((img, index) => (
+                      <div
+                        key={img.id}
+                        className="bg-zinc-800 p-2 rounded text-xs break-all"
+                      >
+                        <p className="text-zinc-500 mb-1">Image {index + 1}:</p>
+                        <code className="text-zinc-300">{img.url}</code>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
 
-          {loading && (
-            <div className="mt-4 p-3 bg-blue-100 text-blue-700 rounded">
-              Loading image...
+            <div className="border border-zinc-700 p-4 rounded-lg bg-zinc-900">
+              <h2 className="text-xl font-semibold mb-4 text-white">
+                Tính năng Gallery
+              </h2>
+              <ul className="list-disc list-inside space-y-2 text-zinc-300 text-sm">
+                <li>
+                  Click vào ảnh chính để mở modal fullscreen
+                </li>
+                <li>
+                  Swipe hoặc dùng nút mũi tên để chuyển ảnh
+                </li>
+                <li>
+                  Click vào thumbnail để chuyển đến ảnh đó
+                </li>
+                <li>
+                  Trong modal: scroll chuột để zoom, kéo để di chuyển
+                </li>
+                <li>
+                  Phím mũi tên trái/phải để chuyển ảnh
+                </li>
+                <li>
+                  Phím ESC để đóng modal
+                </li>
+                <li>
+                  Badge VIP hiển thị ở góc trên bên phải
+                </li>
+              </ul>
             </div>
-          )}
-        </div>
 
-        {/* Hướng dẫn */}
-        <div className="border p-4 rounded-lg bg-yellow-50">
-          <h2 className="text-xl font-semibold mb-4">Notes</h2>
-          <ul className="list-disc list-inside space-y-2">
-            <li>Tất cả các phương thức trên đều render trực tiếp từ Google Drive, không qua Next.js server</li>
-            <li>Kiểm tra Console để xem log khi ảnh load thành công/thất bại</li>
-            <li>Google Drive có thể block request từ một số domain hoặc yêu cầu authentication</li>
-            <li>Format URL: <code>https://lh3.googleusercontent.com/d/FILE_ID=w2000</code></li>
-          </ul>
+            <div className="border border-yellow-500/30 p-4 rounded-lg bg-yellow-500/5">
+              <h2 className="text-xl font-semibold mb-4 text-yellow-400">
+                Lưu ý
+              </h2>
+              <ul className="list-disc list-inside space-y-2 text-zinc-300 text-sm">
+                <li>
+                  Tất cả ảnh được load trực tiếp từ Google Drive
+                </li>
+                <li>
+                  Sử dụng Next.js Image component với unoptimized (không qua
+                  Next.js server)
+                </li>
+                <li>
+                  Kiểm tra Console để xem log load ảnh
+                </li>
+                <li>
+                  Format URL Google Drive: drive.google.com/uc?export=view&id=FILE_ID
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
