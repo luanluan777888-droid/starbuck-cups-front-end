@@ -32,6 +32,49 @@ interface Product {
   }>;
 }
 
+const DRIVE_HOSTNAMES = new Set([
+  "drive.google.com",
+  "docs.google.com",
+]);
+
+function convertDriveUrl(originalUrl: string): string {
+  if (!originalUrl) {
+    return originalUrl;
+  }
+
+  try {
+    const url = new URL(originalUrl);
+
+    if (url.hostname === "lh3.googleusercontent.com") {
+      return originalUrl;
+    }
+
+    if (!DRIVE_HOSTNAMES.has(url.hostname)) {
+      return originalUrl;
+    }
+
+    let id = url.searchParams.get("id");
+
+    if (!id && url.pathname.includes("/d/")) {
+      const parts = url.pathname.split("/");
+      const idIndex = parts.findIndex((part) => part === "d");
+
+      if (idIndex !== -1 && parts[idIndex + 1]) {
+        id = parts[idIndex + 1];
+      }
+    }
+
+    if (!id) {
+      return originalUrl;
+    }
+
+    return `https://lh3.googleusercontent.com/d/${id}`;
+  } catch (error) {
+    console.warn("convertDriveUrl failed for url:", originalUrl, error);
+    return originalUrl;
+  }
+}
+
 export default function TestImagePage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +85,9 @@ export default function TestImagePage() {
   );
   const [curlHeadersError, setCurlHeadersError] = useState<string | null>(null);
   const [curlHeadersLoading, setCurlHeadersLoading] = useState(false);
+  const testDriveUrl =
+    "https://drive.google.com/uc?export=view&id=1vUnGK7HBcMN-ezuFi83ISKEYNxNVCLGR";
+  const normalizedTestDriveUrl = convertDriveUrl(testDriveUrl);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -83,7 +129,7 @@ export default function TestImagePage() {
       setCurlHeaders(null);
 
       const response = await fetch(
-        "https://lh3.googleusercontent.com/d/1vUnGK7HBcMN-ezuFi83ISKEYNxNVCLGR",
+        normalizedTestDriveUrl,
         { method: "HEAD" }
       );
 
@@ -101,7 +147,7 @@ export default function TestImagePage() {
     } finally {
       setCurlHeadersLoading(false);
     }
-  }, []);
+  }, [normalizedTestDriveUrl]);
 
   useEffect(() => {
     fetchCurlHeaders();
@@ -137,7 +183,13 @@ export default function TestImagePage() {
     );
   }
 
-  const images = product.productImages?.sort((a, b) => a.order - b.order) || [];
+  const images =
+    product.productImages
+      ?.map((image) => ({
+        ...image,
+        url: convertDriveUrl(image.url),
+      }))
+      .sort((a, b) => a.order - b.order) || [];
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -331,7 +383,9 @@ export default function TestImagePage() {
         {/* curl -I Debug */}
         <div className="mt-8 bg-zinc-900 p-4 rounded-lg">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <h3 className="font-semibold">curl -I https://lh3.googleusercontent.com/d/1vUnGK7HBcMN-ezuFi83ISKEYNxNVCLGR</h3>
+            <h3 className="font-semibold">
+              curl -I {normalizedTestDriveUrl}
+            </h3>
             <button
               onClick={fetchCurlHeaders}
               className="px-3 py-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-sm transition"
@@ -347,6 +401,9 @@ export default function TestImagePage() {
           )}
           {curlHeaders && Object.keys(curlHeaders).length > 0 && (
             <div className="mt-3 space-y-1 text-sm text-zinc-300">
+              <p className="text-zinc-500">
+                Gốc Drive: <span className="text-zinc-300 break-all">{testDriveUrl}</span>
+              </p>
               {Object.entries(curlHeaders).map(([key, value]) => (
                 <p key={key}>
                   <span className="text-zinc-400">{key}:</span>{" "}
