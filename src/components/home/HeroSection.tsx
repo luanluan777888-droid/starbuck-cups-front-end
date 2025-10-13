@@ -171,7 +171,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
           {/* Hero carousel - lazy loaded sau LCP */}
           <div className="lg:col-span-2 order-1 lg:order-2">
-            <div className="h-64 md:h-96 lg:h-[500px] rounded-2xl md:rounded-3xl overflow-hidden bg-zinc-900">
+            <div className="h-64 md:h-96 lg:h-full rounded-2xl md:rounded-3xl overflow-hidden bg-zinc-900">
               {!showSwiper ? (
                 // Fast loading fallback - skeleton placeholder
                 <div className="relative h-full bg-gray-200 rounded-2xl md:rounded-3xl animate-pulse" />
