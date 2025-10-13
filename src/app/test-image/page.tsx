@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface ProductImage {
   id: string;
@@ -37,6 +37,11 @@ export default function TestImagePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [curlHeaders, setCurlHeaders] = useState<Record<string, string> | null>(
+    null
+  );
+  const [curlHeadersError, setCurlHeadersError] = useState<string | null>(null);
+  const [curlHeadersLoading, setCurlHeadersLoading] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -70,6 +75,37 @@ export default function TestImagePage() {
 
     fetchProduct();
   }, []);
+
+  const fetchCurlHeaders = useCallback(async () => {
+    try {
+      setCurlHeadersLoading(true);
+      setCurlHeadersError(null);
+      setCurlHeaders(null);
+
+      const response = await fetch(
+        "https://lh3.googleusercontent.com/d/1vUnGK7HBcMN-ezuFi83ISKEYNxNVCLGR",
+        { method: "HEAD" }
+      );
+
+      const headers: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+
+      setCurlHeaders(headers);
+    } catch (err) {
+      console.error("curl -I request failed:", err);
+      setCurlHeadersError(
+        err instanceof Error ? err.message : "Unknown error"
+      );
+    } finally {
+      setCurlHeadersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCurlHeaders();
+  }, [fetchCurlHeaders]);
 
   if (loading) {
     return (
@@ -290,6 +326,42 @@ export default function TestImagePage() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* curl -I Debug */}
+        <div className="mt-8 bg-zinc-900 p-4 rounded-lg">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="font-semibold">curl -I https://lh3.googleusercontent.com/d/1vUnGK7HBcMN-ezuFi83ISKEYNxNVCLGR</h3>
+            <button
+              onClick={fetchCurlHeaders}
+              className="px-3 py-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-sm transition"
+              disabled={curlHeadersLoading}
+            >
+              {curlHeadersLoading ? "Đang kiểm tra..." : "Kiểm tra lại"}
+            </button>
+          </div>
+          {curlHeadersError && (
+            <p className="mt-2 text-sm text-red-400">
+              Lỗi: {curlHeadersError}
+            </p>
+          )}
+          {curlHeaders && Object.keys(curlHeaders).length > 0 && (
+            <div className="mt-3 space-y-1 text-sm text-zinc-300">
+              {Object.entries(curlHeaders).map(([key, value]) => (
+                <p key={key}>
+                  <span className="text-zinc-400">{key}:</span>{" "}
+                  <span className="text-zinc-100">{value}</span>
+                </p>
+              ))}
+            </div>
+          )}
+          {curlHeaders &&
+            Object.keys(curlHeaders).length === 0 &&
+            !curlHeadersError && (
+              <p className="mt-2 text-sm text-zinc-400">
+                Không nhận được header nào từ phản hồi.
+              </p>
+            )}
         </div>
 
         {/* Debug Info */}
