@@ -1,130 +1,309 @@
-'use client';
+"use client";
 
-import { PropertyGallery } from '@/components/ui/PropertyGallery';
+import { useState, useEffect } from "react";
+
+interface ProductImage {
+  id: string;
+  url: string;
+  altText: string;
+  order: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  isVip: boolean;
+  productImages: ProductImage[];
+  capacity?: {
+    name: string;
+    volumeMl: number;
+  };
+  productColors?: Array<{
+    color: {
+      name: string;
+      hexCode: string;
+    };
+  }>;
+  productCategories?: Array<{
+    category: {
+      name: string;
+    };
+  }>;
+}
 
 export default function TestImagePage() {
-  // Test images from Google Drive
-  const testImages = [
-    {
-      id: 'b07f8c31-5cbb-4f97-baaf-14ce337de659',
-      url: 'https://drive.google.com/uc?export=view&id=1vUnGK7HBcMN-ezuFi83ISKEYNxNVCLGR',
-      altText: 'Ly dion chim sẻ trắng nhủ Collection Wild Nordic-tag CHINA(591ml)',
-      order: 0,
-    },
-    {
-      id: 'f2914cb4-9d97-4afc-90b4-c5d53472c774',
-      url: 'https://drive.google.com/uc?export=view&id=17B-34odkC34R5SB8m8OPUifjmSlYUqfk',
-      altText: 'Ly dion chim sẻ trắng nhủ Collection Wild Nordic-tag CHINA(591ml)',
-      order: 1,
-    },
-    {
-      id: '8c66f1ab-47c2-4b61-b9cc-90725b14565a',
-      url: 'https://drive.google.com/uc?export=view&id=1SzxR5y3Uv4UsM_8zknQvkhP1VU9LRFJB',
-      altText: 'Ly dion chim sẻ trắng nhủ Collection Wild Nordic-tag CHINA(591ml)',
-      order: 2,
-    },
-  ];
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch(
+          "/api/products/public/ly-dion-chim-se-trang-nhu-collection-wild-nordic-tag-china591ml-trang-kem-beige-venti-20oz-591ml"
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        if (data.success && data.data) {
+          setProduct(data.data);
+        } else {
+          throw new Error("Invalid API response structure");
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p>Đang tải sản phẩm...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">Lỗi</h1>
+          <p className="text-red-400">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p>Không tìm thấy sản phẩm</p>
+      </div>
+    );
+  }
+
+  const images = product.productImages?.sort((a, b) => a.order - b.order) || [];
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-white">
-          Test Google Drive Images Gallery
+    <div className="min-h-screen bg-black text-white p-8">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 text-center">
+          Test Hiển Thị Ảnh Sản Phẩm (Không Next.js Image)
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Product Gallery Component */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-white">
-              PropertyGallery Component (như trang sản phẩm)
-            </h2>
-            <PropertyGallery
-              images={testImages.map((img) => img.url)}
-              title="Ly dion chim sẻ trắng nhủ Collection Wild Nordic"
-              isVip={true}
-            />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Image Gallery */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="relative bg-zinc-900 rounded-lg overflow-hidden aspect-square">
+              {images.length > 0 ? (
+                <img
+                  src={images[currentImageIndex]?.url}
+                  alt={images[currentImageIndex]?.altText || product.name}
+                  className="w-full h-full object-contain"
+                  style={{ imageRendering: "auto" }}
+                  onError={(e) => {
+                    console.error(
+                      "Image failed to load:",
+                      images[currentImageIndex]?.url
+                    );
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/images/placeholder.png";
+                  }}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <span className="text-zinc-400">Không có hình ảnh</span>
+                </div>
+              )}
+
+              {/* VIP Badge */}
+              {product.isVip && (
+                <div className="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold">
+                  VIP
+                </div>
+              )}
+
+              {/* Image Counter */}
+              {images.length > 1 && (
+                <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                  {currentImageIndex + 1} / {images.length}
+                </div>
+              )}
+
+              {/* Navigation Arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={() =>
+                      setCurrentImageIndex((prev) =>
+                        prev > 0 ? prev - 1 : images.length - 1
+                      )
+                    }
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full"
+                  >
+                    ←
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCurrentImageIndex((prev) =>
+                        prev < images.length - 1 ? prev + 1 : 0
+                      )
+                    }
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full"
+                  >
+                    →
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Thumbnail Gallery */}
+            {images.length > 1 && (
+              <div className="grid grid-cols-6 gap-2">
+                {images.map((image, index) => (
+                  <button
+                    key={image.id}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                      index === currentImageIndex
+                        ? "border-white"
+                        : "border-transparent hover:border-zinc-500"
+                    }`}
+                  >
+                    <img
+                      src={image.url}
+                      alt={image.altText}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/images/placeholder.png";
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Info Section */}
-          <div className="space-y-4">
-            <div className="border border-zinc-700 p-4 rounded-lg bg-zinc-900">
-              <h2 className="text-xl font-semibold mb-4 text-white">
-                Thông tin Test
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-zinc-400 text-sm mb-2">
-                    Số lượng ảnh: {testImages.length}
-                  </p>
-                </div>
+          {/* Product Info */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
+              <p className="text-zinc-400 text-sm">Slug: {product.slug}</p>
+            </div>
 
-                <div>
-                  <p className="text-zinc-400 text-sm mb-2">URLs được test:</p>
-                  <div className="space-y-2">
-                    {testImages.map((img, index) => (
+            {/* VIP Status */}
+            <div className="flex items-center gap-2">
+              <span className="text-yellow-500">
+                {product.isVip ? "⭐ Sản phẩm VIP" : "📦 Sản phẩm thường"}
+              </span>
+            </div>
+
+            {/* Capacity */}
+            {product.capacity && (
+              <div>
+                <h3 className="font-semibold mb-2">Dung tích:</h3>
+                <p className="text-zinc-300">
+                  {product.capacity.name} ({product.capacity.volumeMl}ml)
+                </p>
+              </div>
+            )}
+
+            {/* Colors */}
+            {product.productColors && product.productColors.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-2">Màu sắc:</h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.productColors.map((pc, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
                       <div
-                        key={img.id}
-                        className="bg-zinc-800 p-2 rounded text-xs break-all"
+                        className="w-6 h-6 rounded-full border border-zinc-600"
+                        style={{ backgroundColor: pc.color.hexCode }}
+                      ></div>
+                      <span className="text-zinc-300">{pc.color.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Categories */}
+            {product.productCategories &&
+              product.productCategories.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2">Danh mục:</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.productCategories.map((pc, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-zinc-800 px-3 py-1 rounded-full text-sm"
                       >
-                        <p className="text-zinc-500 mb-1">Image {index + 1}:</p>
-                        <code className="text-zinc-300">{img.url}</code>
-                      </div>
+                        {pc.category.name}
+                      </span>
                     ))}
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
 
-            <div className="border border-zinc-700 p-4 rounded-lg bg-zinc-900">
-              <h2 className="text-xl font-semibold mb-4 text-white">
-                Tính năng Gallery
-              </h2>
-              <ul className="list-disc list-inside space-y-2 text-zinc-300 text-sm">
-                <li>
-                  Click vào ảnh chính để mở modal fullscreen
-                </li>
-                <li>
-                  Swipe hoặc dùng nút mũi tên để chuyển ảnh
-                </li>
-                <li>
-                  Click vào thumbnail để chuyển đến ảnh đó
-                </li>
-                <li>
-                  Trong modal: scroll chuột để zoom, kéo để di chuyển
-                </li>
-                <li>
-                  Phím mũi tên trái/phải để chuyển ảnh
-                </li>
-                <li>
-                  Phím ESC để đóng modal
-                </li>
-                <li>
-                  Badge VIP hiển thị ở góc trên bên phải
-                </li>
-              </ul>
-            </div>
-
-            <div className="border border-yellow-500/30 p-4 rounded-lg bg-yellow-500/5">
-              <h2 className="text-xl font-semibold mb-4 text-yellow-400">
-                Lưu ý
-              </h2>
-              <ul className="list-disc list-inside space-y-2 text-zinc-300 text-sm">
-                <li>
-                  Tất cả ảnh được load trực tiếp từ Google Drive
-                </li>
-                <li>
-                  Sử dụng Next.js Image component với unoptimized (không qua
-                  Next.js server)
-                </li>
-                <li>
-                  Kiểm tra Console để xem log load ảnh
-                </li>
-                <li>
-                  Format URL Google Drive: drive.google.com/uc?export=view&id=FILE_ID
-                </li>
-              </ul>
+            {/* Image Details */}
+            <div>
+              <h3 className="font-semibold mb-2">Chi tiết ảnh hiện tại:</h3>
+              {images.length > 0 && (
+                <div className="bg-zinc-900 p-4 rounded-lg">
+                  <p>
+                    <strong>URL:</strong>{" "}
+                    <span className="text-blue-400 break-all">
+                      {images[currentImageIndex]?.url}
+                    </span>
+                  </p>
+                  <p>
+                    <strong>Alt Text:</strong>{" "}
+                    {images[currentImageIndex]?.altText}
+                  </p>
+                  <p>
+                    <strong>Order:</strong> {images[currentImageIndex]?.order}
+                  </p>
+                  <p>
+                    <strong>ID:</strong> {images[currentImageIndex]?.id}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
+        </div>
+
+        {/* Debug Info */}
+        <div className="mt-8 bg-zinc-900 p-4 rounded-lg">
+          <h3 className="font-semibold mb-2">Debug Info:</h3>
+          <p>
+            <strong>Total Images:</strong> {images.length}
+          </p>
+          <p>
+            <strong>Current Index:</strong> {currentImageIndex}
+          </p>
+          <p>
+            <strong>Product ID:</strong> {product.id}
+          </p>
         </div>
       </div>
     </div>
