@@ -13,6 +13,7 @@ interface OptimizedImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 
   fill?: boolean;
   sizes?: string;
   className?: string;
+  fetchPriority?: 'high' | 'low' | 'auto';
   onError?: (e: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 }
 
@@ -30,7 +31,9 @@ export default function OptimizedImage({
   fill = false,
   sizes,
   className = '',
+  fetchPriority,
   onError,
+  style,
   ...props
 }: OptimizedImageProps) {
   const [imageSrc, setImageSrc] = useState<string>('');
@@ -77,6 +80,7 @@ export default function OptimizedImage({
         onError={handleError}
         onLoad={handleLoad}
         loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={fetchPriority}
         style={{
           position: 'absolute',
           width: '100%',
@@ -84,6 +88,7 @@ export default function OptimizedImage({
           left: 0,
           top: 0,
           objectFit: 'cover',
+          ...style,
         }}
         {...props}
       />
@@ -100,6 +105,8 @@ export default function OptimizedImage({
       onError={handleError}
       onLoad={handleLoad}
       loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={fetchPriority}
+      style={style}
       {...props}
     />
   );
