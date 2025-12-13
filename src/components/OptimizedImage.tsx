@@ -37,7 +37,6 @@ export default function OptimizedImage({
   ...props
 }: OptimizedImageProps) {
   const [imageSrc, setImageSrc] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Convert Google Drive URLs
@@ -46,18 +45,15 @@ export default function OptimizedImage({
     // For local images (starting with /), use as-is
     if (convertedSrc.startsWith('/') || convertedSrc.startsWith('data:')) {
       setImageSrc(convertedSrc);
-      setIsLoading(false);
       return;
     }
 
     // For remote images, use optimization API
     const optimizedUrl = getOptimizedUrl(convertedSrc, width, quality);
     setImageSrc(optimizedUrl);
-    setIsLoading(false);
   }, [src, width, quality]);
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    setIsLoading(false);
     if (onError) {
       onError(e);
     } else {
@@ -67,18 +63,13 @@ export default function OptimizedImage({
     }
   };
 
-  const handleLoad = () => {
-    setIsLoading(false);
-  };
-
   if (fill) {
     return (
       <img
         src={imageSrc}
         alt={alt}
-        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+        className={className}
         onError={handleError}
-        onLoad={handleLoad}
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={fetchPriority}
         style={{
@@ -101,9 +92,8 @@ export default function OptimizedImage({
       alt={alt}
       width={width}
       height={height}
-      className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+      className={className}
       onError={handleError}
-      onLoad={handleLoad}
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={fetchPriority}
       style={style}
