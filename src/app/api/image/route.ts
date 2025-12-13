@@ -6,16 +6,32 @@ import crypto from 'crypto';
 import { convertDriveUrl } from '@/utils/googleDriveHelper';
 
 // Tạo cache directory
-const CACHE_DIR = path.join(process.cwd(), '.next', 'cache', 'images');
+// Default cache directory
+const DEFAULT_CACHE_DIR = path.join(process.cwd(), '.next', 'cache', 'images');
+
+// Get cache directory based on environment
+function getCacheDir(): string {
+  // In serverless environments (Vercel, AWS Lambda), use /tmp
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return path.join('/tmp', 'image-cache');
+  }
+  // In local/VPS, use .next/cache/images
+  return DEFAULT_CACHE_DIR;
+}
+
+const CACHE_DIR = getCacheDir();
 
 // Ensure cache directory exists
 async function ensureCacheDir() {
   try {
     await fs.access(CACHE_DIR);
   } catch {
+    // Create directory recursively to ensure all parent dirs exist
     await fs.mkdir(CACHE_DIR, { recursive: true });
   }
 }
+
+
 
 // Generate cache key from URL and params
 function getCacheKey(url: string, width: number, quality: number, format: string): string {
