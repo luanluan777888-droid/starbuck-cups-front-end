@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { X, Save, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
-import Image from "next/image";
 import { HeroImage } from "@/hooks/admin/useHeroImages";
 import type { RootState } from "@/store";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface EditModalProps {
   image: HeroImage;
@@ -132,11 +132,12 @@ export function EditModal({ image, onClose, onSuccess }: EditModalProps) {
                 Ảnh hiện tại
               </label>
               <div className="relative h-48 bg-gray-700 rounded-lg overflow-hidden">
-                <Image
+                <OptimizedImage
                   src={image.imageUrl}
                   alt={image.altText}
                   fill
                   className="object-contain"
+                  style={{ objectFit: "contain" }}
                 />
               </div>
             </div>
@@ -150,11 +151,12 @@ export function EditModal({ image, onClose, onSuccess }: EditModalProps) {
                 {preview ? (
                   <div className="space-y-4">
                     <div className="relative h-48 mx-auto max-w-sm">
-                      <Image
+                      <OptimizedImage
                         src={preview}
                         alt="Preview"
                         fill
                         className="object-contain rounded"
+                        style={{ objectFit: "contain" }}
                       />
                     </div>
                     <button

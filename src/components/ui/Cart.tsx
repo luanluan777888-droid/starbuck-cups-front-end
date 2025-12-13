@@ -4,11 +4,11 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { removeFromCart, clearCart, closeCart } from "@/store/slices/cartSlice";
 import { X, ShoppingBag, FileText } from "lucide-react";
 import type { CartItem } from "@/types";
-import Image from "next/image";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
 import Link from "next/link";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface CartProps {
   className?: string;
@@ -172,7 +172,7 @@ function CartItemCard({ item, onRemove }: CartItemCardProps) {
         className="w-16 h-16 bg-zinc-700 rounded-lg overflow-hidden flex-shrink-0 hover:opacity-80 transition-opacity"
       >
         {getFirstProductImageUrl(product.productImages) ? (
-          <Image
+          <OptimizedImage
             src={getFirstProductImageUrl(product.productImages)}
             alt={product.name}
             width={64}

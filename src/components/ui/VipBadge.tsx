@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface VipBadgeProps {
   size?: "sm" | "md" | "lg";
@@ -17,7 +17,7 @@ export function VipBadge({ size = "md", className = "" }: VipBadgeProps) {
 
   return (
     <div className={`inline-block vip-shimmer ${className}`}>
-      <Image
+      <OptimizedImage
         src="/images/vip-logo.png"
         alt="VIP"
         width={imageSizes[size].width}

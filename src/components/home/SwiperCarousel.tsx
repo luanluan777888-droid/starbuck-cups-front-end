@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
+import OptimizedImage from "@/components/OptimizedImage";
 
 // Import Swiper CSS
 import "swiper/css";
@@ -40,7 +40,7 @@ export default function SwiperCarousel({ images }: SwiperCarouselProps) {
       {images.map((image, index) => (
         <SwiperSlide key={image.id}>
           <div className="relative h-full w-full">
-            <Image
+            <OptimizedImage
               src={image.imageUrl}
               alt={image.altText}
               fill
@@ -49,6 +49,7 @@ export default function SwiperCarousel({ images }: SwiperCarouselProps) {
               loading={index === 0 ? "eager" : "lazy"}
               sizes="(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 50vw"
               quality={85}
+              style={{ objectFit: "contain" }}
             />
           </div>
         </SwiperSlide>

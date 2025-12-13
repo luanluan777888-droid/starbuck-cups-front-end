@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import { ImageModal } from "./ImageModal";
 import { VipBadge } from "./VipBadge";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface PropertyGalleryProps {
   images: string[];
@@ -186,12 +186,13 @@ export function PropertyGallery({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
           >
-            <Image
+            <OptimizedImage
               src={images[currentImage]}
               alt={`${title} - Hình ${currentImage + 1}`}
               fill
               className="object-contain"
               priority
+              style={{ objectFit: "contain" }}
               onError={(e) => {
                 const target = e.currentTarget;
                 target.src = "/images/placeholder-product.jpg";
@@ -298,11 +299,12 @@ export function PropertyGallery({
                     }`}
                     style={{ minWidth: "5rem" }} // Force minimum width
                   >
-                    <Image
+                    <OptimizedImage
                       src={image}
                       alt={`${title} - Thumbnail ${index + 1}`}
                       fill
                       className="object-contain"
+                      style={{ objectFit: "contain" }}
                       onError={(e) => {
                         const target = e.currentTarget;
                         target.src = "/images/placeholder-product.jpg";

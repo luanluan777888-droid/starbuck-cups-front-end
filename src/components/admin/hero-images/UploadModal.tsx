@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { X, Upload, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
-import Image from "next/image";
 import type { RootState } from "@/store";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface UploadModalProps {
   onClose: () => void;
@@ -133,11 +133,12 @@ export function UploadModal({ onClose, onSuccess }: UploadModalProps) {
                 {preview ? (
                   <div className="space-y-4">
                     <div className="relative h-48 mx-auto max-w-sm">
-                      <Image
+                      <OptimizedImage
                         src={preview}
                         alt="Preview"
                         fill
                         className="object-contain rounded"
+                        style={{ objectFit: "contain" }}
                       />
                     </div>
                     <button

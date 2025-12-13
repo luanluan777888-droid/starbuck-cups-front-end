@@ -2,12 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import { Product } from "@/types";
 import { getFirstProductImage, getSecondProductImage } from "@/lib/utils/image";
 import { trackProductClick, trackAddToCartClick } from "@/lib/productAnalytics";
 import { ConditionalVipBadge } from "@/components/ui/VipBadge";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ProductCardProps {
   product: Product;
@@ -30,7 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     if (firstImage) {
       return (
         <>
-          <Image
+          <OptimizedImage
             src={firstImage.url}
             alt={product.name}
             fill
@@ -42,9 +42,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             fetchPriority={priority ? "high" : "auto"}
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 300px"
             quality={80}
+            style={{ objectFit: "contain" }}
           />
           {secondImage && (
-            <Image
+            <OptimizedImage
               src={secondImage.url}
               alt={`${product.name} alternate`}
               fill
@@ -52,6 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               loading="lazy"
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 300px"
               quality={80}
+              style={{ objectFit: "contain" }}
             />
           )}
         </>

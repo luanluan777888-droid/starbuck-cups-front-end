@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 import { createPortal } from "react-dom";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ImageModalProps {
   images: string[];
@@ -496,18 +496,19 @@ export function ImageModal({
               <button
                 key={index}
                 onClick={(e) => handleThumbnailClick(index, e)}
-                className={`relative h-12 w-16 md:h-16 md:w-20 flex-shrink-0 rounded overflow-hidden border-2 transition-all focus:outline-none ${
+              className={`relative h-12 w-16 md:h-16 md:w-20 flex-shrink-0 rounded overflow-hidden border-2 transition-all focus:outline-none ${
                   index === activeIndex
                     ? "border-white scale-110"
                     : "border-zinc-500 hover:border-zinc-300 focus:border-zinc-200"
                 }`}
               >
-                <Image
+                <OptimizedImage
                   src={image}
                   alt={`Thumbnail ${index + 1}`}
                   fill
                   className="object-cover"
                   sizes="80px"
+                  style={{ objectFit: "cover" }}
                   onError={(e) => {
                     e.currentTarget.src = "/images/placeholder-product.jpg";
                   }}
@@ -551,7 +552,7 @@ export function ImageModal({
               willChange: isDragging ? "transform" : "auto", // Optimize for dragging
             }}
           >
-            <Image
+            <OptimizedImage
               src={images[activeIndex]}
               alt={`Hình ${activeIndex + 1}`}
               fill
@@ -559,6 +560,7 @@ export function ImageModal({
               key={activeIndex}
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+              style={{ objectFit: "contain" }}
               onError={(e) => {
                 e.currentTarget.src = "/images/placeholder-product.jpg";
               }}

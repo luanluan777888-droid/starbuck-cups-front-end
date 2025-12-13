@@ -6,7 +6,6 @@ import { clearCart } from "@/store/slices/cartSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronLeft, FileText, Phone, User, MapPin, Mail } from "lucide-react";
-import Image from "next/image";
 import type { CartItem } from "@/types";
 import { Header } from "@/components/layout/Header";
 import { Cart } from "@/components/ui/Cart";
@@ -16,6 +15,7 @@ import {
   isValidPhoneNumber,
   getPhoneValidationErrorMessage,
 } from "@/lib/utils/phoneValidation";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ConsultationFormData {
   customerName: string;
@@ -358,7 +358,7 @@ function CartItemRow({ item }: { item: CartItem }) {
   return (
     <div className="flex items-center gap-4 p-4 border border-zinc-700 rounded-lg bg-zinc-800">
       <div className="relative w-16 h-16 flex-shrink-0">
-        <Image
+        <OptimizedImage
           src={
             getFirstProductImageUrl(item.product.productImages) ||
             "/placeholder-product.jpg"

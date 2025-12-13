@@ -7,11 +7,11 @@ import {
   Image as ImageIcon,
   Loader2,
 } from "lucide-react";
-import Image from "next/image";
 import type { Product } from "@/types";
 import { ProductStatusBadge } from "@/components/admin/products/ProductStatusBadge";
 import { getFirstProductImage } from "@/lib/utils/image";
 import { ConditionalVipBadge } from "@/components/ui/VipBadge";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ProductCategory {
   category: {
@@ -188,7 +188,7 @@ export function ProductsTable({
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-12 w-12 relative">
                         {firstImage ? (
-                          <Image
+                          <OptimizedImage
                             src={firstImage.url}
                             alt={product.name}
                             width={48}

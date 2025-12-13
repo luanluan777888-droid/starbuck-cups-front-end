@@ -7,6 +7,8 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   images: {
+    // Disable Next.js built-in image optimization (for non-Vercel deployments)
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -20,7 +22,6 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
-
       {
         protocol: "https",
         hostname: "starbucks-shop.s3.ap-southeast-1.amazonaws.com",
@@ -30,6 +31,12 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "drive.google.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
         port: "",
         pathname: "/**",
       },

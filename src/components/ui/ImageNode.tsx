@@ -6,7 +6,7 @@ import {
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
-import Image from 'next/image';
+import OptimizedImage from '@/components/OptimizedImage';
 
 export interface ImagePayload {
   altText: string;
@@ -155,7 +155,7 @@ export class ImageNode extends DecoratorNode<React.ReactElement> {
 
   decorate(): React.ReactElement {
     return (
-      <Image
+      <OptimizedImage
         src={this.__src}
         alt={this.__altText}
         width={this.__width === 'inherit' ? 400 : (this.__width || 400)}

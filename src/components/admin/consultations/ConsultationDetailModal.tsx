@@ -7,10 +7,10 @@ import {
   CheckCircle,
   MessageCircle,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import type { Consultation, ConsultationStatus } from "@/types";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ConsultationDetailModalProps {
   isOpen: boolean;
@@ -139,9 +139,11 @@ export function ConsultationDetailModal({
                       <div className="flex-shrink-0">
                         {firstImage ? (
                           <div className="w-16 h-16 relative bg-gray-800 rounded-lg overflow-hidden border border-gray-600">
-                            <Image
+                            <OptimizedImage
                               src={firstImage}
                               alt={item.productName}
+                              width={64}
+                              height={64}
                               fill
                               className="object-cover"
                               sizes="64px"
