@@ -97,6 +97,7 @@ export default function ProductGrid({
           key={product.id}
           product={product}
           onAddToCart={handleAddToCart}
+          showAddToCart={true}
         />
       ))}
     </div>

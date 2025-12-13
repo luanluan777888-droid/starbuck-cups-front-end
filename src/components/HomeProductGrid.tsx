@@ -231,6 +231,7 @@ export default function HomeProductGrid({
                   <ProductCard
                     product={product}
                     onAddToCart={handleAddToCart}
+                    showAddToCart={true}
                     priority={globalIndex < 4} // Đánh dấu 4 sản phẩm đầu làm priority để tối ưu LCP
                   />
                 </div>

@@ -176,7 +176,11 @@ export default function RelatedProducts() {
       >
         {relatedProducts.map((product) => (
           <SwiperSlide key={product.id}>
-            <ProductCard product={product} onAddToCart={handleAddToCart} />
+            <ProductCard
+              product={product}
+              onAddToCart={handleAddToCart}
+              showAddToCart={true}
+            />
           </SwiperSlide>
         ))}
       </Swiper>
