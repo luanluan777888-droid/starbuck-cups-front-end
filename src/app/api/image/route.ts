@@ -1,19 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import sharp from 'sharp';
-import { promises as fs } from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import { convertDriveUrl } from '@/utils/googleDriveHelper';
+import { NextRequest, NextResponse } from "next/server";
+import sharp from "sharp";
+import { promises as fs } from "fs";
+import path from "path";
+import crypto from "crypto";
+import { convertDriveUrl } from "@/utils/googleDriveHelper";
 
 // Tạo cache directory
 // Default cache directory
-const DEFAULT_CACHE_DIR = path.join(process.cwd(), '.next', 'cache', 'images');
+const DEFAULT_CACHE_DIR = path.join(process.cwd(), ".next", "cache", "images");
 
 // Get cache directory based on environment
 function getCacheDir(): string {
   // In serverless environments (Vercel, AWS Lambda), use /tmp
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    return path.join('/tmp', 'image-cache');
+    return path.join("/tmp", "image-cache");
   }
   // In local/VPS, use .next/cache/images
   return DEFAULT_CACHE_DIR;
@@ -31,14 +31,17 @@ async function ensureCacheDir() {
   }
 }
 
-
-
 // Generate cache key from URL and params
-function getCacheKey(url: string, width: number, quality: number, format: string): string {
+function getCacheKey(
+  url: string,
+  width: number,
+  quality: number,
+  format: string
+): string {
   const hash = crypto
-    .createHash('md5')
+    .createHash("md5")
     .update(`${url}-${width}-${quality}-${format}`)
-    .digest('hex');
+    .digest("hex");
   return `${hash}.${format}`;
 }
 
@@ -55,14 +58,14 @@ async function fetchImage(url: string): Promise<Buffer> {
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    let url = searchParams.get('url');
-    const width = parseInt(searchParams.get('w') || '1920');
-    const quality = parseInt(searchParams.get('q') || '75');
-    const format = searchParams.get('f') || 'webp';
+    let url = searchParams.get("url");
+    const width = parseInt(searchParams.get("w") || "1200");
+    const quality = parseInt(searchParams.get("q") || "70");
+    const format = searchParams.get("f") || "webp";
 
     if (!url) {
       return NextResponse.json(
-        { error: 'URL parameter is required' },
+        { error: "URL parameter is required" },
         { status: 400 }
       );
     }
@@ -71,9 +74,9 @@ export async function GET(request: NextRequest) {
     url = convertDriveUrl(url);
 
     // Validate format
-    if (!['webp', 'avif', 'jpeg', 'png'].includes(format)) {
+    if (!["webp", "avif", "jpeg", "png"].includes(format)) {
       return NextResponse.json(
-        { error: 'Invalid format. Supported: webp, avif, jpeg, png' },
+        { error: "Invalid format. Supported: webp, avif, jpeg, png" },
         { status: 400 }
       );
     }
@@ -90,8 +93,8 @@ export async function GET(request: NextRequest) {
       const cachedBody = cachedImage as unknown as BodyInit;
       return new NextResponse(cachedBody, {
         headers: {
-          'Content-Type': `image/${format}`,
-          'Cache-Control': 'public, max-age=31536000, immutable',
+          "Content-Type": `image/${format}`,
+          "Cache-Control": "public, max-age=31536000, immutable",
         },
       });
     } catch {
@@ -106,28 +109,41 @@ export async function GET(request: NextRequest) {
 
     // Get metadata to check if resize is needed
     const metadata = await sharpInstance.metadata();
-    
+
     // Only resize if image is larger than requested width
     if (metadata.width && metadata.width > width) {
       sharpInstance = sharpInstance.resize(width, null, {
         withoutEnlargement: true,
-        fit: 'inside',
+        fit: "inside",
       });
     }
 
-    // Convert to requested format
+    // Convert to requested format with optimized settings
     switch (format) {
-      case 'webp':
-        sharpInstance = sharpInstance.webp({ quality });
+      case "webp":
+        sharpInstance = sharpInstance.webp({
+          quality,
+          effort: 6,
+          smartSubsample: true,
+        });
         break;
-      case 'avif':
-        sharpInstance = sharpInstance.avif({ quality });
+      case "avif":
+        sharpInstance = sharpInstance.avif({
+          quality,
+          effort: 9,
+        });
         break;
-      case 'jpeg':
-        sharpInstance = sharpInstance.jpeg({ quality });
+      case "jpeg":
+        sharpInstance = sharpInstance.jpeg({
+          quality,
+          mozjpeg: true,
+        });
         break;
-      case 'png':
-        sharpInstance = sharpInstance.png({ quality });
+      case "png":
+        sharpInstance = sharpInstance.png({
+          quality,
+          compressionLevel: 9, // Max compression
+        });
         break;
     }
 
@@ -140,16 +156,16 @@ export async function GET(request: NextRequest) {
     const optimizedBody = optimizedImage as unknown as BodyInit;
     return new NextResponse(optimizedBody, {
       headers: {
-        'Content-Type': `image/${format}`,
-        'Cache-Control': 'public, max-age=31536000, immutable',
+        "Content-Type": `image/${format}`,
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   } catch (error) {
-    console.error('Image optimization error:', error);
+    console.error("Image optimization error:", error);
     return NextResponse.json(
-      { 
-        error: 'Failed to optimize image',
-        details: error instanceof Error ? error.message : 'Unknown error'
+      {
+        error: "Failed to optimize image",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );

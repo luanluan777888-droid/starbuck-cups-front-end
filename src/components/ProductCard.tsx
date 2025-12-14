@@ -59,6 +59,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             src={firstImage.url}
             alt={product.name}
             fill
+            width={600} // Hint for API: 300px display x2 for retina
             className={`object-contain transition-opacity duration-300 ${
               secondImage ? "opacity-100 group-hover:opacity-0" : "opacity-100"
             }`}
@@ -66,7 +67,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : "auto"}
             sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 300px"
-            quality={80}
+            quality={70}
             style={{ objectFit: "contain" }}
           />
           {secondImage && (priority || isInView) && (
@@ -74,10 +75,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
               src={secondImage.url}
               alt={`${product.name} alternate`}
               fill
+              width={600} // Hint for API: 300px display x2 for retina
               className="object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               loading="eager"
               sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 300px"
-              quality={80}
+              quality={70}
               style={{ objectFit: "contain" }}
             />
           )}
