@@ -215,7 +215,7 @@ export default function TestImagePage() {
                       images[currentImageIndex]?.url
                     );
                     const target = e.target as HTMLImageElement;
-                    target.src = "/images/placeholder.png";
+                    target.src = "/images/placeholder.webp";
                   }}
                 />
               ) : (
@@ -284,7 +284,7 @@ export default function TestImagePage() {
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = "/images/placeholder.png";
+                        target.src = "/images/placeholder.webp";
                       }}
                     />
                   </button>

@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { X, Upload, ImageIcon } from "lucide-react";
 import type { Product, Category, Color, Capacity } from "@/types";
@@ -8,9 +9,15 @@ import { useProductForm } from "@/hooks/business/useProductForm";
 import { UpdateProductForm } from "./UpdateProductForm";
 import { useUpload } from "@/hooks/useUpload";
 import ImageReorder from "./ImageReorder";
-import RichTextEditor from "@/components/ui/RichTextEditor";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
 import { VipToggle } from "./VipRadio";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+
+// Dynamic import for RichTextEditor to reduce initial bundle
+const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="w-full h-[300px] border rounded-md flex items-center justify-center"><LoadingSpinner /></div>
+});
 
 // Extended product type for admin operations
 interface AdminProduct extends Omit<Product, "stockQuantity"> {

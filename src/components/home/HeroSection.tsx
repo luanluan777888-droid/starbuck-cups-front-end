@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowRight } from "lucide-react";
@@ -79,16 +79,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   heroImages = [],
   promotionalBanner = null,
 }) => {
-  const [showSwiper, setShowSwiper] = useState(false);
-
-  // Delay Swiper load để tối ưu LCP - load static content trước
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSwiper(true);
-    }, 1000); // Load Swiper sau 1 giây
-
-    return () => clearTimeout(timer);
-  }, []);
+  // Load Swiper immediately to enable priority loading for first hero image (LCP optimization)
+  const showSwiper = true;
 
   if (loading) {
     return <HeroSectionSkeleton />;

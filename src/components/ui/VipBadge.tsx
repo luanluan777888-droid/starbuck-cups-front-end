@@ -18,7 +18,7 @@ export function VipBadge({ size = "md", className = "" }: VipBadgeProps) {
   return (
     <div className={`inline-block vip-shimmer ${className}`}>
       <OptimizedImage
-        src="/images/vip-logo.png"
+        src="/images/vip-logo.webp"
         alt="VIP"
         width={imageSizes[size].width}
         height={imageSizes[size].height}

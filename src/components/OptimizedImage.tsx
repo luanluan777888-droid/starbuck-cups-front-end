@@ -59,7 +59,7 @@ export default function OptimizedImage({
     } else {
       // Fallback to placeholder
       const target = e.currentTarget;
-      target.src = '/images/placeholder.png';
+      target.src = '/images/placeholder.webp';
     }
   };
 

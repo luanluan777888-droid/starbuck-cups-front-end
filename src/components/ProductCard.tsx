@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { Product } from "@/types";
@@ -24,6 +24,31 @@ const ProductCard: React.FC<ProductCardProps> = ({
   showAddToCart = false,
   priority = false, // Thêm prop để control priority cho LCP
 }) => {
+  const [isInView, setIsInView] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Intersection Observer để lazy load second image khi card vào viewport
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          // Unobserve sau khi đã vào viewport 1 lần
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: '100px', // Preload 100px trước khi vào viewport
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(cardRef.current);
+
+    return () => observer.disconnect();
+  }, []);
   const renderProductVisual = () => {
     const firstImage = getFirstProductImage(product.productImages);
     const secondImage = getSecondProductImage(product.productImages);
@@ -44,7 +69,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             quality={80}
             style={{ objectFit: "contain" }}
           />
-          {secondImage && (
+          {secondImage && (priority || isInView) && (
             <OptimizedImage
               src={secondImage.url}
               alt={`${product.name} alternate`}
@@ -90,7 +115,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         });
       }}
     >
-      <div className="bg-zinc-900 rounded-2xl overflow-hidden hover:bg-zinc-800 transition-colors duration-300 relative">
+      <div ref={cardRef} className="bg-zinc-900 rounded-2xl overflow-hidden hover:bg-zinc-800 transition-colors duration-300 relative">
         <div className="aspect-square bg-gradient-to-br from-zinc-800 to-zinc-900 relative overflow-hidden">
           {/* VIP Badge */}
           <div className="absolute top-3 right-3 z-10">

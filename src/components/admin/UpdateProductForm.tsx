@@ -1,13 +1,20 @@
 ﻿"use client";
 
 import React, { useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { X, Upload, ImageIcon } from "lucide-react";
 import type { Category, Color, Capacity } from "@/types";
 import { useUpdateProduct } from "@/hooks/business/useUpdateProduct";
 import { uploadAPI } from "@/lib/api/upload";
 import ImageReorder from "./ImageReorder";
-import RichTextEditor from "@/components/ui/RichTextEditor";
 import { VipToggle } from "./VipRadio";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+
+// Dynamic import for RichTextEditor to reduce initial bundle
+const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="w-full h-[300px] border rounded-md flex items-center justify-center"><LoadingSpinner /></div>
+});
 
 interface UpdateProductFormProps {
   productId: string;

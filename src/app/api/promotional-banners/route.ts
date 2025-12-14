@@ -29,7 +29,12 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        // Cache for 30 minutes on CDN, revalidate in background for 24 hours
+        'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=86400',
+      },
+    });
   } catch (error: unknown) {
 
     return NextResponse.json(

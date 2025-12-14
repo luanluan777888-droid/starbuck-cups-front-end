@@ -42,7 +42,7 @@ export const metadata: Metadata = generateSEO({
     title: "H’s shoucangpu - Trang chủ",
     description:
       "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury. Có dịch vụ gói quà. FB: Hasron Leung",
-    image: "/images/placeholder.png",
+    image: "/images/placeholder.webp",
     url: "/",
     type: "website",
   },

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
       title: "H's shoucangpu - Collectible Gift Shop",
       description:
         "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury. Có dịch vụ gói quà",
-      image: "/images/placeholder.png",
+      image: "/images/placeholder.webp",
       url: "/",
       type: "website",
     },
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: "H's shoucangpu - Cửa hàng ly St@rbucks",
     description:
       "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury",
-    images: ["/images/placeholder.png"],
+    images: ["/images/placeholder.webp"],
   },
   icons: {
     icon: [
@@ -53,6 +53,10 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <head>
+        {/* Resource hints for Google Drive images - early DNS resolution */}
+        <link rel="preconnect" href="https://lh3.googleusercontent.com" />
+        <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
+
         {/* Dynamic AWS resource hints nếu có */}
         {awsS3Url && (
           <>

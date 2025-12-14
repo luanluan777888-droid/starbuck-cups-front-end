@@ -12,7 +12,7 @@ export const metadata: Metadata = generateSEO({
     title: "Liên hệ - H's shoucangpu",
     description:
       "Liên hệ với chúng tôi qua Hotline, Zalo hoặc Messenger để được tư vấn về sản phẩm ly Starbucks chính hãng.",
-    image: "/images/placeholder.png",
+    image: "/images/placeholder.webp",
     url: "/contacts",
     type: "website",
   },
