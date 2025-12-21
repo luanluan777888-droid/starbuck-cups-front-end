@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   }),
   twitter: {
     card: "summary",
-    title: "H's shoucangpu - Cửa hàng ly St@rbucks",
+    title: "H's shoucangpu - Tiệm sưu tầm của H",
     description:
       "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury",
     images: ["/images/placeholder.webp"],
