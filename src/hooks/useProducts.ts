@@ -176,70 +176,94 @@ export function useProducts(): UseProductsReturn {
     setDebouncedSearchQuery(search); // Also update debounced version immediately when URL changes
     setSelectedCategory(category);
     setSelectedColor(color);
-    setCapacityRange({ min: minCapacity, max: maxCapacity });
+    //chỉ update khi capacity range thay đổi, nếu ko sẽ trigger render
+    setCapacityRange((prev) => {
+      if (prev.min !== minCapacity || prev.max !== maxCapacity) {
+        return { min: minCapacity, max: maxCapacity };
+      }
+      return prev;
+    });
     setSortBy(sort);
     setCurrentPage(page);
   }, [searchParams, isHydrated]);
 
   // Update URL with current filter state
-  const updateURL = useCallback((newFilters: {
-    search?: string;
-    category?: string;
-    color?: string;
-    minCapacity?: number;
-    maxCapacity?: number;
-    sort?: string;
-    page?: number;
-  }) => {
-    const params = new URLSearchParams();
+  const updateURL = useCallback(
+    (newFilters: {
+      search?: string;
+      category?: string;
+      color?: string;
+      minCapacity?: number;
+      maxCapacity?: number;
+      sort?: string;
+      page?: number;
+    }) => {
+      const params = new URLSearchParams();
 
-    const search = "search" in newFilters ? newFilters.search : searchQuery;
-    const category =
-      "category" in newFilters ? newFilters.category : selectedCategory;
-    const color = "color" in newFilters ? newFilters.color : selectedColor;
-    const minCapacity =
-      "minCapacity" in newFilters ? newFilters.minCapacity : capacityRange.min;
-    const maxCapacity =
-      "maxCapacity" in newFilters ? newFilters.maxCapacity : capacityRange.max;
-    const sort = "sort" in newFilters ? newFilters.sort : sortBy;
-    const page = "page" in newFilters ? newFilters.page : currentPage;
+      const search = "search" in newFilters ? newFilters.search : searchQuery;
+      const category =
+        "category" in newFilters ? newFilters.category : selectedCategory;
+      const color = "color" in newFilters ? newFilters.color : selectedColor;
+      const minCapacity =
+        "minCapacity" in newFilters
+          ? newFilters.minCapacity
+          : capacityRange.min;
+      const maxCapacity =
+        "maxCapacity" in newFilters
+          ? newFilters.maxCapacity
+          : capacityRange.max;
+      const sort = "sort" in newFilters ? newFilters.sort : sortBy;
+      const page = "page" in newFilters ? newFilters.page : currentPage;
 
-    if (search) params.set("search", search);
-    if (category) params.set("category", category);
-    if (color) params.set("color", color);
-    if (minCapacity !== undefined && minCapacity > 0)
-      params.set("minCapacity", minCapacity.toString());
-    if (maxCapacity !== undefined && maxCapacity < 9999)
-      params.set("maxCapacity", maxCapacity.toString());
-    if (sort && sort !== "newest") params.set("sort", sort);
-    if (page && page !== 1) params.set("page", page.toString());
+      if (search) params.set("search", search);
+      if (category) params.set("category", category);
+      if (color) params.set("color", color);
+      if (minCapacity !== undefined && minCapacity > 0)
+        params.set("minCapacity", minCapacity.toString());
+      if (maxCapacity !== undefined && maxCapacity < 9999)
+        params.set("maxCapacity", maxCapacity.toString());
+      if (sort && sort !== "newest") params.set("sort", sort);
+      if (page && page !== 1) params.set("page", page.toString());
 
-    const newURL = params.toString()
-      ? `/products?${params.toString()}`
-      : "/products";
-    router.replace(newURL, { scroll: false });
-  }, [searchQuery, selectedCategory, selectedColor, capacityRange, sortBy, currentPage, router]);
+      const newURL = params.toString()
+        ? `/products?${params.toString()}`
+        : "/products";
+      router.replace(newURL, { scroll: false });
+    },
+    [
+      searchQuery,
+      selectedCategory,
+      selectedColor,
+      capacityRange,
+      sortBy,
+      currentPage,
+      router,
+    ]
+  );
 
   // Debounced version of updateURL (300ms delay)
-  const debouncedUpdateURL = useCallback((newFilters: {
-    search?: string;
-    category?: string;
-    color?: string;
-    minCapacity?: number;
-    maxCapacity?: number;
-    sort?: string;
-    page?: number;
-  }) => {
-    // Clear previous timeout
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
+  const debouncedUpdateURL = useCallback(
+    (newFilters: {
+      search?: string;
+      category?: string;
+      color?: string;
+      minCapacity?: number;
+      maxCapacity?: number;
+      sort?: string;
+      page?: number;
+    }) => {
+      // Clear previous timeout
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
 
-    // Set new timeout
-    debounceTimerRef.current = setTimeout(() => {
-      updateURL(newFilters);
-    }, 300);
-  }, [updateURL]);
+      // Set new timeout
+      debounceTimerRef.current = setTimeout(() => {
+        updateURL(newFilters);
+      }, 300);
+    },
+    [updateURL]
+  );
 
   // Cleanup debounce timer on unmount
   useEffect(() => {

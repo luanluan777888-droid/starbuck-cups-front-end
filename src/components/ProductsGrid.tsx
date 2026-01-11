@@ -115,6 +115,7 @@ export default function ProductsGrid({
     };
 
     fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchQuery,
     selectedCategory,
@@ -122,7 +123,7 @@ export default function ProductsGrid({
     capacityRange,
     sortBy,
     currentPage,
-    isMounted,
+    // Note: isMounted không cần phải thêm vào vì sẽ trigger 2 lần render
   ]);
 
   const handleAddToCart = (product: Product) => {
