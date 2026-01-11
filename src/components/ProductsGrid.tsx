@@ -136,7 +136,7 @@ export default function ProductsGrid({
     capacityRange,
     sortBy,
     currentPage,
-    // Note: isMounted không cần phải thêm vào vì sẽ trigger 2 lần render
+    isMounted, // ✅ FIXED: Cần thêm để fetch lần đầu khi component mount
   ]);
 
   const handleAddToCart = (product: Product) => {
