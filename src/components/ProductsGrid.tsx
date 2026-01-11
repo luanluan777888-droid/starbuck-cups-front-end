@@ -90,8 +90,15 @@ export default function ProductsGrid({
         const productsLimit = getProductsPageLimit();
         params.append("limit", productsLimit.toString());
 
+        console.log("🔍 [ProductsGrid] Fetching products with params:", params.toString());
         const response = await fetch(`/api/products?${params.toString()}`);
         const data = await response.json();
+        console.log("📦 [ProductsGrid] API Response:", {
+          success: data.success,
+          itemsCount: data.data?.items?.length,
+          error: data.error,
+          fullData: data
+        });
 
         if (data.success && data.data?.items) {
           setProducts(data.data.items);
@@ -107,10 +114,12 @@ export default function ProductsGrid({
             onPageChange(1);
           }
         } else {
+          console.warn("⚠️ [ProductsGrid] No items in response or unsuccessful");
           setProducts([]);
           setPaginationData(null);
         }
-      } catch {
+      } catch (error) {
+        console.error("❌ [ProductsGrid] Error fetching products:", error);
         setProducts([]);
         setPaginationData(null);
       } finally {
