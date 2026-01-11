@@ -156,11 +156,13 @@ export function ProductsFilters({
                 </div>
               )}
 
-              {sortBy !== "newest" && (
+              {sortBy !== "featured" && (
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white">
                   <span>
                     Sắp xếp:{" "}
-                    {sortBy === "oldest"
+                    {sortBy === "newest"
+                      ? "Mới nhất"
+                      : sortBy === "oldest"
                       ? "Cũ nhất"
                       : sortBy === "name_asc"
                       ? "Tên A → Z"
@@ -169,7 +171,7 @@ export function ProductsFilters({
                       : sortBy}
                   </span>
                   <button
-                    onClick={() => onSortChange("newest")}
+                    onClick={() => onSortChange("featured")}
                     className="text-zinc-400 hover:text-zinc-300"
                   >
                     ×
@@ -329,6 +331,7 @@ export function ProductsFilters({
             onChange={(e) => onSortChange(e.target.value)}
             className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:ring-2 focus:ring-zinc-500 focus:border-zinc-500"
           >
+            <option value="featured">Nổi bật</option>
             <option value="newest">Mới nhất</option>
             <option value="oldest">Cũ nhất</option>
             <option value="name_asc">Tên A → Z</option>

@@ -8,6 +8,7 @@ import { useUpdateProduct } from "@/hooks/business/useUpdateProduct";
 import { uploadAPI } from "@/lib/api/upload";
 import ImageReorder from "./ImageReorder";
 import { VipToggle } from "./VipRadio";
+import { FeaturedToggle } from "./FeaturedToggle";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // Dynamic import for RichTextEditor to reduce initial bundle
@@ -326,6 +327,13 @@ export function UpdateProductForm({
           <VipToggle
             value={formData.isVip || false}
             onChange={(isVip) => updateField("isVip", isVip)}
+            disabled={loading}
+          />
+
+          {/* Featured Status */}
+          <FeaturedToggle
+            value={formData.isFeatured || false}
+            onChange={(isFeatured) => updateField("isFeatured", isFeatured)}
             disabled={loading}
           />
         </div>

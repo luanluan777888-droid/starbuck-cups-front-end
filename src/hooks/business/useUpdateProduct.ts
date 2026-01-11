@@ -14,6 +14,7 @@ export interface UpdateProductFormData {
   productUrl: string;
   isActive: boolean;
   isVip: boolean; // ✅ NEW FIELD
+  isFeatured: boolean; // ✅ NEW FIELD
   // For file uploads
   newImages?: File[];
   keepExistingImages?: boolean;
@@ -61,6 +62,7 @@ export function useUpdateProduct(
     productUrl: "",
     isActive: true,
     isVip: false, // ✅ NEW FIELD - default false
+    isFeatured: false, // ✅ NEW FIELD - default false
     newImages: [],
     keepExistingImages: true,
   });
@@ -110,6 +112,7 @@ export function useUpdateProduct(
         productUrl: product.productUrl || "",
         isActive: product.isActive ?? true,
         isVip: product.isVip ?? false, // ✅ NEW FIELD - default false
+        isFeatured: product.isFeatured ?? false, // ✅ NEW FIELD - default false
         newImages: [],
         keepExistingImages: true,
       };
@@ -259,6 +262,7 @@ export function useUpdateProduct(
         );
         formDataToSend.append("isActive", formData.isActive.toString());
         formDataToSend.append("isVip", formData.isVip.toString()); // ✅ NEW FIELD
+        formDataToSend.append("isFeatured", formData.isFeatured.toString()); // ✅ NEW FIELD
 
         // Only add productUrl if it's a valid URL or empty
         const productUrlValue = formData.productUrl.trim();
@@ -311,6 +315,7 @@ export function useUpdateProduct(
           productUrl: formData.productUrl.trim() || "",
           isActive: formData.isActive,
           isVip: formData.isVip, // ✅ NEW FIELD
+          isFeatured: formData.isFeatured, // ✅ NEW FIELD
           // Include images array for image reordering - convert URLs to proper format
           productImages: formData.images.map((url, index) => ({
             url,

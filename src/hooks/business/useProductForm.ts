@@ -15,6 +15,7 @@ export interface ProductFormData {
   categoryIds: string[];
   isActive: boolean;
   isVip: boolean; // ✅ NEW FIELD
+  isFeatured: boolean; // ✅ NEW FIELD
   stockQuantity: number;
   productUrl: string;
 }
@@ -71,6 +72,7 @@ export function useProductForm(
     categoryIds: initialData?.categoryIds || [],
     isActive: initialData?.isActive ?? true,
     isVip: initialData?.isVip ?? false, // ✅ NEW FIELD - default false
+    isFeatured: initialData?.isFeatured ?? false, // ✅ NEW FIELD - default false
     stockQuantity: initialData?.stockQuantity || 0,
     productUrl: initialData?.productUrl || "",
   });
@@ -223,6 +225,7 @@ export function useProductForm(
         stockQuantity: formData.stockQuantity,
         productUrl: formData.productUrl.trim() || undefined,
         isVip: formData.isVip,
+        isFeatured: formData.isFeatured,
         ...(isEditing && productId && { id: productId }),
       };
 
@@ -407,6 +410,7 @@ export function useProductForm(
           stockQuantity: tempFormData.stockQuantity,
           productUrl: tempFormData.productUrl.trim() || undefined,
           isVip: tempFormData.isVip, // ✅ ADDED: isVip field
+          isFeatured: tempFormData.isFeatured, // ✅ ADDED: isFeatured field
           ...(isEditing && productId && { id: productId }),
         };
 
@@ -495,6 +499,7 @@ export function useProductForm(
       categoryIds: initialData?.categoryIds || [],
       isActive: initialData?.isActive ?? true,
       isVip: initialData?.isVip ?? false, // ✅ NEW FIELD - default false
+      isFeatured: initialData?.isFeatured ?? false, // ✅ NEW FIELD - default false
       stockQuantity: initialData?.stockQuantity || 0,
       productUrl: initialData?.productUrl || "",
     });

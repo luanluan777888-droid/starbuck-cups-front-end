@@ -45,6 +45,7 @@ export function FilterBadges({
 
   const getSortLabel = (value: string): string => {
     const sortLabels: Record<string, string> = {
+      featured: "Nổi bật",
       newest: "Mới nhất",
       oldest: "Cũ nhất",
       name_asc: "Tên A-Z",
@@ -58,7 +59,7 @@ export function FilterBadges({
   const hasCategory = selectedCategory.trim().length > 0;
   const hasColor = selectedColor.trim().length > 0;
   const hasCapacity = capacityRange.min > 0 || capacityRange.max < 9999;
-  const hasSort = sortBy && sortBy !== "newest";
+  const hasSort = sortBy && sortBy !== "featured";
 
   const activeFiltersCount = [
     hasSearch,

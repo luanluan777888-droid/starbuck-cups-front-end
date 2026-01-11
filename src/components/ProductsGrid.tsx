@@ -68,7 +68,12 @@ export default function ProductsGrid({
           params.append("maxCapacity", capacityRange.max.toString());
         if (sortBy) {
           let field, order;
-          if (sortBy === "newest") {
+          if (sortBy === "featured") {
+            // Featured products: add isFeatured filter and sort by newest
+            params.append("isFeatured", "true");
+            field = "createdAt";
+            order = "desc";
+          } else if (sortBy === "newest") {
             field = "createdAt";
             order = "desc";
           } else if (sortBy === "oldest") {

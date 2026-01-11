@@ -75,7 +75,7 @@ export function useProducts(): UseProductsReturn {
     max: parseInt(searchParams.get("maxCapacity") || "9999"),
   });
   const [showFilters, setShowFilters] = useState(false);
-  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
+  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "featured");
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get("page") || "1")
   );
@@ -168,7 +168,7 @@ export function useProducts(): UseProductsReturn {
     const color = searchParams.get("color") || "";
     const minCapacity = parseInt(searchParams.get("minCapacity") || "0");
     const maxCapacity = parseInt(searchParams.get("maxCapacity") || "9999");
-    const sort = searchParams.get("sort") || "newest";
+    const sort = searchParams.get("sort") || "featured";
     const page = parseInt(searchParams.get("page") || "1");
 
     // Update state to match URL params
@@ -222,7 +222,7 @@ export function useProducts(): UseProductsReturn {
         params.set("minCapacity", minCapacity.toString());
       if (maxCapacity !== undefined && maxCapacity < 9999)
         params.set("maxCapacity", maxCapacity.toString());
-      if (sort && sort !== "newest") params.set("sort", sort);
+      if (sort && sort !== "featured") params.set("sort", sort);
       if (page && page !== 1) params.set("page", page.toString());
 
       const newURL = params.toString()
@@ -279,7 +279,7 @@ export function useProducts(): UseProductsReturn {
     setSelectedCategory("");
     setSelectedColor("");
     setCapacityRange({ min: 0, max: 9999 });
-    setSortBy("newest");
+    setSortBy("featured");
     setCurrentPage(1);
     router.replace("/products", { scroll: false });
   };
@@ -290,7 +290,7 @@ export function useProducts(): UseProductsReturn {
     selectedColor !== "" ||
     capacityRange.min > 0 ||
     capacityRange.max < 9999 ||
-    sortBy !== "newest";
+    sortBy !== "featured";
 
   return {
     // Filter options data

@@ -212,7 +212,15 @@ export function ProductsTable({
                         >
                           <ImageIcon className="w-6 h-6 text-gray-400" />
                         </div>
-                        {/* VIP Badge */}
+                        {/* Featured Badge - TOP LEFT */}
+                        {product.isFeatured && (
+                          <div className="absolute -top-1 -left-1 z-10">
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-500 text-white text-[10px] font-semibold shadow-sm">
+                              ⭐
+                            </span>
+                          </div>
+                        )}
+                        {/* VIP Badge - TOP RIGHT */}
                         <div className="absolute -top-1 -right-1 z-10">
                           <ConditionalVipBadge product={product} size="sm" />
                         </div>
