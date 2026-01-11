@@ -69,9 +69,8 @@ export default function ProductsGrid({
         if (sortBy) {
           let field, order;
           if (sortBy === "featured") {
-            // Featured products: add isFeatured filter and sort by newest
-            params.append("isFeatured", "true");
-            field = "createdAt";
+            // Featured products: sort by isFeatured desc (featured first), then by newest
+            field = "isFeatured";
             order = "desc";
           } else if (sortBy === "newest") {
             field = "createdAt";
