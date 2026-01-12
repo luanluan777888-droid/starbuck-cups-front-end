@@ -121,11 +121,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="aspect-square bg-gradient-to-br from-zinc-800 to-zinc-900 relative overflow-hidden">
           {/* Featured Badge - TOP LEFT */}
           {product.isFeatured && (
-            <div className="absolute top-3 left-3 z-10 animate-pulse">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-white text-xs font-bold shadow-xl shadow-amber-500/60 backdrop-blur-sm">
-                <span className="text-sm">⭐</span>
-                <span className="hidden sm:inline">Nổi bật</span>
-              </span>
+            <div className="absolute top-3 left-3 z-10">
+              <div className="relative inline-block">
+                <span className="text-2xl animate-pulse filter drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]">
+                  ⭐
+                </span>
+              </div>
             </div>
           )}
 
