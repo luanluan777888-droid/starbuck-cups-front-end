@@ -119,7 +119,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
     >
       <div ref={cardRef} className="bg-zinc-900 rounded-2xl overflow-hidden hover:bg-zinc-800 transition-colors duration-300 relative">
         <div className="aspect-square bg-gradient-to-br from-zinc-800 to-zinc-900 relative overflow-hidden">
-          {/* VIP Badge */}
+          {/* Featured Badge - TOP LEFT */}
+          {product.isFeatured && (
+            <div className="absolute top-3 left-3 z-10">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-500 text-white text-xs font-semibold shadow-md">
+                ⭐
+              </span>
+            </div>
+          )}
+
+          {/* VIP Badge - TOP RIGHT */}
           <div className="absolute top-3 right-3 z-10">
             <ConditionalVipBadge product={product} size="sm" />
           </div>
