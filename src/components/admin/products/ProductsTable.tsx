@@ -214,8 +214,8 @@ export function ProductsTable({
                         </div>
                         {/* Featured Badge - TOP LEFT */}
                         {product.isFeatured && (
-                          <div className="absolute -top-1 -left-1 z-10">
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-500 text-white text-[10px] font-semibold shadow-sm">
+                          <div className="absolute -top-1 -left-1 z-10 animate-pulse">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-white text-[10px] font-bold shadow-lg shadow-amber-500/50">
                               ⭐
                             </span>
                           </div>
