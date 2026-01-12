@@ -7,6 +7,7 @@ import { Product } from "@/types";
 import { getFirstProductImage, getSecondProductImage } from "@/lib/utils/image";
 import { trackProductClick, trackAddToCartClick } from "@/lib/productAnalytics";
 import { ConditionalVipBadge } from "@/components/ui/VipBadge";
+import { ConditionalFeaturedBadge } from "@/components/ui/FeaturedBadge";
 import OptimizedImage from "@/components/OptimizedImage";
 
 interface ProductCardProps {
@@ -120,15 +121,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div ref={cardRef} className="bg-zinc-900 rounded-2xl overflow-hidden hover:bg-zinc-800 transition-colors duration-300 relative">
         <div className="aspect-square bg-gradient-to-br from-zinc-800 to-zinc-900 relative overflow-hidden">
           {/* Featured Badge - TOP LEFT */}
-          {product.isFeatured && (
-            <div className="absolute top-3 left-3 z-10">
-              <div className="relative inline-block">
-                <span className="text-2xl animate-pulse filter drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]">
-                  ⭐
-                </span>
-              </div>
-            </div>
-          )}
+          <div className="absolute top-3 left-3 z-10">
+            <ConditionalFeaturedBadge product={product} size="md" />
+          </div>
 
           {/* VIP Badge - TOP RIGHT */}
           <div className="absolute top-3 right-3 z-10">

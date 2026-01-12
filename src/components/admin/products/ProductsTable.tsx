@@ -11,6 +11,7 @@ import type { Product } from "@/types";
 import { ProductStatusBadge } from "@/components/admin/products/ProductStatusBadge";
 import { getFirstProductImage } from "@/lib/utils/image";
 import { ConditionalVipBadge } from "@/components/ui/VipBadge";
+import { ConditionalFeaturedBadge } from "@/components/ui/FeaturedBadge";
 import OptimizedImage from "@/components/OptimizedImage";
 
 interface ProductCategory {
@@ -213,15 +214,9 @@ export function ProductsTable({
                           <ImageIcon className="w-6 h-6 text-gray-400" />
                         </div>
                         {/* Featured Badge - TOP LEFT */}
-                        {product.isFeatured && (
-                          <div className="absolute -top-1 -left-1 z-10">
-                            <div className="relative inline-block">
-                              <span className="text-lg animate-pulse filter drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]">
-                                ⭐
-                              </span>
-                            </div>
-                          </div>
-                        )}
+                        <div className="absolute -top-1 -left-1 z-10">
+                          <ConditionalFeaturedBadge product={product} size="sm" />
+                        </div>
                         {/* VIP Badge - TOP RIGHT */}
                         <div className="absolute -top-1 -right-1 z-10">
                           <ConditionalVipBadge product={product} size="sm" />
