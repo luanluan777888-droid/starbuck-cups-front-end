@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 interface FeaturedBadgeProps {
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -11,11 +9,11 @@ export function FeaturedBadge({
   size = "md",
   className = "",
 }: FeaturedBadgeProps) {
-  // Match VIP badge sizes: sm=24px, md=32px, lg=40px
+  // Featured badge sizes - max 24px
   const sizes = {
-    sm: { fontSize: "24px", lineHeight: "24px" },
-    md: { fontSize: "32px", lineHeight: "32px" },
-    lg: { fontSize: "40px", lineHeight: "40px" },
+    sm: { fontSize: "20px", lineHeight: "20px" },
+    md: { fontSize: "24px", lineHeight: "24px" },
+    lg: { fontSize: "24px", lineHeight: "24px" },
   };
 
   return (
