@@ -11,21 +11,18 @@ export function FeaturedBadge({
   size = "md",
   className = "",
 }: FeaturedBadgeProps) {
+  // Match VIP badge sizes: sm=24px, md=32px, lg=40px
   const sizes = {
-    sm: "text-lg",
-    md: "text-2xl",
-    lg: "text-3xl",
+    sm: { fontSize: "24px", lineHeight: "24px" },
+    md: { fontSize: "32px", lineHeight: "32px" },
+    lg: { fontSize: "40px", lineHeight: "40px" },
   };
 
   return (
     <div className={`inline-block featured-shimmer ${className}`}>
-      <span className={`${sizes[size]} featured-pulse`}>⭐</span>
+      <span style={sizes[size]}>⭐</span>
 
       <style jsx>{`
-        .featured-pulse {
-          animation: featured-pulse 1.5s infinite;
-        }
-
         .featured-shimmer {
           position: relative;
           overflow: hidden !important;
@@ -52,17 +49,6 @@ export function FeaturedBadge({
           animation: featured-shimmer-sweep 2.5s infinite;
           z-index: 2;
           pointer-events: none;
-        }
-
-        @keyframes featured-pulse {
-          0%,
-          100% {
-            filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.6));
-          }
-          50% {
-            filter: drop-shadow(0 0 15px rgba(251, 191, 36, 1))
-              drop-shadow(0 0 25px rgba(251, 191, 36, 0.8));
-          }
         }
 
         @keyframes featured-shimmer-sweep {
