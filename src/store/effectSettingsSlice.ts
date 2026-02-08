@@ -10,7 +10,15 @@ export interface RedEnvelopeSettings {
   windStrength: number;
   sparkleFrequency: number;
   quantity: number;
+  minSize: number;
+  maxSize: number;
+  flipSpeed: number;
+  swaySpeed: number;
+  hue: number;
+  bounce: boolean;
 }
+
+// ... 
 
 export interface SnowSettings {
   speed: number;
@@ -33,13 +41,18 @@ interface EffectSettingsState extends EffectSettings {
   error: string | null;
 }
 
-// Defaults
 const DEFAULT_RED_ENVELOPE_SETTINGS: RedEnvelopeSettings = {
   fallSpeed: 0.3,
   rotationSpeed: 1.0,
   windStrength: 0.3,
   sparkleFrequency: 0.02,
   quantity: 25,
+  minSize: 0.8,
+  maxSize: 1.2,
+  flipSpeed: 1.0,
+  swaySpeed: 1.0,
+  hue: 0,
+  bounce: true,
 };
 
 const DEFAULT_SNOW_SETTINGS: SnowSettings = {

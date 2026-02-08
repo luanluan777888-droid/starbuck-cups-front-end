@@ -59,8 +59,8 @@ export default function SettingsPage() {
     }
   };
 
-  const updateRedEnvelope = (key: keyof RedEnvelopeSettings, value: number) => {
-    setLocalSettings((prev) => ({
+  const updateRedEnvelope = (key: keyof RedEnvelopeSettings, value: number | boolean) => {
+    setLocalSettings((prev: EffectSettings) => ({
       ...prev,
       redEnvelopeSettings: {
         ...prev.redEnvelopeSettings!,
@@ -209,6 +209,8 @@ export default function SettingsPage() {
               />
             </div>
             
+            
+            
              <div className="space-y-2">
               <label className="flex justify-between text-sm font-medium text-gray-700">
                 <span>Sức gió</span>
@@ -222,6 +224,114 @@ export default function SettingsPage() {
                 value={localSettings.redEnvelopeSettings?.windStrength || 0.3}
                 onChange={(e) => updateRedEnvelope("windStrength", Number(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+              />
+            </div>
+
+             <div className="space-y-2">
+              <label className="flex justify-between text-sm font-medium text-gray-700">
+                <span>Tần suất lấp lánh</span>
+                <span className="text-gray-500 font-mono">{localSettings.redEnvelopeSettings?.sparkleFrequency}</span>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="0.1"
+                step="0.005"
+                value={localSettings.redEnvelopeSettings?.sparkleFrequency || 0.02}
+                onChange={(e) => updateRedEnvelope("sparkleFrequency", Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="flex justify-between text-sm font-medium text-gray-700">
+                  <span>Kích thước tối thiểu</span>
+                  <span className="text-gray-500 font-mono">{localSettings.redEnvelopeSettings?.minSize}</span>
+                </label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="1.5"
+                  step="0.1"
+                  value={localSettings.redEnvelopeSettings?.minSize || 0.8}
+                  onChange={(e) => updateRedEnvelope("minSize", Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="flex justify-between text-sm font-medium text-gray-700">
+                  <span>Kích thước tối đa</span>
+                  <span className="text-gray-500 font-mono">{localSettings.redEnvelopeSettings?.maxSize}</span>
+                </label>
+                <input
+                  type="range"
+                  min="1.0"
+                  max="2.5"
+                  step="0.1"
+                  value={localSettings.redEnvelopeSettings?.maxSize || 1.2}
+                  onChange={(e) => updateRedEnvelope("maxSize", Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="flex justify-between text-sm font-medium text-gray-700">
+                  <span>Tốc độ lật</span>
+                  <span className="text-gray-500 font-mono">{localSettings.redEnvelopeSettings?.flipSpeed}</span>
+                </label>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="3.0"
+                  step="0.1"
+                  value={localSettings.redEnvelopeSettings?.flipSpeed || 1.0}
+                  onChange={(e) => updateRedEnvelope("flipSpeed", Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="flex justify-between text-sm font-medium text-gray-700">
+                  <span>Tốc độ lắc lư</span>
+                  <span className="text-gray-500 font-mono">{localSettings.redEnvelopeSettings?.swaySpeed}</span>
+                </label>
+                <input
+                  type="range"
+                  min="0.1"
+                  max="3.0"
+                  step="0.1"
+                  value={localSettings.redEnvelopeSettings?.swaySpeed || 1.0}
+                  onChange={(e) => updateRedEnvelope("swaySpeed", Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="flex justify-between text-sm font-medium text-gray-700">
+                <span>Màu sắc (Hue Shift)</span>
+                <span className="text-gray-500 font-mono">{localSettings.redEnvelopeSettings?.hue}</span>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                step="5"
+                value={localSettings.redEnvelopeSettings?.hue || 0}
+                onChange={(e) => updateRedEnvelope("hue", Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700">Hiệu ứng nảy (Bounce)</label>
+              <input
+                type="checkbox"
+                checked={localSettings.redEnvelopeSettings?.bounce ?? true}
+                onChange={(e) => updateRedEnvelope("bounce", e.target.checked)}
+                className="w-5 h-5 accent-red-600 rounded cursor-pointer"
               />
             </div>
           </div>

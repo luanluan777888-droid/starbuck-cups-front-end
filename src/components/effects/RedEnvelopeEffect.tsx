@@ -8,6 +8,12 @@ interface RedEnvelopeSettings {
   windStrength: number;
   sparkleFrequency: number;
   quantity?: number;
+  minSize?: number;
+  maxSize?: number;
+  flipSpeed?: number;
+  swaySpeed?: number;
+  hue?: number;
+  bounce?: boolean;
 }
 
 interface RedEnvelopeEffectProps {
@@ -23,10 +29,10 @@ interface RedEnvelope {
   speed: number;
   wind: number;
   size: number;
-  flip: number; // For 3D flip effect (-1 to 1)
+  flip: number;
   flipSpeed: number;
-  velocityY: number; // For bounce effect
-  hue: number; // Color variation (0-20 for red shades)
+  velocityY: number;
+  hue: number;
   swayPhase: number;
   swaySpeed: number;
 }
@@ -36,7 +42,7 @@ interface Sparkle {
   y: number;
   size: number;
   opacity: number;
-  life: number; // 0 to 1
+  life: number;
   decay: number;
 }
 
@@ -49,13 +55,18 @@ export default function RedEnvelopeEffect({
   const sparklesRef = useRef<Sparkle[]>([]);
   const animationFrameRef = useRef<number | undefined>(undefined);
 
-  // Default settings if not provided
   const settings = redEnvelopeSettings || {
     fallSpeed: 0.3,
     rotationSpeed: 1.0,
     windStrength: 0.3,
     sparkleFrequency: 0.02,
     quantity: 25,
+    minSize: 0.8,
+    maxSize: 1.2,
+    flipSpeed: 1.0,
+    swaySpeed: 1.0,
+    hue: 0,
+    bounce: true,
   };
 
   useEffect(() => {
@@ -65,7 +76,6 @@ export default function RedEnvelopeEffect({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -73,123 +83,108 @@ export default function RedEnvelopeEffect({
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // Determine target count
     let targetCount = settings.quantity;
     if (!targetCount) {
-       targetCount = {
+      targetCount = {
         low: 15,
         medium: 25,
         high: 40,
       }[intensity];
     }
 
-    // Function to create a new envelope
-    const createEnvelope = (yStart: number = -100): RedEnvelope => ({
-      x: Math.random() * canvas.width,
-      y: yStart,
-      rotation: Math.random() * 360,
-      rotationSpeed: (Math.random() - 0.5) * 2 * settings.rotationSpeed,
-      speed: Math.random() * 1.5 + 0.5,
-      wind: (Math.random() * 0.3 - 0.15) * settings.windStrength,
-      size: Math.random() * 15 + 20,
-      flip: Math.random() * 2 - 1, // -1 to 1
-      flipSpeed: (Math.random() - 0.5) * 0.05,
-      velocityY: (Math.random() * 0.8 + 0.2) * settings.fallSpeed, // Slower initial velocity
-      hue: Math.random() * 20, // 0-20 for red color variations
-      swayPhase: Math.random() * Math.PI * 2, // Random starting phase for sway
-      swaySpeed: Math.random() * 1 + 0.5, // Different sway speeds
-    });
+    const createEnvelope = (yStart: number = -100): RedEnvelope => {
+      const minScale = settings.minSize ?? 0.8;
+      const maxScale = settings.maxSize ?? 1.2;
+      const scale = minScale + Math.random() * (maxScale - minScale);
 
-    // Check if we need to re-initialize or update existing
-    // If envelopes array is empty, initialize it full
+      return {
+        x: Math.random() * canvas.width,
+        y: yStart,
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 2 * settings.rotationSpeed,
+        speed: Math.random() * 1.5 + 0.5,
+        wind: (Math.random() * 0.3 - 0.15) * settings.windStrength,
+        size: 40 * scale,
+        flip: Math.random() * 2 - 1,
+        flipSpeed: (Math.random() - 0.5) * 0.05 * (settings.flipSpeed ?? 1.0),
+        velocityY: (Math.random() * 0.8 + 0.2) * settings.fallSpeed,
+        hue: (settings.hue ?? 0) + Math.random() * 10,
+        swayPhase: Math.random() * Math.PI * 2,
+        swaySpeed: (Math.random() * 1 + 0.5) * (settings.swaySpeed ?? 1.0),
+      };
+    };
+
     if (envelopesRef.current.length === 0) {
-      envelopesRef.current = Array.from({ length: targetCount! }, () => 
+      envelopesRef.current = Array.from({ length: targetCount! }, () =>
         createEnvelope(Math.random() * canvas.height - canvas.height)
       );
     } else {
-      // Logic for real-time updates without full reset
-      
-      // 1. Update count
       if (envelopesRef.current.length < targetCount!) {
-        // Add more
         const needed = targetCount! - envelopesRef.current.length;
         for (let i = 0; i < needed; i++) {
-          envelopesRef.current.push(createEnvelope(Math.random() * -500)); // Start above
+          envelopesRef.current.push(createEnvelope(Math.random() * -500));
         }
       } else if (envelopesRef.current.length > targetCount!) {
-        // Remove excess
         envelopesRef.current = envelopesRef.current.slice(0, targetCount);
       }
 
-      // 2. Update physics parameters for ALL envelopes to match new settings (wind, speed, etc.)
-      envelopesRef.current.forEach(env => {
-         // Update rotation speed range
-         const dir = Math.sign(env.rotationSpeed) || 1;
-         env.rotationSpeed = dir * (Math.random() * 0.5 + 0.5) * settings.rotationSpeed;
-         
-         // Update wind
-         const windDir = Math.sign(env.wind) || (Math.random() > 0.5 ? 1 : -1);
-         env.wind = windDir * (Math.random() * 0.3) * settings.windStrength;
+      envelopesRef.current.forEach((env) => {
+        const dir = Math.sign(env.rotationSpeed) || 1;
+        env.rotationSpeed = dir * (Math.random() * 0.5 + 0.5) * settings.rotationSpeed;
+        
+        const windDir = Math.sign(env.wind) || (Math.random() > 0.5 ? 1 : -1);
+        env.wind = windDir * (Math.random() * 0.3) * settings.windStrength;
       });
     }
 
-    // Initialize sparkles
     sparklesRef.current = [];
 
-    // Draw enhanced red envelope with 3D effects
-    const drawEnvelope = (envelope: RedEnvelope & { swayPhase?: number; swaySpeed?: number }) => {
+    const drawEnvelope = (envelope: RedEnvelope) => {
       ctx.save();
       ctx.translate(envelope.x, envelope.y);
       ctx.rotate((envelope.rotation * Math.PI) / 180);
 
-      const width = envelope.size * Math.abs(envelope.flip); // 3D width based on flip
+      const width = envelope.size * Math.abs(envelope.flip);
       const height = envelope.size * 1.4;
       const isFront = envelope.flip > 0;
-      const cornerRadius = 4; // Rounded corners
+      const cornerRadius = 4;
 
-      // Drop shadow for depth
       ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
       ctx.shadowBlur = 8;
       ctx.shadowOffsetX = 3;
       ctx.shadowOffsetY = 3;
 
-      // Draw rounded rectangle path
       ctx.beginPath();
-      // Simple fallback for rounded rect if not supported (though widely supported)
       if (ctx.roundRect) {
         ctx.roundRect(-width / 2, -height / 2, width, height, cornerRadius);
       } else {
         ctx.rect(-width / 2, -height / 2, width, height);
       }
-      ctx.clip(); // Clip everything to the rounded shape
+      ctx.clip();
 
-      // Main envelope body with gradient (3D effect)
       const gradient = ctx.createLinearGradient(-width / 2, -height / 2, width / 2, height / 2);
-      const redHue = 0 + envelope.hue; // 0-20 range for color variety
-      gradient.addColorStop(0, `hsl(${redHue}, 85%, 55%)`); // Lighter red
-      gradient.addColorStop(0.5, `hsl(${redHue}, 95%, 45%)`); // Richer red center
-      gradient.addColorStop(1, `hsl(${redHue}, 85%, 35%)`); // Darker red for depth
+      const redHue = 0 + envelope.hue;
+      gradient.addColorStop(0, `hsl(${redHue}, 85%, 55%)`);
+      gradient.addColorStop(0.5, `hsl(${redHue}, 95%, 45%)`);
+      gradient.addColorStop(1, `hsl(${redHue}, 85%, 35%)`);
 
       ctx.fillStyle = gradient;
       ctx.fillRect(-width / 2, -height / 2, width, height);
 
-      // Reset shadow for other elements
       ctx.shadowColor = "transparent";
       ctx.shadowBlur = 0;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
 
-      // Double golden border for richness
-      const goldGradient = ctx.createLinearGradient(-width/2, -height/2, width/2, height/2);
+      const goldGradient = ctx.createLinearGradient(-width / 2, -height / 2, width / 2, height / 2);
       goldGradient.addColorStop(0, "#FFD700");
-      goldGradient.addColorStop(0.3, "#FFFACD"); // Shiny spot
+      goldGradient.addColorStop(0.3, "#FFFACD");
       goldGradient.addColorStop(0.6, "#FFD700");
-      goldGradient.addColorStop(1, "#B8860B"); // Bronze/Dark Gold
+      goldGradient.addColorStop(1, "#B8860B");
 
       ctx.strokeStyle = goldGradient;
       ctx.lineWidth = 2.5;
-      
-      // Draw border using the same rounded path
+
       ctx.beginPath();
       if (ctx.roundRect) {
         ctx.roundRect(-width / 2, -height / 2, width, height, cornerRadius);
@@ -198,11 +193,10 @@ export default function RedEnvelopeEffect({
       }
       ctx.stroke();
 
-      ctx.strokeStyle = "rgba(255, 165, 0, 0.7)"; // Orange-ish inner border
+      ctx.strokeStyle = "rgba(255, 165, 0, 0.7)";
       ctx.lineWidth = 1;
       ctx.strokeRect(-width / 2 + 3, -height / 2 + 3, width - 6, height - 6);
 
-      // Inner decorative pattern (subtle corner ornaments)
       ctx.fillStyle = "rgba(255, 215, 0, 0.3)";
       const cornerSize = envelope.size * 0.15;
       ctx.fillRect(-width / 2, -height / 2, cornerSize, cornerSize);
@@ -211,33 +205,23 @@ export default function RedEnvelopeEffect({
       ctx.fillRect(width / 2 - cornerSize, height / 2 - cornerSize, cornerSize, cornerSize);
 
       if (isFront && width > envelope.size * 0.3) {
-        // Content transformation for 3D effect
         ctx.save();
-        // Scale the context horizontally based on the flip factor
-        // This makes the text look like it's attached to the surface as it rotates
         ctx.scale(Math.abs(envelope.flip), 1);
-
-        // Golden "福" character with glow effect
         ctx.shadowColor = "#FFD700";
         ctx.shadowBlur = 10;
-
-        ctx.fillStyle = goldGradient; // Use gold gradient for text too
+        ctx.fillStyle = goldGradient;
         ctx.font = `bold ${envelope.size * 0.6}px "SimSun", serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("福", 0, 0);
-
-        // Add subtle text shadow for depth
         ctx.shadowBlur = 2;
         ctx.shadowColor = "#8B4513";
         ctx.fillText("福", 0, 0);
-        
         ctx.restore();
       }
 
       ctx.restore();
 
-      // Generate sparkles occasionally (based on advanced settings)
       if (Math.random() < settings.sparkleFrequency && sparklesRef.current.length < 100) {
         sparklesRef.current.push({
           x: envelope.x + (Math.random() - 0.5) * width,
@@ -250,62 +234,45 @@ export default function RedEnvelopeEffect({
       }
     };
 
-    // Draw sparkle particles
     const drawSparkle = (sparkle: Sparkle) => {
       ctx.save();
       ctx.fillStyle = `rgba(255, 215, 0, ${sparkle.opacity * sparkle.life})`;
       ctx.shadowColor = "#FFD700";
       ctx.shadowBlur = 5;
-
-      // Star shape
       ctx.beginPath();
       ctx.arc(sparkle.x, sparkle.y, sparkle.size, 0, Math.PI * 2);
       ctx.fill();
-
       ctx.restore();
     };
 
-    // Animation loop with enhanced physics
     let time = 0;
     const animate = () => {
       time += 0.05;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw and update sparkles first (background layer)
       sparklesRef.current.forEach((sparkle, index) => {
         drawSparkle(sparkle);
-
-        // Update sparkle life
         sparkle.life -= sparkle.decay;
-        sparkle.y -= 0.5; // Float upward slowly
-
-        // Remove dead sparkles
+        sparkle.y -= 0.5;
         if (sparkle.life <= 0) {
           sparklesRef.current.splice(index, 1);
         }
       });
 
-      // Draw and update envelopes
-      envelopesRef.current.forEach((envelope: RedEnvelope & { swayPhase?: number; swaySpeed?: number }) => {
+      envelopesRef.current.forEach((envelope) => {
         drawEnvelope(envelope);
 
-        // Update position with smooth physics
-        envelope.velocityY += 0.005; // Gentle gravity
-        
-        // Terminal velocity
+        envelope.velocityY += 0.005;
         const maxVelocity = 2.0 * settings.fallSpeed;
         envelope.velocityY = Math.min(envelope.velocityY, maxVelocity);
 
         envelope.y += envelope.velocityY;
-        
-        // Swaying motion (Sine wave)
-        const sway = Math.sin(time * (envelope.swaySpeed || 1) + (envelope.swayPhase || 0));
-        envelope.x += envelope.wind + sway * 0.5; // Combine constant wind with swaying
 
-        // Update rotation with smoother animation
+        const sway = Math.sin(time * (envelope.swaySpeed || 1) + (envelope.swayPhase || 0));
+        envelope.x += envelope.wind + sway * 0.5;
+
         envelope.rotation += envelope.rotationSpeed;
 
-        // Update 3D flip effect for realistic tumbling
         envelope.flip += envelope.flipSpeed;
         if (envelope.flip > 1) {
           envelope.flip = 1;
@@ -315,19 +282,20 @@ export default function RedEnvelopeEffect({
           envelope.flipSpeed = Math.abs(envelope.flipSpeed);
         }
 
-        // Reset if out of bounds
-        if (envelope.y > canvas.height + 20) {
-          envelope.y = -50;
-          envelope.x = Math.random() * canvas.width;
-          envelope.rotation = Math.random() * 360;
-          envelope.velocityY = (Math.random() * 0.8 + 0.2) * settings.fallSpeed;
-          envelope.flip = Math.random() * 2 - 1;
-          envelope.hue = Math.random() * 20;
-          // Reset sway properties
-          envelope.swayPhase = Math.random() * Math.PI * 2;
+        if (settings.bounce && envelope.y > canvas.height - envelope.size && envelope.velocityY > 0) {
+          envelope.velocityY *= -0.6;
         }
 
-        // Wrap horizontally with smooth transition
+        if (!settings.bounce && envelope.y > canvas.height + 20) {
+             envelope.y = -50;
+             envelope.x = Math.random() * canvas.width;
+             Object.assign(envelope, createEnvelope(-50));
+        } else if (settings.bounce && envelope.y > canvas.height + 100) {
+             envelope.y = -50;
+             envelope.x = Math.random() * canvas.width;
+             Object.assign(envelope, createEnvelope(-50));
+        }
+
         if (envelope.x > canvas.width + 50) {
           envelope.x = -50;
         } else if (envelope.x < -50) {
@@ -346,7 +314,7 @@ export default function RedEnvelopeEffect({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [intensity, settings.fallSpeed, settings.rotationSpeed, settings.windStrength, settings.sparkleFrequency, settings.quantity]);
+  }, [intensity, settings]); // Simplified dependencies
 
   return (
     <canvas
