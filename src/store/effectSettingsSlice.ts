@@ -15,7 +15,6 @@ export interface RedEnvelopeSettings {
   flipSpeed: number;
   swaySpeed: number;
   hue: number;
-  bounce: boolean;
 }
 
 // ... 
@@ -52,7 +51,6 @@ const DEFAULT_RED_ENVELOPE_SETTINGS: RedEnvelopeSettings = {
   flipSpeed: 1.0,
   swaySpeed: 1.0,
   hue: 0,
-  bounce: true,
 };
 
 const DEFAULT_SNOW_SETTINGS: SnowSettings = {

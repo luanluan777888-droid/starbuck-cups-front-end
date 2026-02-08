@@ -59,7 +59,7 @@ export default function SettingsPage() {
     }
   };
 
-  const updateRedEnvelope = (key: keyof RedEnvelopeSettings, value: number | boolean) => {
+  const updateRedEnvelope = (key: keyof RedEnvelopeSettings, value: number) => {
     setLocalSettings((prev: EffectSettings) => ({
       ...prev,
       redEnvelopeSettings: {
@@ -325,15 +325,7 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700">Hiệu ứng nảy (Bounce)</label>
-              <input
-                type="checkbox"
-                checked={localSettings.redEnvelopeSettings?.bounce ?? true}
-                onChange={(e) => updateRedEnvelope("bounce", e.target.checked)}
-                className="w-5 h-5 accent-red-600 rounded cursor-pointer"
-              />
-            </div>
+
           </div>
         </div>
 

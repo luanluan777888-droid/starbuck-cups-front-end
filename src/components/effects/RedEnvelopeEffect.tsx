@@ -13,7 +13,6 @@ interface RedEnvelopeSettings {
   flipSpeed?: number;
   swaySpeed?: number;
   hue?: number;
-  bounce?: boolean;
 }
 
 interface RedEnvelopeEffectProps {
@@ -66,7 +65,6 @@ export default function RedEnvelopeEffect({
     flipSpeed: 1.0,
     swaySpeed: 1.0,
     hue: 0,
-    bounce: true,
   };
 
   useEffect(() => {
@@ -282,15 +280,7 @@ export default function RedEnvelopeEffect({
           envelope.flipSpeed = Math.abs(envelope.flipSpeed);
         }
 
-        if (settings.bounce && envelope.y > canvas.height - envelope.size && envelope.velocityY > 0) {
-          envelope.velocityY *= -0.6;
-        }
-
-        if (!settings.bounce && envelope.y > canvas.height + 20) {
-             envelope.y = -50;
-             envelope.x = Math.random() * canvas.width;
-             Object.assign(envelope, createEnvelope(-50));
-        } else if (settings.bounce && envelope.y > canvas.height + 100) {
+        if (envelope.y > canvas.height + 20) {
              envelope.y = -50;
              envelope.x = Math.random() * canvas.width;
              Object.assign(envelope, createEnvelope(-50));
