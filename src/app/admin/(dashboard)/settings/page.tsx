@@ -251,7 +251,7 @@ export default function SettingsPage() {
                 </label>
                 <input
                   type="range"
-                  min="0.5"
+                  min="0.2"
                   max="1.5"
                   step="0.1"
                   value={localSettings.redEnvelopeSettings?.minSize || 0.8}
