@@ -7,6 +7,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Toaster, toast } from "sonner";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { clearLastAction } from "@/store/slices/cartSlice";
+import { SettingsSocketProvider } from "@/components/providers/SettingsSocketProvider";
+import EffectManager from "@/components/effects/EffectManager";
 
 // Dynamic imports để giảm TBT
 const Header = dynamic(() => import("@/components/layout/Header"), {
@@ -69,7 +71,10 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   if (isAdminRoute) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <ErrorBoundary>{children}</ErrorBoundary>
+        <SettingsSocketProvider>
+          <EffectManager />
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </SettingsSocketProvider>
         <Toaster
           position="top-right"
           richColors
@@ -88,9 +93,12 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <main className="flex-1">
-        <ErrorBoundary>{children}</ErrorBoundary>
-      </main>
+      <SettingsSocketProvider>
+        <EffectManager />
+        <main className="flex-1">
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </main>
+      </SettingsSocketProvider>
       <Footer />
       <Cart />
       <FloatingContactButton />
