@@ -88,6 +88,7 @@ export default function SettingsPage() {
         activeEffects: isActive
           ? current.filter((e) => e !== effect)
           : [...current, effect],
+      };
     });
   };
 

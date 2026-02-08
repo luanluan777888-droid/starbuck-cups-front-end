@@ -155,7 +155,7 @@ export default function RedEnvelopeEffect({
         cancelAnimationFrame(requestRef.current);
       }
     };
-  }, [intensity, settings.fallSpeed, settings.rotationSpeed, settings.quantity]);
+  }, [intensity, settings.fallSpeed, settings.rotationSpeed, redEnvelopeSettings?.quantity]);
 
   return (
     <canvas
