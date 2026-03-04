@@ -1,0 +1,9 @@
+.thumbnailList {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.thumbnailList::-webkit-scrollbar {
+  display: none;
+}
+

@@ -1,0 +1,26 @@
+.thumbnailScroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #52525b #27272a;
+}
+
+.thumbnailScroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.thumbnailScroll::-webkit-scrollbar-track {
+  background: #27272a;
+  border-radius: 3px;
+}
+
+.thumbnailScroll::-webkit-scrollbar-thumb {
+  background: #52525b;
+  border-radius: 3px;
+}
+
+.thumbnailScroll::-webkit-scrollbar-thumb:hover {
+  background: #71717a;
+}
+

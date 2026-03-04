@@ -36,7 +36,6 @@ export default function DeferredGoogleAnalytics({
     if (enabled) return;
 
     const enable = () => setEnabled(true);
-    const fallbackTimer = window.setTimeout(enable, 12000);
 
     const passiveOptions: AddEventListenerOptions = {
       once: true,
@@ -48,7 +47,6 @@ export default function DeferredGoogleAnalytics({
     window.addEventListener("scroll", enable, passiveOptions);
 
     return () => {
-      window.clearTimeout(fallbackTimer);
       window.removeEventListener("pointerdown", enable);
       window.removeEventListener("keydown", enable);
       window.removeEventListener("scroll", enable);
@@ -84,4 +82,3 @@ export default function DeferredGoogleAnalytics({
     </>
   );
 }
-

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ImageModal } from "./ImageModal";
 import { VipBadge } from "./VipBadge";
 import OptimizedImage from "@/components/OptimizedImage";
+import styles from "./PropertyGallery.module.css";
 
 interface PropertyGalleryProps {
   images: string[];
@@ -287,7 +288,7 @@ export function PropertyGallery({
           <div className="px-4 py-2 bg-zinc-800">
             {/* Force container width và enable scrolling */}
             <div className="w-full max-w-full">
-              <div className="flex gap-2 md:gap-3 pb-2 thumbnail-scroll">
+              <div className={`flex gap-2 md:gap-3 pb-2 ${styles.thumbnailScroll}`}>
                 {images.map((image, index) => (
                   <button
                     key={index}

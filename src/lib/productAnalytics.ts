@@ -181,23 +181,28 @@ export const trackAddToCartClick = async (product: {
 };
 
 // Utility functions for debugging and monitoring
+interface SerializableClickTracker {
+  lastClickTime: string;
+  clickCount: number;
+}
+
+const mapToSerializableTracker = (clickMap: Map<string, ClickTracker>) => {
+  const result: Record<string, SerializableClickTracker> = {};
+  clickMap.forEach((value, key) => {
+    result[key] = {
+      ...value,
+      lastClickTime: new Date(value.lastClickTime).toISOString(),
+    };
+  });
+  return result;
+};
 
 // Get current session stats (for debugging)
 export const getSessionStats = () => {
   resetSessionIfNeeded();
   return {
-    productClicks: Object.fromEntries(
-      Array.from(sessionTracker.productClicks.entries()).map(([key, value]) => [
-        key,
-        { ...value, lastClickTime: new Date(value.lastClickTime).toISOString() },
-      ])
-    ),
-    cartClicks: Object.fromEntries(
-      Array.from(sessionTracker.cartClicks.entries()).map(([key, value]) => [
-        key,
-        { ...value, lastClickTime: new Date(value.lastClickTime).toISOString() },
-      ])
-    ),
+    productClicks: mapToSerializableTracker(sessionTracker.productClicks),
+    cartClicks: mapToSerializableTracker(sessionTracker.cartClicks),
     sessionDuration: Date.now() - sessionTracker.sessionStart,
     totalSessionClicks: getTotalSessionClicks(),
     sessionStart: new Date(sessionTracker.sessionStart).toISOString(),

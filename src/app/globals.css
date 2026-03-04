@@ -3,44 +3,6 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-jetbrains-mono: "JetBrains Mono", monospace;
-}
-
-/* Hide scrollbar utility classes */
-.scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
-}
-
-/* Horizontal scroll for thumbnails */
-.thumbnail-scroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #52525b #27272a;
-}
-
-.thumbnail-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-
-.thumbnail-scroll::-webkit-scrollbar-track {
-  background: #27272a;
-  border-radius: 3px;
-}
-
-.thumbnail-scroll::-webkit-scrollbar-thumb {
-  background: #52525b;
-  border-radius: 3px;
-}
-
-.thumbnail-scroll::-webkit-scrollbar-thumb:hover {
-  background: #71717a;
 }
 
 /* JetBrains Mono Font Family - Load only essential weights */
@@ -58,20 +20,6 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
