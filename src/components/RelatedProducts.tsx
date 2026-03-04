@@ -9,10 +9,6 @@ import ProductCard from "@/components/ProductCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-// Import Swiper CSS
-import "swiper/css";
-import "swiper/css/navigation";
-
 export default function RelatedProducts() {
   const dispatch = useAppDispatch();
 

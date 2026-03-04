@@ -2,6 +2,8 @@
 import { generateSEO } from "@/lib/seo";
 import HomePageComponent from "@/components/pages/HomePage";
 import { Category } from "@/types";
+import { preload } from "react-dom";
+import { convertDriveUrl } from "@/utils/googleDriveHelper";
 
 // Enable static generation with revalidation for better performance
 export const revalidate = 300; // 5 minutes
@@ -30,6 +32,24 @@ interface HomePageProps {
   categories: Category[];
   heroImages: HeroImageData[];
   promotionalBanner: PromotionalBannerData | null;
+}
+
+const HERO_IMAGE_SIZES =
+  "(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 50vw";
+
+function buildOptimizedImageUrl(src: string, width: number, quality = 60): string {
+  const convertedSrc = convertDriveUrl(src);
+
+  if (convertedSrc.startsWith("/") || convertedSrc.startsWith("data:")) {
+    return convertedSrc;
+  }
+
+  const params = new URLSearchParams();
+  params.set("url", convertedSrc);
+  params.set("w", String(width));
+  params.set("q", String(quality));
+  params.set("f", "webp");
+  return `/api/image?${params.toString()}`;
 }
 
 export const metadata: Metadata = generateSEO({
@@ -135,11 +155,30 @@ async function getHomePageData(): Promise<HomePageProps> {
 
 export default async function HomePage() {
   const homePageData = await getHomePageData();
+  const heroImages = homePageData.heroImages || [];
+  const lcpHeroImage = heroImages.find((img) => img.isActive) || heroImages[0];
+
+  if (lcpHeroImage?.imageUrl) {
+    const lcpImageSrc = buildOptimizedImageUrl(lcpHeroImage.imageUrl, 1280, 60);
+    const lcpImageSrcSet = [640, 960, 1280]
+      .map(
+        (width) =>
+          `${buildOptimizedImageUrl(lcpHeroImage.imageUrl, width, 60)} ${width}w`
+      )
+      .join(", ");
+
+    preload(lcpImageSrc, {
+      as: "image",
+      imageSrcSet: lcpImageSrcSet,
+      imageSizes: HERO_IMAGE_SIZES,
+      fetchPriority: "high",
+    });
+  }
 
   return (
     <HomePageComponent
       categories={homePageData.categories || []}
-      heroImages={homePageData.heroImages || []}
+      heroImages={heroImages}
       promotionalBanner={homePageData.promotionalBanner}
     />
   );

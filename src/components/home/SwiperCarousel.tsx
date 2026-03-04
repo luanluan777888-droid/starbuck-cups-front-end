@@ -5,10 +5,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import OptimizedImage from "@/components/OptimizedImage";
 
-// Import Swiper CSS
-import "swiper/css";
-import "swiper/css/pagination";
-
 interface HeroImageData {
   id: string;
   title: string;

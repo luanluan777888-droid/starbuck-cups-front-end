@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, ImgHTMLAttributes } from 'react';
+import { ImgHTMLAttributes } from 'react';
 import { convertDriveUrl } from '@/utils/googleDriveHelper';
 
 interface OptimizedImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet'> {
@@ -36,25 +36,7 @@ export default function OptimizedImage({
   style,
   ...props
 }: OptimizedImageProps) {
-  const [imageSrc, setImageSrc] = useState<string>('');
-  const [imageSrcSet, setImageSrcSet] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    // Convert Google Drive URLs
-    const convertedSrc = convertDriveUrl(src);
-
-    // For local images (starting with /), use as-is
-    if (convertedSrc.startsWith('/') || convertedSrc.startsWith('data:')) {
-      setImageSrc(convertedSrc);
-      setImageSrcSet(undefined);
-      return;
-    }
-
-    // For remote images, use optimization API
-    const optimizedUrl = getOptimizedUrl(convertedSrc, width, quality);
-    setImageSrc(optimizedUrl);
-    setImageSrcSet(buildSrcSet(convertedSrc, width, quality));
-  }, [src, width, quality]);
+  const { imageSrc, imageSrcSet } = resolveImageSource(src, width, quality);
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (onError) {
@@ -109,6 +91,24 @@ export default function OptimizedImage({
       {...props}
     />
   );
+}
+
+function resolveImageSource(src: string, width?: number, quality?: number): {
+  imageSrc: string;
+  imageSrcSet?: string;
+} {
+  const convertedSrc = convertDriveUrl(src);
+
+  // For local images (starting with /), use as-is
+  if (convertedSrc.startsWith('/') || convertedSrc.startsWith('data:')) {
+    return { imageSrc: convertedSrc };
+  }
+
+  // For remote images, use optimization API
+  return {
+    imageSrc: getOptimizedUrl(convertedSrc, width, quality),
+    imageSrcSet: buildSrcSet(convertedSrc, width, quality),
+  };
 }
 
 /**
