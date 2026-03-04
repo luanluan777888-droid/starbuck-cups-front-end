@@ -24,8 +24,9 @@ export function SettingsSocketProvider({
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Backend URL
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    // Socket server listens on backend root, while NEXT_PUBLIC_API_URL may end with "/api".
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+    const baseUrl = apiUrl.endsWith("/api") ? apiUrl.slice(0, -4) : apiUrl;
     
     // Connect to root namespace as per socket.service.ts
     // Note: socket.service.ts uses root namespace, unlike the Movie project which used /settings
