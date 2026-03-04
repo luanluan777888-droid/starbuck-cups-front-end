@@ -17,6 +17,12 @@ export function convertDriveUrl(originalUrl: string): string {
     return originalUrl;
   }
 
+  // Skip local/relative assets like /logo.png, data:, blob:, etc.
+  // Only absolute http/https URLs should be parsed via URL().
+  if (!/^https?:\/\//i.test(originalUrl)) {
+    return originalUrl;
+  }
+
   try {
     const url = new URL(originalUrl);
 
@@ -60,6 +66,10 @@ export function convertDriveUrl(originalUrl: string): string {
  * Check if URL is a Google Drive URL
  */
 export function isGoogleDriveUrl(url: string): boolean {
+  if (!/^https?:\/\//i.test(url)) {
+    return false;
+  }
+
   try {
     const parsedUrl = new URL(url);
     return DRIVE_HOSTNAMES.has(parsedUrl.hostname) || 
