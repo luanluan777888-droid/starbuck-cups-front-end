@@ -124,10 +124,12 @@ function resolveImageSource(src: string, width?: number, quality?: number): {
     return { imageSrc: convertedSrc };
   }
 
+  const allowDirectFallback = convertedSrc.startsWith("/");
+
   return {
     imageSrc: getOptimizedUrl(convertedSrc, width, quality),
     imageSrcSet: buildSrcSet(convertedSrc, width, quality),
-    directFallbackSrc: convertedSrc,
+    directFallbackSrc: allowDirectFallback ? convertedSrc : undefined,
   };
 }
 
@@ -144,23 +146,8 @@ function shouldBypassOptimization(src: string): boolean {
     return true;
   }
 
-  try {
-    const hostname = new URL(src).hostname.toLowerCase();
-    if (hostname === "drive.google.com" || hostname === "docs.google.com") {
-      return true;
-    }
-
-    return (
-      hostname === "googleusercontent.com" ||
-      hostname.endsWith(".googleusercontent.com") ||
-      hostname === "amazonaws.com" ||
-      hostname.endsWith(".amazonaws.com") ||
-      hostname === "cloudfront.net" ||
-      hostname.endsWith(".cloudfront.net")
-    );
-  } catch {
-    return true;
-  }
+  // Remote images should go through /api/image for resize/re-encode/cache.
+  return false;
 }
 
 /**

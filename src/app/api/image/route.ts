@@ -20,12 +20,6 @@ function getCacheDir(): string {
 }
 
 const CACHE_DIR = getCacheDir();
-const BYPASS_OPTIMIZATION_HOST_SUFFIXES = [
-  "googleusercontent.com",
-  "amazonaws.com",
-  "cloudfront.net",
-];
-const BYPASS_OPTIMIZATION_HOSTS = new Set(["drive.google.com", "docs.google.com"]);
 
 // Ensure cache directory exists
 async function ensureCacheDir() {
@@ -65,16 +59,10 @@ function resolveOutputFormat(
   return "jpeg";
 }
 
-function shouldBypassOptimization(url: string): boolean {
+function isHttpUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    const hostname = parsed.hostname.toLowerCase();
-
-    if (BYPASS_OPTIMIZATION_HOSTS.has(hostname)) return true;
-
-    return BYPASS_OPTIMIZATION_HOST_SUFFIXES.some(
-      (suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`)
-    );
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
   } catch {
     return false;
   }
@@ -134,6 +122,13 @@ export async function GET(request: NextRequest) {
     // Convert Google Drive URLs to direct googleusercontent URLs
     url = convertDriveUrl(url);
 
+    if (!isHttpUrl(url)) {
+      return NextResponse.json(
+        { error: "Invalid URL protocol. Only http/https are supported." },
+        { status: 400 }
+      );
+    }
+
     // Validate format
     if (!["auto", "webp", "avif", "jpeg", "png"].includes(requestedFormat)) {
       return NextResponse.json(
@@ -146,12 +141,6 @@ export async function GET(request: NextRequest) {
       requestedFormat,
       request.headers.get("accept")
     );
-
-    if (shouldBypassOptimization(url)) {
-      const bypass = NextResponse.redirect(url, 307);
-      bypass.headers.set("Cache-Control", "public, max-age=3600");
-      return bypass;
-    }
 
     // Ensure cache directory exists
     await ensureCacheDir();
@@ -174,12 +163,16 @@ export async function GET(request: NextRequest) {
       // Cache miss, continue to optimization
     }
 
-    // Fetch original image - fallback to direct URL if origin is slow/unavailable
+    // Fetch original image - fallback to local placeholder if origin is slow/unavailable
     let imageBuffer: Buffer;
     try {
       imageBuffer = await fetchImage(url);
-    } catch {
-      const fallback = NextResponse.redirect(url, 307);
+    } catch (error) {
+      console.error("Image origin fetch failed:", error);
+      const fallback = NextResponse.redirect(
+        new URL("/images/placeholder.webp", request.url),
+        307
+      );
       fallback.headers.set("Cache-Control", "public, max-age=300");
       return fallback;
     }
