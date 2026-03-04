@@ -45,7 +45,9 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   const isAdminRoute = pathname?.startsWith("/admin");
 
   // Get cart state for global notifications
-  const { lastAction } = useAppSelector((state) => state.cart);
+  const { lastAction, isOpen: isCartOpen } = useAppSelector(
+    (state) => state.cart
+  );
 
   // Global cart notification handler
   useEffect(() => {
@@ -94,7 +96,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
         <ErrorBoundary>{children}</ErrorBoundary>
       </main>
       <Footer />
-      <Cart />
+      {isCartOpen ? <Cart /> : null}
       <FloatingContactButton />
       <Toaster
         position="top-right"
