@@ -72,45 +72,118 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   promotionalBanner = null,
 }) => {
   const [showSwiper, setShowSwiper] = useState(false);
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(max-width: 768px)").matches;
+  });
+  const [isLowEndDevice, setIsLowEndDevice] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const memory = nav.deviceMemory ?? 4;
+    const cores = navigator.hardwareConcurrency ?? 4;
+    return prefersReducedMotion || memory <= 4 || cores <= 4;
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
 
     const updateViewport = () => {
       setIsMobileViewport(mediaQuery.matches);
+      const nav = navigator as Navigator & { deviceMemory?: number };
+      const memory = nav.deviceMemory ?? 4;
+      const cores = navigator.hardwareConcurrency ?? 4;
+      setIsLowEndDevice(reducedMotionQuery.matches || memory <= 4 || cores <= 4);
     };
 
     updateViewport();
     mediaQuery.addEventListener("change", updateViewport);
+    reducedMotionQuery.addEventListener("change", updateViewport);
 
-    return () => mediaQuery.removeEventListener("change", updateViewport);
+    return () => {
+      mediaQuery.removeEventListener("change", updateViewport);
+      reducedMotionQuery.removeEventListener("change", updateViewport);
+    };
   }, []);
 
   useEffect(() => {
-    // Keep first static hero image on mobile for faster LCP and less JS work.
-    if (isMobileViewport) {
+    // Keep static hero image on constrained devices to avoid loading Swiper runtime.
+    if (isMobileViewport || isLowEndDevice) {
       setShowSwiper(false);
       return;
     }
 
-    const run = () => setShowSwiper(true);
-    const idleApi = window as Window & {
-      requestIdleCallback?: (
-        callback: () => void,
-        options?: { timeout: number }
-      ) => number;
-      cancelIdleCallback?: (handle: number) => void;
+    let timeoutId: number | undefined;
+    let idleId: number | undefined;
+    let didEnable = false;
+
+    const interactionEvents: Array<keyof WindowEventMap> = [
+      "pointerdown",
+      "keydown",
+      "touchstart",
+      "wheel",
+    ];
+
+    const enableSwiper = () => {
+      if (didEnable) return;
+      didEnable = true;
+      setShowSwiper(true);
     };
 
-    if (idleApi.requestIdleCallback && idleApi.cancelIdleCallback) {
-      const idleId = idleApi.requestIdleCallback(run, { timeout: 2000 });
-      return () => idleApi.cancelIdleCallback?.(idleId);
-    }
+    const scheduleEnable = () => {
+      const requestIdle = (
+        window as Window & {
+          requestIdleCallback?: (
+            callback: () => void,
+            options?: { timeout: number }
+          ) => number;
+        }
+      ).requestIdleCallback;
 
-    const timer = window.setTimeout(run, 1600);
-    return () => window.clearTimeout(timer);
-  }, [isMobileViewport]);
+      if (typeof requestIdle === "function") {
+        idleId = requestIdle(enableSwiper, { timeout: 1800 });
+        return;
+      }
+
+      timeoutId = window.setTimeout(enableSwiper, 1200);
+    };
+
+    const handleFirstInteraction = () => {
+      interactionEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, handleFirstInteraction);
+      });
+      scheduleEnable();
+    };
+
+    interactionEvents.forEach((eventName) => {
+      window.addEventListener(eventName, handleFirstInteraction, {
+        passive: true,
+      });
+    });
+
+    const fallbackTimer = window.setTimeout(scheduleEnable, 15000);
+
+    return () => {
+      window.clearTimeout(fallbackTimer);
+      if (timeoutId) window.clearTimeout(timeoutId);
+      const cancelIdle = (
+        window as Window & {
+          cancelIdleCallback?: (handle: number) => void;
+        }
+      ).cancelIdleCallback;
+      if (idleId && typeof cancelIdle === "function") {
+        cancelIdle(idleId);
+      }
+      interactionEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, handleFirstInteraction);
+      });
+    };
+  }, [isLowEndDevice, isMobileViewport]);
 
   if (loading) {
     return <HeroSectionSkeleton />;

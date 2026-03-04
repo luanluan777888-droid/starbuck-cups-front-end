@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { usePathname } from "next/navigation";
 import { RootState, AppDispatch } from "@/store"; // Need to ensure store export
@@ -24,6 +24,7 @@ const RedEnvelopeEffect = dynamic(() => import("./RedEnvelopeEffect"), {
 export default function EffectManager() {
   const dispatch = useDispatch<AppDispatch>(); // Ensure AppDispatch type exists
   const pathname = usePathname();
+  const [allowAnimatedEffects, setAllowAnimatedEffects] = useState(false);
   
   // Select from store - assumed structure
   const {
@@ -37,15 +38,31 @@ export default function EffectManager() {
 
   const { socket } = useSettingsSocket();
 
+  useEffect(() => {
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const memory = nav.deviceMemory ?? 4;
+    const cores = navigator.hardwareConcurrency ?? 4;
+
+    setAllowAnimatedEffects(
+      !isMobile && !prefersReducedMotion && memory > 4 && cores > 4
+    );
+  }, []);
+
   // Fetch settings on mount
   useEffect(() => {
+    if (!allowAnimatedEffects) return;
     // Dispatch action to fetch settings via API
     // Need to implement fetchEffectSettings thunk
     dispatch(fetchEffectSettings());
-  }, [dispatch]);
+  }, [allowAnimatedEffects, dispatch]);
 
   // Listen for socket updates
   useEffect(() => {
+    if (!allowAnimatedEffects) return;
     if (!socket) return;
 
     const handleSettingsUpdate = (newSettings: EffectSettings) => {
@@ -58,7 +75,7 @@ export default function EffectManager() {
     return () => {
       socket.off("settings:updated", handleSettingsUpdate);
     };
-  }, [socket, dispatch]);
+  }, [allowAnimatedEffects, socket, dispatch]);
 
   const isAdminPage = pathname?.startsWith("/admin");
   
@@ -69,7 +86,14 @@ export default function EffectManager() {
     return false;
   });
 
-  if (isAdminPage || isExcluded || !enabled || !activeEffects || activeEffects.length === 0) {
+  if (
+    isAdminPage ||
+    isExcluded ||
+    !enabled ||
+    !activeEffects ||
+    activeEffects.length === 0 ||
+    !allowAnimatedEffects
+  ) {
     return null;
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 interface RedEnvelopeSettings {
   fallSpeed: number;
@@ -54,18 +54,22 @@ export default function RedEnvelopeEffect({
   const sparklesRef = useRef<Sparkle[]>([]);
   const animationFrameRef = useRef<number | undefined>(undefined);
 
-  const settings = redEnvelopeSettings || {
-    fallSpeed: 0.3,
-    rotationSpeed: 1.0,
-    windStrength: 0.3,
-    sparkleFrequency: 0.02,
-    quantity: 25,
-    minSize: 0.8,
-    maxSize: 1.2,
-    flipSpeed: 1.0,
-    swaySpeed: 1.0,
-    hue: 0,
-  };
+  const settings = useMemo(
+    () =>
+      redEnvelopeSettings || {
+        fallSpeed: 0.3,
+        rotationSpeed: 1.0,
+        windStrength: 0.3,
+        sparkleFrequency: 0.02,
+        quantity: 25,
+        minSize: 0.8,
+        maxSize: 1.2,
+        flipSpeed: 1.0,
+        swaySpeed: 1.0,
+        hue: 0,
+      },
+    [redEnvelopeSettings]
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -89,6 +93,8 @@ export default function RedEnvelopeEffect({
         high: 40,
       }[intensity];
     }
+    // Cap particle count to keep CPU stable on slower devices.
+    targetCount = Math.max(6, Math.min(targetCount, 22));
 
     const createEnvelope = (yStart: number = -100): RedEnvelope => {
       const minScale = settings.minSize ?? 0.8;
@@ -244,18 +250,27 @@ export default function RedEnvelopeEffect({
     };
 
     let time = 0;
-    const animate = () => {
+    let lastFrameAt = 0;
+    const frameIntervalMs = 1000 / 30;
+
+    const animate = (timestamp: number) => {
+      if (timestamp - lastFrameAt < frameIntervalMs) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameAt = timestamp;
       time += 0.05;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      sparklesRef.current.forEach((sparkle, index) => {
+      for (let index = sparklesRef.current.length - 1; index >= 0; index -= 1) {
+        const sparkle = sparklesRef.current[index];
         drawSparkle(sparkle);
         sparkle.life -= sparkle.decay;
         sparkle.y -= 0.5;
         if (sparkle.life <= 0) {
           sparklesRef.current.splice(index, 1);
         }
-      });
+      }
 
       envelopesRef.current.forEach((envelope) => {
         drawEnvelope(envelope);
@@ -296,7 +311,7 @@ export default function RedEnvelopeEffect({
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
@@ -304,7 +319,7 @@ export default function RedEnvelopeEffect({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [intensity, settings]); // Simplified dependencies
+  }, [intensity, settings]);
 
   return (
     <canvas
