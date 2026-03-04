@@ -62,6 +62,7 @@ const nextConfig: NextConfig = {
       "swiper",
     ],
     webpackBuildWorker: true,
+    inlineCss: true,
   },
   // Compression
   compress: true,
