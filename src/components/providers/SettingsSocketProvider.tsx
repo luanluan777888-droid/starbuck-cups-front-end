@@ -15,6 +15,21 @@ const SettingsSocketContext = createContext<SettingsSocketContextType>({
 
 export const useSettingsSocket = () => useContext(SettingsSocketContext);
 
+function normalizeSocketBaseUrl(apiUrl: string): string {
+  return apiUrl.endsWith("/api") ? apiUrl.slice(0, -4) : apiUrl;
+}
+
+function getSocketCandidates(): string[] {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+  const configuredBaseUrl = normalizeSocketBaseUrl(apiUrl);
+
+  if (typeof window === "undefined") {
+    return [configuredBaseUrl];
+  }
+
+  return Array.from(new Set([window.location.origin, configuredBaseUrl]));
+}
+
 export function SettingsSocketProvider({
   children,
 }: {
@@ -24,37 +39,53 @@ export function SettingsSocketProvider({
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Socket server listens on backend root, while NEXT_PUBLIC_API_URL may end with "/api".
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
-    const baseUrl = apiUrl.endsWith("/api") ? apiUrl.slice(0, -4) : apiUrl;
-    
-    // Connect to root namespace as per socket.service.ts
-    // Note: socket.service.ts uses root namespace, unlike the Movie project which used /settings
-    // Wait, let me check socket.service.ts again. 
-    // It initializes 'new SocketIOServer(server, ...)' without explicit namespace in constructor
-    // So it listens on root. But wait, it doesn't seem to distinct settings yet.
-    // In socket.service.ts, I added emitSettingsUpdate using this.io.emit -> broadcasts to everyone.
-    // So client should connect to root.
+    const [primaryUrl, fallbackUrl] = getSocketCandidates();
+    let activeSocket: Socket | null = null;
+    let switchedToFallback = false;
 
-    const socketInstance = io(baseUrl, {
-      withCredentials: true,
-      transports: ["websocket", "polling"],
-    });
+    const connect = (targetUrl: string, allowFallback: boolean) => {
+      const instance = io(targetUrl, {
+        withCredentials: true,
+        transports: ["websocket", "polling"],
+        timeout: 8000,
+        reconnectionAttempts: 2,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 2500,
+      });
 
-    socketInstance.on("connect", () => {
-      console.log("Connected to socket server");
-      setIsConnected(true);
-    });
+      activeSocket = instance;
+      setSocket(instance);
 
-    socketInstance.on("disconnect", () => {
-      console.log("Disconnected from socket server");
-      setIsConnected(false);
-    });
+      instance.on("connect", () => {
+        setIsConnected(true);
+      });
 
-    setSocket(socketInstance);
+      instance.on("disconnect", () => {
+        setIsConnected(false);
+      });
+
+      instance.on("connect_error", () => {
+        setIsConnected(false);
+
+        if (
+          allowFallback &&
+          !switchedToFallback &&
+          fallbackUrl &&
+          fallbackUrl !== targetUrl
+        ) {
+          switchedToFallback = true;
+          instance.removeAllListeners();
+          instance.disconnect();
+          connect(fallbackUrl, false);
+        }
+      });
+    };
+
+    connect(primaryUrl, true);
 
     return () => {
-      socketInstance.disconnect();
+      activeSocket?.removeAllListeners();
+      activeSocket?.disconnect();
     };
   }, []);
 

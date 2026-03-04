@@ -23,6 +23,22 @@ class SocketManager {
     null;
   private isConnecting = false;
 
+  private normalizeSocketBaseUrl(apiUrl: string): string {
+    return apiUrl.endsWith("/api") ? apiUrl.slice(0, -4) : apiUrl;
+  }
+
+  private getSocketCandidates(): string[] {
+    const configuredUrl = process.env.NEXT_PUBLIC_API_URL
+      ? this.normalizeSocketBaseUrl(process.env.NEXT_PUBLIC_API_URL)
+      : "http://localhost:8080";
+
+    if (typeof window === "undefined") {
+      return [configuredUrl];
+    }
+
+    return Array.from(new Set([window.location.origin, configuredUrl]));
+  }
+
   public connect(
     token: string
   ): Promise<Socket<ServerToClientEvents, ClientToServerEvents>> {
@@ -48,54 +64,57 @@ class SocketManager {
       }
 
       this.isConnecting = true;
+      const candidates = this.getSocketCandidates();
+      let candidateIndex = 0;
+      let settled = false;
 
-      // Extract base URL for Socket.IO connection
-      let serverUrl: string;
+      const cleanupCurrentSocket = () => {
+        if (!this.socket) return;
+        this.socket.removeAllListeners();
+        this.socket.disconnect();
+        this.socket = null;
+      };
 
-      if (process.env.NEXT_PUBLIC_API_URL) {
-        // Remove /api suffix and ensure proper URL format
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        if (apiUrl.endsWith("/api")) {
-          serverUrl = apiUrl.slice(0, -4); // Remove "/api"
-        } else {
-          serverUrl = apiUrl;
-        }
-      } else {
-        serverUrl = "http://localhost:8080";
-      }
+      const tryConnect = (serverUrl: string) => {
+        this.socket = io(serverUrl, {
+          auth: {
+            token,
+          },
+          transports: ["websocket", "polling"],
+          timeout: 8000,
+          reconnection: false,
+        });
 
-      this.socket = io(serverUrl, {
-        auth: {
-          token: token,
-        },
-        transports: ["websocket", "polling"],
-        timeout: 10000,
-        retries: 3,
-      });
+        this.socket.on("connect", () => {
+          if (settled) return;
+          settled = true;
+          this.isConnecting = false;
+          this.socket?.emit("admin:join");
+          resolve(this.socket!);
+        });
 
-      this.socket.on("connect", () => {
-        this.isConnecting = false;
+        this.socket.on("disconnect", () => {
+          this.isConnecting = false;
+        });
 
-        // Join admin room
-        this.socket?.emit("admin:join");
+        this.socket.on("connect_error", (error: Error) => {
+          cleanupCurrentSocket();
+          candidateIndex += 1;
 
-        resolve(this.socket!);
-      });
+          if (candidateIndex < candidates.length) {
+            tryConnect(candidates[candidateIndex]);
+            return;
+          }
 
-      this.socket.on("connect_error", (error) => {
-        this.isConnecting = false;
-        reject(error);
-      });
+          if (!settled) {
+            settled = true;
+            this.isConnecting = false;
+            reject(error);
+          }
+        });
+      };
 
-      this.socket.on("disconnect", () => {
-        this.isConnecting = false;
-      });
-
-      // Set up error handling
-      this.socket.on("connect_error", (error: Error) => {
-        this.isConnecting = false;
-        reject(error);
-      });
+      tryConnect(candidates[candidateIndex]);
     });
   }
 

@@ -35,10 +35,42 @@ interface HomePageProps {
 const HERO_IMAGE_SIZES =
   "(max-width: 640px) 88vw, (max-width: 768px) 88vw, (max-width: 1024px) 56vw, 44vw";
 
+function shouldBypassImageProxy(src: string): boolean {
+  if (
+    src.startsWith("/") ||
+    src.startsWith("data:") ||
+    src.startsWith("blob:")
+  ) {
+    return true;
+  }
+
+  if (!/^https?:\/\//i.test(src)) {
+    return true;
+  }
+
+  try {
+    const hostname = new URL(src).hostname.toLowerCase();
+    if (hostname === "drive.google.com" || hostname === "docs.google.com") {
+      return true;
+    }
+
+    return (
+      hostname === "googleusercontent.com" ||
+      hostname.endsWith(".googleusercontent.com") ||
+      hostname === "amazonaws.com" ||
+      hostname.endsWith(".amazonaws.com") ||
+      hostname === "cloudfront.net" ||
+      hostname.endsWith(".cloudfront.net")
+    );
+  } catch {
+    return true;
+  }
+}
+
 function buildOptimizedImageUrl(src: string, width: number, quality = 50): string {
   const convertedSrc = convertDriveUrl(src);
 
-  if (convertedSrc.startsWith("/") || convertedSrc.startsWith("data:")) {
+  if (shouldBypassImageProxy(convertedSrc)) {
     return convertedSrc;
   }
 

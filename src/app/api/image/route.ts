@@ -20,6 +20,12 @@ function getCacheDir(): string {
 }
 
 const CACHE_DIR = getCacheDir();
+const BYPASS_OPTIMIZATION_HOST_SUFFIXES = [
+  "googleusercontent.com",
+  "amazonaws.com",
+  "cloudfront.net",
+];
+const BYPASS_OPTIMIZATION_HOSTS = new Set(["drive.google.com", "docs.google.com"]);
 
 // Ensure cache directory exists
 async function ensureCacheDir() {
@@ -59,21 +65,55 @@ function resolveOutputFormat(
   return "jpeg";
 }
 
+function shouldBypassOptimization(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
+
+    if (BYPASS_OPTIMIZATION_HOSTS.has(hostname)) return true;
+
+    return BYPASS_OPTIMIZATION_HOST_SUFFIXES.some(
+      (suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`)
+    );
+  } catch {
+    return false;
+  }
+}
+
 // Fetch image from URL
 async function fetchImage(url: string): Promise<Buffer> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
-  const response = await fetch(url, {
-    signal: controller.signal,
-    headers: {
-      Accept: "image/avif,image/webp,image/*,*/*;q=0.8",
-    },
-  }).finally(() => clearTimeout(timeoutId));
-  if (!response.ok) {
-    throw new Error(`Failed to fetch image: ${response.statusText}`);
+  const timeouts = [5000, 9000];
+  let lastError: unknown;
+
+  for (const timeout of timeouts) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          Accept: "image/avif,image/webp,image/*,*/*;q=0.8",
+          "User-Agent": "hasron-image-proxy/1.0",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      return Buffer.from(arrayBuffer);
+    } catch (error) {
+      lastError = error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("Failed to fetch image from origin");
 }
 
 export async function GET(request: NextRequest) {
@@ -106,6 +146,12 @@ export async function GET(request: NextRequest) {
       requestedFormat,
       request.headers.get("accept")
     );
+
+    if (shouldBypassOptimization(url)) {
+      const bypass = NextResponse.redirect(url, 307);
+      bypass.headers.set("Cache-Control", "public, max-age=3600");
+      return bypass;
+    }
 
     // Ensure cache directory exists
     await ensureCacheDir();

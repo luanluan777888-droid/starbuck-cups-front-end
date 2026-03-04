@@ -109,8 +109,8 @@ export function Header({ className = "" }: HeaderProps) {
         {/* Desktop Layout */}
         <div className="hidden md:flex container mx-auto px-6 py-4 items-center justify-between">
           {/* Logo thay thế Menu Button */}
-          <Link href="/" className="flex items-center gap-3">
-            {isHydrated && (
+          <Link href="/" className="flex items-center gap-3 w-[220px]">
+            <span className="w-8 h-8 flex-shrink-0" aria-hidden="true">
               <OptimizedImage
                 src="/logo-32.png"
                 alt=""
@@ -123,7 +123,7 @@ export function Header({ className = "" }: HeaderProps) {
                   target.style.display = "none";
                 }}
               />
-            )}
+            </span>
             <span className="text-lg font-semibold text-white">
               H&apos;s shoucangpu
             </span>
@@ -160,7 +160,7 @@ export function Header({ className = "" }: HeaderProps) {
             </Link>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-end gap-4 w-[220px]">
             <button
               onClick={handleSearchClick}
               className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors"
@@ -177,9 +177,9 @@ export function Header({ className = "" }: HeaderProps) {
               className="text-sm font-medium text-white hover:text-zinc-300 transition-colors"
             >
               Giỏ Tư Vấn{" "}
-              {isHydrated && totalCartItems > 0 && (
-                <span className="text-zinc-500">({totalCartItems})</span>
-              )}
+              <span className="inline-block w-8 text-right text-zinc-500">
+                {isHydrated && totalCartItems > 0 ? `(${totalCartItems})` : ""}
+              </span>
             </button>
           </div>
         </div>
@@ -207,7 +207,7 @@ export function Header({ className = "" }: HeaderProps) {
           <div className="flex items-center justify-between mb-8">
             {/* Logo trong sidebar */}
             <div className="flex items-center gap-3">
-              {isHydrated && (
+              <span className="w-8 h-8 flex-shrink-0" aria-hidden="true">
                 <OptimizedImage
                   src="/logo-32.png"
                   alt=""
@@ -220,7 +220,7 @@ export function Header({ className = "" }: HeaderProps) {
                     target.style.display = "none";
                   }}
                 />
-              )}
+              </span>
               <div className="text-lg font-bold text-white tracking-wider">
                 H&apos;s shoucangpu
               </div>

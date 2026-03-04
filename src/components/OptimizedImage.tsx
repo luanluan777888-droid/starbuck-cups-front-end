@@ -36,15 +36,33 @@ export default function OptimizedImage({
   style,
   ...props
 }: OptimizedImageProps) {
-  const { imageSrc, imageSrcSet } = resolveImageSource(src, width, quality);
+  const { imageSrc, imageSrcSet, directFallbackSrc } = resolveImageSource(
+    src,
+    width,
+    quality
+  );
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.currentTarget;
+    const fallbackSrc = target.dataset.directSrc;
+
+    if (
+      fallbackSrc &&
+      target.dataset.fallbackTried !== "1" &&
+      target.src !== fallbackSrc
+    ) {
+      target.dataset.fallbackTried = "1";
+      target.src = fallbackSrc;
+      target.srcset = "";
+      return;
+    }
+
     if (onError) {
       onError(e);
     } else {
       // Fallback to placeholder
-      const target = e.currentTarget;
       target.src = '/images/placeholder.webp';
+      target.srcset = "";
     }
   };
 
@@ -60,6 +78,7 @@ export default function OptimizedImage({
         decoding="async"
         srcSet={imageSrcSet}
         sizes={sizes}
+        data-direct-src={directFallbackSrc}
         style={{
           position: 'absolute',
           width: '100%',
@@ -87,6 +106,7 @@ export default function OptimizedImage({
       decoding="async"
       srcSet={imageSrcSet}
       sizes={sizes}
+      data-direct-src={directFallbackSrc}
       style={style}
       {...props}
     />
@@ -96,19 +116,51 @@ export default function OptimizedImage({
 function resolveImageSource(src: string, width?: number, quality?: number): {
   imageSrc: string;
   imageSrcSet?: string;
+  directFallbackSrc?: string;
 } {
   const convertedSrc = convertDriveUrl(src);
 
-  // For local images (starting with /), use as-is
-  if (convertedSrc.startsWith('/') || convertedSrc.startsWith('data:')) {
+  if (shouldBypassOptimization(convertedSrc)) {
     return { imageSrc: convertedSrc };
   }
 
-  // For remote images, use optimization API
   return {
     imageSrc: getOptimizedUrl(convertedSrc, width, quality),
     imageSrcSet: buildSrcSet(convertedSrc, width, quality),
+    directFallbackSrc: convertedSrc,
   };
+}
+
+function shouldBypassOptimization(src: string): boolean {
+  if (
+    src.startsWith('/') ||
+    src.startsWith('data:') ||
+    src.startsWith('blob:')
+  ) {
+    return true;
+  }
+
+  if (!/^https?:\/\//i.test(src)) {
+    return true;
+  }
+
+  try {
+    const hostname = new URL(src).hostname.toLowerCase();
+    if (hostname === "drive.google.com" || hostname === "docs.google.com") {
+      return true;
+    }
+
+    return (
+      hostname === "googleusercontent.com" ||
+      hostname.endsWith(".googleusercontent.com") ||
+      hostname === "amazonaws.com" ||
+      hostname.endsWith(".amazonaws.com") ||
+      hostname === "cloudfront.net" ||
+      hostname.endsWith(".cloudfront.net")
+    );
+  } catch {
+    return true;
+  }
 }
 
 /**
