@@ -1,11 +1,10 @@
-import React, { Suspense } from "react";
-import { ProductGridSkeleton } from "@/components/ui/LoadingSkeleton";
+import React from "react";
 import { StructuredData } from "@/components/seo/StructuredData";
 
 // Hero Section không lazy load để tối ưu LCP
 import HeroSection from "@/components/home/HeroSection";
 
-import HomeProductGrid from "@/components/HomeProductGrid";
+import DeferredHomeProductGrid from "@/components/home/DeferredHomeProductGrid";
 
 interface HeroImageData {
   id: string;
@@ -55,10 +54,8 @@ const HomePage: React.FC<HomePageProps> = ({
           {/* product title*/}
           <h2 className="text-2xl font-semibold mb-6">Sản phẩm mới nhất</h2>
 
-          {/* Products Grid */}
-          <Suspense fallback={<ProductGridSkeleton />}>
-            <HomeProductGrid selectedCategory={null} />
-          </Suspense>
+          {/* Products Grid (deferred to reduce initial main-thread cost) */}
+          <DeferredHomeProductGrid selectedCategory={null} />
         </div>
       </section>
     </div>

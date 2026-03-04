@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import path from "path";
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -72,6 +73,58 @@ const nextConfig: NextConfig = {
       transform: "@lexical/react/{{member}}",
     },
   },
+  webpack: (config, { isServer, webpack }) => {
+    // Aggressive modern-only build mode:
+    // Strip Next legacy polyfill bundle from client runtime.
+    // Trade-off: very old browsers are no longer supported.
+    if (!isServer) {
+      config.resolve = config.resolve || {};
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        "next/dist/build/polyfills/polyfill-module": path.resolve(
+          __dirname,
+          "src/polyfills/polyfill-module-empty.js"
+        ),
+        "next/dist/build/polyfills/polyfill-module.js": path.resolve(
+          __dirname,
+          "src/polyfills/polyfill-module-empty.js"
+        ),
+        "next/dist/build/polyfills/process": path.resolve(
+          __dirname,
+          "src/polyfills/process-empty.js"
+        ),
+        "next/dist/build/polyfills/process.js": path.resolve(
+          __dirname,
+          "src/polyfills/process-empty.js"
+        ),
+      };
+
+      config.plugins = config.plugins || [];
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /polyfills[\\/]polyfill-module(?:\.js)?$/,
+          (resource: { request: string }) => {
+            resource.request = path.resolve(
+              __dirname,
+              "src/polyfills/polyfill-module-empty.js"
+            );
+          }
+        ),
+        new webpack.NormalModuleReplacementPlugin(
+          /polyfills[\\/]process(?:\.js)?$/,
+          (resource: { request: string }) => {
+            resource.request = path.resolve(
+              __dirname,
+              "src/polyfills/process-empty.js"
+            );
+          }
+        )
+      );
+    }
+
+    return config;
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);
+

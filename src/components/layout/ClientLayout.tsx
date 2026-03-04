@@ -41,32 +41,7 @@ interface ClientLayoutProps {
 
 export function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
   const isAdminRoute = pathname?.startsWith("/admin");
-
-  // Get cart state for global notifications
-  const { lastAction, isOpen: isCartOpen } = useAppSelector(
-    (state) => state.cart
-  );
-
-  // Global cart notification handler
-  useEffect(() => {
-    if (lastAction) {
-      switch (lastAction.type) {
-        case "added":
-          toast.success(`Đã thêm ${lastAction.productName} vào giỏ tư vấn`, {
-            duration: 3000,
-          });
-          break;
-        case "already_exists":
-          toast.info(`${lastAction.productName} đã có trong giỏ tư vấn`, {
-            duration: 3000,
-          });
-          break;
-      }
-      dispatch(clearLastAction());
-    }
-  }, [lastAction, dispatch]);
 
   // For admin routes, don't show customer header and cart
   if (isAdminRoute) {
@@ -87,7 +62,34 @@ export function ClientLayout({ children }: ClientLayoutProps) {
     );
   }
 
-  // For customer routes, show full layout with header and cart
+  return <PublicClientLayout>{children}</PublicClientLayout>;
+}
+
+function PublicClientLayout({ children }: ClientLayoutProps) {
+  const dispatch = useAppDispatch();
+  const { lastAction, isOpen: isCartOpen } = useAppSelector(
+    (state) => state.cart
+  );
+
+  useEffect(() => {
+    if (!lastAction) return;
+
+    switch (lastAction.type) {
+      case "added":
+        toast.success(`Đã thêm ${lastAction.productName} vào giỏ tư vấn`, {
+          duration: 3000,
+        });
+        break;
+      case "already_exists":
+        toast.info(`${lastAction.productName} đã có trong giỏ tư vấn`, {
+          duration: 3000,
+        });
+        break;
+    }
+
+    dispatch(clearLastAction());
+  }, [lastAction, dispatch]);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />

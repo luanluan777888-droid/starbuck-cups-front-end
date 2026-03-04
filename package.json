@@ -13,12 +13,10 @@
   },
   "browserslist": {
     "production": [
-      "chrome >= 109",
-      "edge >= 109",
-      "firefox >= 115",
-      "safari >= 16.4",
-      "ios_saf >= 16.4",
-      "not dead"
+      "chrome 111",
+      "edge 111",
+      "firefox 111",
+      "safari 16.4"
     ],
     "development": [
       "last 1 chrome version",
