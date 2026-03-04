@@ -61,7 +61,14 @@ function resolveOutputFormat(
 
 // Fetch image from URL
 async function fetchImage(url: string): Promise<Buffer> {
-  const response = await fetch(url);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const response = await fetch(url, {
+    signal: controller.signal,
+    headers: {
+      Accept: "image/avif,image/webp,image/*,*/*;q=0.8",
+    },
+  }).finally(() => clearTimeout(timeoutId));
   if (!response.ok) {
     throw new Error(`Failed to fetch image: ${response.statusText}`);
   }
@@ -73,14 +80,8 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     let url = searchParams.get("url");
-    const requestedWidth = Number.parseInt(searchParams.get("w") || "960", 10);
-    const requestedQuality = Number.parseInt(searchParams.get("q") || "65", 10);
-    const width = Number.isNaN(requestedWidth)
-      ? 960
-      : Math.min(Math.max(requestedWidth, 96), 2000);
-    const quality = Number.isNaN(requestedQuality)
-      ? 65
-      : Math.min(Math.max(requestedQuality, 35), 85);
+    const width = parseInt(searchParams.get("w") || "1200");
+    const quality = parseInt(searchParams.get("q") || "70");
     const requestedFormat = searchParams.get("f") || "auto";
 
     if (!url) {
@@ -119,8 +120,7 @@ export async function GET(request: NextRequest) {
       return new NextResponse(cachedBody, {
         headers: {
           "Content-Type": `image/${outputFormat}`,
-          "Cache-Control":
-            "public, max-age=31536000, immutable, stale-while-revalidate=86400",
+          "Cache-Control": "public, max-age=31536000, immutable",
           Vary: "Accept",
         },
       });
@@ -128,8 +128,15 @@ export async function GET(request: NextRequest) {
       // Cache miss, continue to optimization
     }
 
-    // Fetch original image
-    const imageBuffer = await fetchImage(url);
+    // Fetch original image - fallback to direct URL if origin is slow/unavailable
+    let imageBuffer: Buffer;
+    try {
+      imageBuffer = await fetchImage(url);
+    } catch {
+      const fallback = NextResponse.redirect(url, 307);
+      fallback.headers.set("Cache-Control", "public, max-age=300");
+      return fallback;
+    }
 
     // Process image with sharp
     let sharpInstance = sharp(imageBuffer);
@@ -184,8 +191,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse(optimizedBody, {
       headers: {
         "Content-Type": `image/${outputFormat}`,
-        "Cache-Control":
-          "public, max-age=31536000, immutable, stale-while-revalidate=86400",
+        "Cache-Control": "public, max-age=31536000, immutable",
         Vary: "Accept",
       },
     });

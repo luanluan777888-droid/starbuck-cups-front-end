@@ -109,6 +109,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <Link
       href={`/products/${product.slug}`}
+      aria-label={`Xem chi tiết sản phẩm ${product.name}`}
       className={`group block ${
         animationDelay !== undefined ? animationStyles.zoomIn : ""
       }`}

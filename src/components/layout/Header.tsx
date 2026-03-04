@@ -66,10 +66,8 @@ export function Header({ className = "" }: HeaderProps) {
             <MenuIcon className="w-5 h-5" />
           </button>
 
-          {/* Center: Logo - Hidden on mobile */}
-          <Link href="/" className="flex items-center gap-2">
-            {/* Logo hidden on mobile devices */}
-          </Link>
+          {/* Center spacer to keep search/cart aligned when mobile logo is hidden */}
+          <div className="w-10 h-10" aria-hidden="true" />
 
           {/* Right: Search & Cart */}
           <div className="flex items-center gap-2">
@@ -105,7 +103,7 @@ export function Header({ className = "" }: HeaderProps) {
             {isHydrated && (
               <OptimizedImage
                 src="/logo-32.png"
-                alt="Starbucks Logo"
+                alt=""
                 width={32}
                 height={32}
                 className="w-8 h-8 brightness-0 invert"
@@ -202,7 +200,7 @@ export function Header({ className = "" }: HeaderProps) {
               {isHydrated && (
                 <OptimizedImage
                   src="/logo-32.png"
-                  alt="Starbucks Logo"
+                  alt=""
                   width={32}
                   height={32}
                   className="w-8 h-8 brightness-0 invert"

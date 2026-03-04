@@ -1,7 +1,6 @@
 ﻿import { Metadata } from "next";
 import { generateSEO } from "@/lib/seo";
 import HomePageComponent from "@/components/pages/HomePage";
-import { Category } from "@/types";
 import { preload } from "react-dom";
 import { convertDriveUrl } from "@/utils/googleDriveHelper";
 
@@ -29,7 +28,6 @@ interface PromotionalBannerData {
 }
 
 interface HomePageProps {
-  categories: Category[];
   heroImages: HeroImageData[];
   promotionalBanner: PromotionalBannerData | null;
 }
@@ -70,83 +68,53 @@ export const metadata: Metadata = generateSEO({
 
 // Server-side data fetching
 async function getHomePageData(): Promise<HomePageProps> {
-  try {
-    // Fetch categories from API
-    const categoriesResponse = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_API_URL ||
-        "https://api-starbuck-cups.lequangtridat.com/api"
-      }/categories/public/`,
-      {
-        next: { revalidate: 300 }, // Revalidate every 5 minutes
+  const apiBaseUrl =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://api-starbuck-cups.lequangtridat.com/api";
+
+  const timedFetch = async (url: string, revalidateValue: number) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1800);
+
+    try {
+      const response = await fetch(url, {
+        next: { revalidate: revalidateValue },
         cache: "force-cache",
-      }
-    );
+        signal: controller.signal,
+      });
 
-    let categories: Category[] = [];
+      if (!response.ok) return null;
+      return response.json();
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  };
 
-    if (categoriesResponse.ok) {
-      const categoriesData = await categoriesResponse.json();
+  try {
+    let heroImages: HeroImageData[] = [];
+    let promotionalBanner: PromotionalBannerData | null = null;
+    // Fetch critical hero data in parallel to reduce TTFB.
+    const [heroImagesData, bannerData] = await Promise.all([
+      timedFetch(`${apiBaseUrl}/hero-images/public`, 300),
+      timedFetch(`${apiBaseUrl}/promotional-banners`, 120),
+    ]);
 
-      if (categoriesData.success && categoriesData.data?.items) {
-        categories = categoriesData.data.items;
-      }
+    if (heroImagesData?.success && heroImagesData.data) {
+      heroImages = heroImagesData.data;
     }
 
-    // Fetch hero images from API
-    let heroImages: HeroImageData[] = [];
-    try {
-      const heroImagesUrl = `${
-        process.env.NEXT_PUBLIC_API_URL ||
-        "https://api-starbuck-cups.lequangtridat.com/api"
-      }/hero-images/public`;
-
-      const heroImagesResponse = await fetch(heroImagesUrl, {
-        next: { revalidate: 300 }, // Revalidate every 5 minutes
-        cache: "force-cache",
-      });
-
-      if (heroImagesResponse.ok) {
-        const heroImagesData = await heroImagesResponse.json();
-
-        if (heroImagesData.success && heroImagesData.data) {
-          heroImages = heroImagesData.data;
-        }
-      } else {
-      }
-    } catch {}
-
-    // Fetch promotional banner from API
-    let promotionalBanner: PromotionalBannerData | null = null;
-    try {
-      const bannerUrl = `${
-        process.env.NEXT_PUBLIC_API_URL ||
-        "https://api-starbuck-cups.lequangtridat.com/api"
-      }/promotional-banners`;
-
-      const bannerResponse = await fetch(bannerUrl, {
-        next: { revalidate: 60 }, // Revalidate every 1 minute for promotional content
-        cache: "force-cache",
-      });
-
-      if (bannerResponse.ok) {
-        const bannerData = await bannerResponse.json();
-
-        if (bannerData.success && bannerData.data) {
-          promotionalBanner = bannerData.data;
-        }
-      } else {
-      }
-    } catch {}
+    if (bannerData?.success && bannerData.data) {
+      promotionalBanner = bannerData.data;
+    }
 
     return {
-      categories,
       heroImages,
       promotionalBanner,
     };
   } catch {
     return {
-      categories: [],
       heroImages: [],
       promotionalBanner: null,
     };
@@ -177,7 +145,6 @@ export default async function HomePage() {
 
   return (
     <HomePageComponent
-      categories={homePageData.categories || []}
       heroImages={heroImages}
       promotionalBanner={homePageData.promotionalBanner}
     />
