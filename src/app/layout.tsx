@@ -3,6 +3,7 @@ import React from "react";
 import "./globals.css";
 import StoreProvider from "@/components/StoreProvider";
 import ClientLayout from "@/components/layout/ClientLayout";
+import DeferredGoogleAnalytics from "@/components/analytics/DeferredGoogleAnalytics";
 import { generateSEO, generateOrganizationStructuredData } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -82,28 +83,6 @@ export default function RootLayout({
         {/* Performance hints */}
         <meta httpEquiv="x-dns-prefetch-control" content="on" />
 
-        {/* Google Analytics 4 */}
-        <script
-          async
-          src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${gaMeasurementId}', {
-                page_title: document.title,
-                page_location: window.location.href,
-                anonymize_ip: true,
-                allow_google_signals: false,
-                cookie_flags: 'SameSite=None;Secure'
-              });
-            `,
-          }}
-        />
-
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -113,6 +92,7 @@ export default function RootLayout({
       </head>
       <body>
         <StoreProvider>
+          <DeferredGoogleAnalytics measurementId={gaMeasurementId} />
           <ClientLayout>{children}</ClientLayout>
         </StoreProvider>
       </body>

@@ -4,6 +4,7 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import OptimizedImage from "@/components/OptimizedImage";
+import styles from "./SwiperStyles.module.css";
 
 interface HeroImageData {
   id: string;
@@ -31,7 +32,7 @@ export default function SwiperCarousel({ images }: SwiperCarouselProps) {
         bulletClass: "swiper-pagination-bullet !bg-white/50",
         bulletActiveClass: "swiper-pagination-bullet-active !bg-white",
       }}
-      className="h-full"
+      className={`h-full ${styles.swiperScope}`}
     >
       {images.map((image, index) => (
         <SwiperSlide key={image.id}>

@@ -4,11 +4,27 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
+    "build:turbopack": "next build --turbopack",
     "build:production": "next build",
     "build:analyze": "ANALYZE=true npm run build",
     "start": "next start",
     "lint": "eslint"
+  },
+  "browserslist": {
+    "production": [
+      "chrome >= 109",
+      "edge >= 109",
+      "firefox >= 115",
+      "safari >= 16.4",
+      "ios_saf >= 16.4",
+      "not dead"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
