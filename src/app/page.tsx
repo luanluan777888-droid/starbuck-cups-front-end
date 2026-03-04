@@ -35,9 +35,9 @@ interface HomePageProps {
 }
 
 const HERO_IMAGE_SIZES =
-  "(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 50vw";
+  "(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 46vw";
 
-function buildOptimizedImageUrl(src: string, width: number, quality = 60): string {
+function buildOptimizedImageUrl(src: string, width: number, quality = 55): string {
   const convertedSrc = convertDriveUrl(src);
 
   if (convertedSrc.startsWith("/") || convertedSrc.startsWith("data:")) {
@@ -48,7 +48,7 @@ function buildOptimizedImageUrl(src: string, width: number, quality = 60): strin
   params.set("url", convertedSrc);
   params.set("w", String(width));
   params.set("q", String(quality));
-  params.set("f", "webp");
+  params.set("f", "auto");
   return `/api/image?${params.toString()}`;
 }
 
@@ -159,11 +159,11 @@ export default async function HomePage() {
   const lcpHeroImage = heroImages.find((img) => img.isActive) || heroImages[0];
 
   if (lcpHeroImage?.imageUrl) {
-    const lcpImageSrc = buildOptimizedImageUrl(lcpHeroImage.imageUrl, 1280, 60);
-    const lcpImageSrcSet = [640, 960, 1280]
+    const lcpImageSrc = buildOptimizedImageUrl(lcpHeroImage.imageUrl, 960, 55);
+    const lcpImageSrcSet = [480, 640, 720, 768, 800, 840, 900, 960, 1200]
       .map(
         (width) =>
-          `${buildOptimizedImageUrl(lcpHeroImage.imageUrl, width, 60)} ${width}w`
+          `${buildOptimizedImageUrl(lcpHeroImage.imageUrl, width, 55)} ${width}w`
       )
       .join(", ");
 

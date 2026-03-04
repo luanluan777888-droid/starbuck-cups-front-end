@@ -170,13 +170,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                     src={primaryHeroImage.imageUrl}
                     alt={primaryHeroImage.altText}
                     fill
-                    width={1280}
+                    width={960}
                     className="object-contain"
                     priority
                     loading="eager"
                     fetchPriority="high"
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 50vw"
-                    quality={60}
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 46vw"
+                    quality={55}
                     style={{ objectFit: "contain" }}
                   />
                 </div>

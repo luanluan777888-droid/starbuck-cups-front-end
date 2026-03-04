@@ -45,6 +45,20 @@ function getCacheKey(
   return `${hash}.${format}`;
 }
 
+function resolveOutputFormat(
+  requestedFormat: string,
+  acceptHeader: string | null
+): "avif" | "webp" | "jpeg" | "png" {
+  if (requestedFormat !== "auto") {
+    return requestedFormat as "avif" | "webp" | "jpeg" | "png";
+  }
+
+  const accept = (acceptHeader || "").toLowerCase();
+  if (accept.includes("image/avif")) return "avif";
+  if (accept.includes("image/webp")) return "webp";
+  return "jpeg";
+}
+
 // Fetch image from URL
 async function fetchImage(url: string): Promise<Buffer> {
   const response = await fetch(url);
@@ -67,7 +81,7 @@ export async function GET(request: NextRequest) {
     const quality = Number.isNaN(requestedQuality)
       ? 65
       : Math.min(Math.max(requestedQuality, 35), 85);
-    const format = searchParams.get("f") || "webp";
+    const requestedFormat = searchParams.get("f") || "auto";
 
     if (!url) {
       return NextResponse.json(
@@ -80,18 +94,23 @@ export async function GET(request: NextRequest) {
     url = convertDriveUrl(url);
 
     // Validate format
-    if (!["webp", "avif", "jpeg", "png"].includes(format)) {
+    if (!["auto", "webp", "avif", "jpeg", "png"].includes(requestedFormat)) {
       return NextResponse.json(
-        { error: "Invalid format. Supported: webp, avif, jpeg, png" },
+        { error: "Invalid format. Supported: auto, webp, avif, jpeg, png" },
         { status: 400 }
       );
     }
+
+    const outputFormat = resolveOutputFormat(
+      requestedFormat,
+      request.headers.get("accept")
+    );
 
     // Ensure cache directory exists
     await ensureCacheDir();
 
     // Check cache first
-    const cacheKey = getCacheKey(url, width, quality, format);
+    const cacheKey = getCacheKey(url, width, quality, outputFormat);
     const cachePath = path.join(CACHE_DIR, cacheKey);
 
     try {
@@ -99,7 +118,7 @@ export async function GET(request: NextRequest) {
       const cachedBody = cachedImage as unknown as BodyInit;
       return new NextResponse(cachedBody, {
         headers: {
-          "Content-Type": `image/${format}`,
+          "Content-Type": `image/${outputFormat}`,
           "Cache-Control":
             "public, max-age=31536000, immutable, stale-while-revalidate=86400",
           Vary: "Accept",
@@ -127,7 +146,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Convert to requested format with optimized settings
-    switch (format) {
+    switch (outputFormat) {
       case "webp":
         sharpInstance = sharpInstance.webp({
           quality,
@@ -164,7 +183,7 @@ export async function GET(request: NextRequest) {
     const optimizedBody = optimizedImage as unknown as BodyInit;
     return new NextResponse(optimizedBody, {
       headers: {
-        "Content-Type": `image/${format}`,
+        "Content-Type": `image/${outputFormat}`,
         "Cache-Control":
           "public, max-age=31536000, immutable, stale-while-revalidate=86400",
         Vary: "Accept",

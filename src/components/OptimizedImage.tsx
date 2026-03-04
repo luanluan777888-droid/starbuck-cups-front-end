@@ -126,8 +126,8 @@ function getOptimizedUrl(src: string, width?: number, quality?: number): string 
     params.set('q', quality.toString());
   }
   
-  // Default to WebP format for best compression
-  params.set('f', 'webp');
+  // Let server negotiate AVIF/WebP based on request Accept header
+  params.set('f', 'auto');
   
   return `/api/image?${params.toString()}`;
 }
@@ -136,7 +136,7 @@ function buildSrcSet(src: string, width?: number, quality?: number): string | un
   if (!width || width <= 0) return undefined;
 
   const maxTargetWidth = Math.min(Math.max(width * 2, width), 2000);
-  const widthCandidates = [160, 200, 240, 280, 320, 360, 384, 420, 448, 480, 540, 640, 768, 960, 1200, 1600, 2000]
+  const widthCandidates = [160, 200, 240, 280, 320, 360, 384, 420, 448, 480, 540, 640, 720, 768, 800, 840, 900, 960, 1200, 1600, 2000]
     .filter((candidate) => candidate <= maxTargetWidth);
 
   const targetWidths = new Set<number>(widthCandidates);
