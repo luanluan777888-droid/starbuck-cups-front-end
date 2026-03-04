@@ -70,7 +70,8 @@ function isHttpUrl(url: string): boolean {
 
 // Fetch image from URL
 async function fetchImage(url: string): Promise<Buffer> {
-  const timeouts = [5000, 9000];
+  // Keep origin fetch aggressive for mobile LCP; fallback quickly if origin is slow.
+  const timeouts = [3000];
   let lastError: unknown;
 
   for (const timeout of timeouts) {
@@ -163,16 +164,14 @@ export async function GET(request: NextRequest) {
       // Cache miss, continue to optimization
     }
 
-    // Fetch original image - fallback to local placeholder if origin is slow/unavailable
+    // Fetch original image. If origin is slow, quickly fallback to direct URL
+    // so the browser can still render LCP instead of waiting then showing placeholder.
     let imageBuffer: Buffer;
     try {
       imageBuffer = await fetchImage(url);
     } catch (error) {
       console.error("Image origin fetch failed:", error);
-      const fallback = NextResponse.redirect(
-        new URL("/images/placeholder.webp", request.url),
-        307
-      );
+      const fallback = NextResponse.redirect(url, 307);
       fallback.headers.set("Cache-Control", "public, max-age=300");
       return fallback;
     }

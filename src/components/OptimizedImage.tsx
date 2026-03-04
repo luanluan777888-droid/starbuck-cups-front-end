@@ -39,7 +39,8 @@ export default function OptimizedImage({
   const { imageSrc, imageSrcSet, directFallbackSrc } = resolveImageSource(
     src,
     width,
-    quality
+    quality,
+    priority
   );
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -113,7 +114,12 @@ export default function OptimizedImage({
   );
 }
 
-function resolveImageSource(src: string, width?: number, quality?: number): {
+function resolveImageSource(
+  src: string,
+  width?: number,
+  quality?: number,
+  priority?: boolean
+): {
   imageSrc: string;
   imageSrcSet?: string;
   directFallbackSrc?: string;
@@ -124,7 +130,10 @@ function resolveImageSource(src: string, width?: number, quality?: number): {
     return { imageSrc: convertedSrc };
   }
 
-  const allowDirectFallback = convertedSrc.startsWith("/");
+  // Allow direct fallback for local assets and critical (priority) images.
+  // This keeps LCP resilient when the optimizer origin fetch is slow.
+  const allowDirectFallback =
+    convertedSrc.startsWith("/") || Boolean(priority);
 
   return {
     imageSrc: getOptimizedUrl(convertedSrc, width, quality),
