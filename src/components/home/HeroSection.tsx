@@ -1,10 +1,10 @@
-﻿"use client";
+"use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ArrowRight } from "lucide-react";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import OptimizedImage from "@/components/OptimizedImage";
 
 // Dynamic import toàn bộ Swiper bundle
 const SwiperCarousel = dynamic(() => import("./SwiperCarousel"), {
@@ -40,38 +40,30 @@ interface HeroSectionProps {
 }
 
 const HeroSectionSkeleton = () => (
-  <SkeletonTheme baseColor="#18181b" highlightColor="#27272a">
-    <section className="py-4 md:py-8">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
-          {/* Left text card skeleton */}
-          <div className="bg-zinc-900 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
-            <div className="mb-4 md:mb-6">
-              <Skeleton height={32} width="80%" className="mb-2 md:mb-2" />
-              <Skeleton height={32} width="60%" className="md:h-14" />
-            </div>
-            <div className="mb-6 md:mb-8">
-              <Skeleton height={16} className="mb-2 md:h-5 md:mb-2" />
-              <Skeleton height={16} className="mb-2 md:h-5 md:mb-2" />
-              <Skeleton height={16} width="70%" className="md:h-5" />
-            </div>
-            <Skeleton
-              height={40}
-              width={180}
-              className="rounded-full md:h-12 md:w-48"
-            />
+  <section className="py-4 md:py-8">
+    <div className="container mx-auto px-4 md:px-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="bg-zinc-900 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
+          <div className="mb-4 md:mb-6 space-y-3">
+            <div className="h-8 md:h-10 w-4/5 bg-zinc-800 rounded animate-pulse" />
+            <div className="h-8 md:h-10 w-3/5 bg-zinc-800 rounded animate-pulse" />
           </div>
+          <div className="mb-6 md:mb-8 space-y-2">
+            <div className="h-4 md:h-5 w-full bg-zinc-800 rounded animate-pulse" />
+            <div className="h-4 md:h-5 w-full bg-zinc-800 rounded animate-pulse" />
+            <div className="h-4 md:h-5 w-2/3 bg-zinc-800 rounded animate-pulse" />
+          </div>
+          <div className="h-10 md:h-12 w-44 bg-zinc-800 rounded-full animate-pulse" />
+        </div>
 
-          {/* Right image carousel skeleton */}
-          <div className="lg:col-span-2 order-1 lg:order-2">
-            <div className="h-48 md:h-64 lg:h-full rounded-2xl md:rounded-3xl overflow-hidden bg-zinc-900">
-              <Skeleton height="100%" />
-            </div>
+        <div className="lg:col-span-2 order-1 lg:order-2">
+          <div className="h-48 md:h-64 lg:h-full rounded-2xl md:rounded-3xl overflow-hidden bg-zinc-900">
+            <div className="h-full w-full bg-zinc-800 animate-pulse" />
           </div>
         </div>
       </div>
-    </section>
-  </SkeletonTheme>
+    </div>
+  </section>
 );
 
 const HeroSection: React.FC<HeroSectionProps> = ({
@@ -79,8 +71,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   heroImages = [],
   promotionalBanner = null,
 }) => {
-  // Load Swiper immediately to enable priority loading for first hero image (LCP optimization)
-  const showSwiper = true;
+  const [showSwiper, setShowSwiper] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setShowSwiper(true);
+    }, 180);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   if (loading) {
     return <HeroSectionSkeleton />;
@@ -112,6 +111,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   const activeImages = imagesToShow
     .filter((img) => img.isActive)
     .sort((a, b) => a.order - b.order);
+  const primaryHeroImage = activeImages[0] || defaultImages[0];
 
   // Default banner data
   const defaultBanner = {
@@ -161,14 +161,26 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             </Link>
           </div>
 
-          {/* Hero carousel - lazy loaded sau LCP */}
+          {/* Hero carousel - lazy loaded sau first paint */}
           <div className="lg:col-span-2 order-1 lg:order-2">
             <div className="h-64 md:h-96 lg:h-full rounded-2xl md:rounded-3xl overflow-hidden bg-zinc-900">
               {!showSwiper ? (
-                // Fast loading fallback - skeleton placeholder
-                <div className="relative h-full bg-gray-200 rounded-2xl md:rounded-3xl animate-pulse" />
+                <div className="relative h-full">
+                  <OptimizedImage
+                    src={primaryHeroImage.imageUrl}
+                    alt={primaryHeroImage.altText}
+                    fill
+                    width={1280}
+                    className="object-contain"
+                    priority
+                    loading="eager"
+                    fetchPriority="high"
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 50vw"
+                    quality={60}
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
               ) : (
-                // Swiper carousel sau khi LCP đã tối ưu
                 <SwiperCarousel images={activeImages} />
               )}
             </div>
