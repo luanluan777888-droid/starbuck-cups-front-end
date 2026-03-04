@@ -71,15 +71,16 @@ const initialState: EffectSettingsState = {
   error: null,
 };
 
-// Keep API URL in canonical ".../api" format to avoid double "/api/api" paths.
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api").replace(/\/+$/, "");
+const SETTINGS_API_PATH = "/api/settings/effect-settings";
 
 // Thunks
 export const fetchEffectSettings = createAsyncThunk(
   "effectSettings/fetch",
   async () => {
     try {
-      const response = await axios.get(`${API_URL}/settings/effect-settings`);
+      const response = await axios.get(SETTINGS_API_PATH, {
+        withCredentials: true,
+      });
       return response.data.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Failed to fetch settings");
@@ -91,7 +92,9 @@ export const updateEffectSettings = createAsyncThunk(
   "effectSettings/update",
   async (settings: EffectSettings) => {
     try {
-      const response = await axios.put(`${API_URL}/settings/effect-settings`, settings);
+      const response = await axios.put(SETTINGS_API_PATH, settings, {
+        withCredentials: true,
+      });
       return response.data.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Failed to update settings");
