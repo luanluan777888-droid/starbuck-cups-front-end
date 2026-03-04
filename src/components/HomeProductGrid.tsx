@@ -7,6 +7,7 @@ import { useAppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import animationStyles from "@/components/home/ZoomIn.module.css";
 // CSS cho skeleton được import ở app level để tránh duplicate
 
 interface HomeProductGridProps {
@@ -249,7 +250,7 @@ export default function HomeProductGrid({
       {/* View All Products Button */}
       {!loading && products.length > 0 && showViewAllButton && (
         <div className="flex justify-center mt-12">
-          <div className="animate-zoom-in">
+          <div className={animationStyles.zoomIn}>
             <Link
               href="/products"
               className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900 text-white font-semibold rounded-2xl relative overflow-hidden group transition-colors duration-300"

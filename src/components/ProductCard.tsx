@@ -9,6 +9,7 @@ import { trackProductClick, trackAddToCartClick } from "@/lib/productAnalytics";
 import { ConditionalVipBadge } from "@/components/ui/VipBadge";
 import { ConditionalFeaturedBadge } from "@/components/ui/FeaturedBadge";
 import OptimizedImage from "@/components/OptimizedImage";
+import animationStyles from "@/components/home/ZoomIn.module.css";
 
 interface ProductCardProps {
   product: Product;
@@ -109,7 +110,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <Link
       href={`/products/${product.slug}`}
       className={`group block ${
-        animationDelay !== undefined ? "animate-zoom-in" : ""
+        animationDelay !== undefined ? animationStyles.zoomIn : ""
       }`}
       style={
         animationDelay !== undefined

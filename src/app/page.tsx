@@ -35,9 +35,9 @@ interface HomePageProps {
 }
 
 const HERO_IMAGE_SIZES =
-  "(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 46vw";
+  "(max-width: 640px) 88vw, (max-width: 768px) 88vw, (max-width: 1024px) 56vw, 44vw";
 
-function buildOptimizedImageUrl(src: string, width: number, quality = 55): string {
+function buildOptimizedImageUrl(src: string, width: number, quality = 50): string {
   const convertedSrc = convertDriveUrl(src);
 
   if (convertedSrc.startsWith("/") || convertedSrc.startsWith("data:")) {
@@ -159,11 +159,11 @@ export default async function HomePage() {
   const lcpHeroImage = heroImages.find((img) => img.isActive) || heroImages[0];
 
   if (lcpHeroImage?.imageUrl) {
-    const lcpImageSrc = buildOptimizedImageUrl(lcpHeroImage.imageUrl, 960, 55);
-    const lcpImageSrcSet = [480, 640, 720, 768, 800, 840, 900, 960, 1200]
+    const lcpImageSrc = buildOptimizedImageUrl(lcpHeroImage.imageUrl, 840, 50);
+    const lcpImageSrcSet = [360, 384, 420, 480, 540, 640, 720, 768, 840]
       .map(
         (width) =>
-          `${buildOptimizedImageUrl(lcpHeroImage.imageUrl, width, 55)} ${width}w`
+          `${buildOptimizedImageUrl(lcpHeroImage.imageUrl, width, 50)} ${width}w`
       )
       .join(", ");
 

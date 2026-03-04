@@ -72,14 +72,45 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   promotionalBanner = null,
 }) => {
   const [showSwiper, setShowSwiper] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setShowSwiper(true);
-    }, 180);
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
 
-    return () => window.clearTimeout(timer);
+    const updateViewport = () => {
+      setIsMobileViewport(mediaQuery.matches);
+    };
+
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+
+    return () => mediaQuery.removeEventListener("change", updateViewport);
   }, []);
+
+  useEffect(() => {
+    // Keep first static hero image on mobile for faster LCP and less JS work.
+    if (isMobileViewport) {
+      setShowSwiper(false);
+      return;
+    }
+
+    const run = () => setShowSwiper(true);
+    const idleApi = window as Window & {
+      requestIdleCallback?: (
+        callback: () => void,
+        options?: { timeout: number }
+      ) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+
+    if (idleApi.requestIdleCallback && idleApi.cancelIdleCallback) {
+      const idleId = idleApi.requestIdleCallback(run, { timeout: 2000 });
+      return () => idleApi.cancelIdleCallback?.(idleId);
+    }
+
+    const timer = window.setTimeout(run, 1600);
+    return () => window.clearTimeout(timer);
+  }, [isMobileViewport]);
 
   if (loading) {
     return <HeroSectionSkeleton />;
@@ -170,13 +201,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                     src={primaryHeroImage.imageUrl}
                     alt={primaryHeroImage.altText}
                     fill
-                    width={960}
+                    width={840}
                     className="object-contain"
                     priority
                     loading="eager"
                     fetchPriority="high"
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 46vw"
-                    quality={55}
+                    sizes="(max-width: 640px) 88vw, (max-width: 768px) 88vw, (max-width: 1024px) 56vw, 44vw"
+                    quality={50}
                     style={{ objectFit: "contain" }}
                   />
                 </div>
