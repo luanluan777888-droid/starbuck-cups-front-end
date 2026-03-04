@@ -26,6 +26,11 @@ export default function HomeProductGrid({
   );
   const dispatch = useAppDispatch();
 
+  const getHomeProductsLimit = () => {
+    if (typeof window === "undefined") return 12;
+    return window.innerWidth < 640 ? 8 : 12;
+  };
+
   // Debug logs
 
   // Generate random delays for products when they're loaded
@@ -124,7 +129,7 @@ export default function HomeProductGrid({
         setAllAnimationsComplete(false);
         setShowViewAllButton(false);
 
-        const url = "/api/products?sortBy=createdAt&sortOrder=desc&limit=12";
+        const url = `/api/products?sortBy=createdAt&sortOrder=desc&limit=${getHomeProductsLimit()}`;
 
         const response = await fetch(url);
         const data = await response.json();
@@ -232,7 +237,7 @@ export default function HomeProductGrid({
                     product={product}
                     onAddToCart={handleAddToCart}
                     showAddToCart={true}
-                    priority={globalIndex < 4} // Đánh dấu 4 sản phẩm đầu làm priority để tối ưu LCP
+                    priority={globalIndex < 2} // Mobile-first: chỉ ưu tiên 2 sản phẩm đầu
                   />
                 </div>
               );

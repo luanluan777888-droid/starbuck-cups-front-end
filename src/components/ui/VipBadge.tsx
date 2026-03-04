@@ -18,12 +18,12 @@ export function VipBadge({ size = "md", className = "" }: VipBadgeProps) {
   return (
     <div className={`inline-block vip-shimmer ${className}`}>
       <OptimizedImage
-        src="/images/vip-logo.webp"
+        src="/images/vip-logo-mobile.webp"
         alt="VIP"
         width={imageSizes[size].width}
         height={imageSizes[size].height}
         className="object-contain vip-pulse"
-        priority
+        loading="lazy"
       />
 
       <style jsx>{`

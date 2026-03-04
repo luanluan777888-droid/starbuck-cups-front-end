@@ -44,12 +44,13 @@ export default function SwiperCarousel({ images }: SwiperCarouselProps) {
               src={image.imageUrl}
               alt={image.altText}
               fill
-              width={1600}
+              width={1280}
               className="object-contain"
               priority={index === 0}
               loading={index === 0 ? "eager" : "lazy"}
+              fetchPriority={index === 0 ? "high" : "auto"}
               sizes="(max-width: 640px) 100vw, (max-width: 768px) 90vw, (max-width: 1024px) 60vw, 50vw"
-              quality={75}
+              quality={60}
               style={{ objectFit: "contain" }}
             />
           </div>

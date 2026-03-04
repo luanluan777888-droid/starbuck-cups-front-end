@@ -53,17 +53,8 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <head>
-        {/* Resource hints for Google Drive images - early DNS resolution */}
-        <link rel="preconnect" href="https://lh3.googleusercontent.com" />
-        <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
-
-        {/* Dynamic AWS resource hints nếu có */}
-        {awsS3Url && (
-          <>
-            <link rel="preconnect" href={awsS3Url} />
-            <link rel="dns-prefetch" href={awsS3Url} />
-          </>
-        )}
+        {/* Images are served via same-origin /api/image, so external preconnect is unnecessary */}
+        {awsS3Url && <link rel="dns-prefetch" href={awsS3Url} />}
 
         {/* Preload critical fonts để tối ưu LCP */}
         <link

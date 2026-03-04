@@ -37,6 +37,7 @@ export default function OptimizedImage({
   ...props
 }: OptimizedImageProps) {
   const [imageSrc, setImageSrc] = useState<string>('');
+  const [imageSrcSet, setImageSrcSet] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     // Convert Google Drive URLs
@@ -45,12 +46,14 @@ export default function OptimizedImage({
     // For local images (starting with /), use as-is
     if (convertedSrc.startsWith('/') || convertedSrc.startsWith('data:')) {
       setImageSrc(convertedSrc);
+      setImageSrcSet(undefined);
       return;
     }
 
     // For remote images, use optimization API
     const optimizedUrl = getOptimizedUrl(convertedSrc, width, quality);
     setImageSrc(optimizedUrl);
+    setImageSrcSet(buildSrcSet(convertedSrc, width, quality));
   }, [src, width, quality]);
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -72,6 +75,9 @@ export default function OptimizedImage({
         onError={handleError}
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={fetchPriority}
+        decoding="async"
+        srcSet={imageSrcSet}
+        sizes={sizes}
         style={{
           position: 'absolute',
           width: '100%',
@@ -96,6 +102,9 @@ export default function OptimizedImage({
       onError={handleError}
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={fetchPriority}
+      decoding="async"
+      srcSet={imageSrcSet}
+      sizes={sizes}
       style={style}
       {...props}
     />
@@ -121,6 +130,22 @@ function getOptimizedUrl(src: string, width?: number, quality?: number): string 
   params.set('f', 'webp');
   
   return `/api/image?${params.toString()}`;
+}
+
+function buildSrcSet(src: string, width?: number, quality?: number): string | undefined {
+  if (!width || width <= 0) return undefined;
+
+  const maxTargetWidth = Math.min(Math.max(width * 2, width), 2000);
+  const widthCandidates = [160, 240, 320, 480, 640, 768, 960, 1200, 1600, 2000]
+    .filter((candidate) => candidate <= maxTargetWidth);
+
+  const targetWidths = new Set<number>(widthCandidates);
+  targetWidths.add(Math.min(width, 2000));
+
+  return Array.from(targetWidths)
+    .sort((a, b) => a - b)
+    .map((candidateWidth) => `${getOptimizedUrl(src, candidateWidth, quality)} ${candidateWidth}w`)
+    .join(', ');
 }
 
 /**

@@ -59,8 +59,14 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     let url = searchParams.get("url");
-    const width = parseInt(searchParams.get("w") || "1200");
-    const quality = parseInt(searchParams.get("q") || "70");
+    const requestedWidth = Number.parseInt(searchParams.get("w") || "960", 10);
+    const requestedQuality = Number.parseInt(searchParams.get("q") || "65", 10);
+    const width = Number.isNaN(requestedWidth)
+      ? 960
+      : Math.min(Math.max(requestedWidth, 96), 2000);
+    const quality = Number.isNaN(requestedQuality)
+      ? 65
+      : Math.min(Math.max(requestedQuality, 35), 85);
     const format = searchParams.get("f") || "webp";
 
     if (!url) {
@@ -94,7 +100,9 @@ export async function GET(request: NextRequest) {
       return new NextResponse(cachedBody, {
         headers: {
           "Content-Type": `image/${format}`,
-          "Cache-Control": "public, max-age=31536000, immutable",
+          "Cache-Control":
+            "public, max-age=31536000, immutable, stale-while-revalidate=86400",
+          Vary: "Accept",
         },
       });
     } catch {
@@ -157,7 +165,9 @@ export async function GET(request: NextRequest) {
     return new NextResponse(optimizedBody, {
       headers: {
         "Content-Type": `image/${format}`,
-        "Cache-Control": "public, max-age=31536000, immutable",
+        "Cache-Control":
+          "public, max-age=31536000, immutable, stale-while-revalidate=86400",
+        Vary: "Accept",
       },
     });
   } catch (error) {
