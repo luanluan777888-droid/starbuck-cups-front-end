@@ -26,7 +26,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   priority = false, // Thêm prop để control priority cho LCP
 }) => {
   const [isInView, setIsInView] = useState(false);
+  const [supportsHover, setSupportsHover] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    setSupportsHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+  }, []);
 
   // Intersection Observer để lazy load second image khi card vào viewport
   useEffect(() => {
@@ -60,28 +66,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
             src={firstImage.url}
             alt={product.name}
             fill
-            width={480} // Mobile-first: ~230px card x2 DPR
+            width={384} // Mobile-first: reduce transfer for ~228px card
             className={`object-contain transition-opacity duration-300 ${
               secondImage ? "opacity-100 group-hover:opacity-0" : "opacity-100"
             }`}
             priority={priority}
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : "auto"}
-            sizes="(max-width: 640px) 46vw, (max-width: 1024px) 31vw, 228px"
-            quality={55}
+            sizes="(max-width: 640px) calc((100vw - 3rem)/2), (max-width: 1024px) 31vw, 228px"
+            quality={50}
             style={{ objectFit: "contain" }}
           />
-          {secondImage && isInView && (
+          {secondImage && supportsHover && isInView && (
             <OptimizedImage
               src={secondImage.url}
               alt={`${product.name} alternate`}
               fill
-              width={480}
+              width={384}
               className="object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               loading="lazy"
               fetchPriority="low"
-              sizes="(max-width: 640px) 46vw, (max-width: 1024px) 31vw, 228px"
-              quality={50}
+              sizes="(max-width: 640px) calc((100vw - 3rem)/2), (max-width: 1024px) 31vw, 228px"
+              quality={45}
               style={{ objectFit: "contain" }}
             />
           )}

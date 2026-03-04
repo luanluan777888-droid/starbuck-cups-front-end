@@ -237,7 +237,7 @@ export default function HomeProductGrid({
                     product={product}
                     onAddToCart={handleAddToCart}
                     showAddToCart={true}
-                    priority={globalIndex < 2} // Mobile-first: chỉ ưu tiên 2 sản phẩm đầu
+                    priority={globalIndex < 1} // Mobile-first: chỉ ưu tiên 1 sản phẩm đầu
                   />
                 </div>
               );

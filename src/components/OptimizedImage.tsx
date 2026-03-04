@@ -136,7 +136,7 @@ function buildSrcSet(src: string, width?: number, quality?: number): string | un
   if (!width || width <= 0) return undefined;
 
   const maxTargetWidth = Math.min(Math.max(width * 2, width), 2000);
-  const widthCandidates = [160, 240, 320, 480, 640, 768, 960, 1200, 1600, 2000]
+  const widthCandidates = [160, 200, 240, 280, 320, 360, 384, 420, 448, 480, 540, 640, 768, 960, 1200, 1600, 2000]
     .filter((candidate) => candidate <= maxTargetWidth);
 
   const targetWidths = new Set<number>(widthCandidates);
