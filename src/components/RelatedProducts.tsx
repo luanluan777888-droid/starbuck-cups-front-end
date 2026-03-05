@@ -7,6 +7,8 @@ import { fetchRelatedProducts } from "@/store/slices/productsSlice";
 import ProductCard from "@/components/ProductCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 
 export default function RelatedProducts() {
   const dispatch = useAppDispatch();
