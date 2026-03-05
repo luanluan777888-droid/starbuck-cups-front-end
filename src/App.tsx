@@ -32,6 +32,10 @@ const AdminLogin = React.lazy(() => import('@/app/admin/login/page').then(m => (
 
 // Storefront Pages - lazy loaded
 const HomePage = React.lazy(() => import('@/pages/HomePage'));
+const StorefrontProductsPage = React.lazy(() => import('@/app/products/page').then(m => ({ default: m.default || m })));
+const StorefrontProductDetailPage = React.lazy(() => import('@/app/products/[slug]/page').then(m => ({ default: m.default || m })));
+const ContactsPage = React.lazy(() => import('@/app/contacts/page').then(m => ({ default: m.default || m })));
+const CartPage = React.lazy(() => import('@/app/cart/page').then(m => ({ default: m.default || m })));
 
 export default function App() {
   return (
@@ -64,6 +68,10 @@ export default function App() {
 
             {/* Storefront */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/products" element={<StorefrontProductsPage />} />
+            <Route path="/products/:slug" element={<StorefrontProductDetailPage />} />
+            <Route path="/contacts" element={<ContactsPage />} />
+            <Route path="/cart" element={<CartPage />} />
 
             {/* 404 fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
