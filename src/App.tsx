@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import ClientLayout from '@/components/layout/ClientLayout';
 
 // Loading fallback
 const LoadingPage = () => (
@@ -36,36 +37,38 @@ export default function App() {
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingPage />}>
-        <Routes>
-          {/* Admin Auth */}
-          <Route path="/admin/login" element={<AdminLogin />} />
+        <ClientLayout>
+          <Routes>
+            {/* Admin Auth */}
+            <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* Admin Panel */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="products" element={<ProductsPage />} />
-            <Route path="categories" element={<CategoriesPage />} />
-            <Route path="colors" element={<ColorsPage />} />
-            <Route path="capacities" element={<CapacitiesPage />} />
-            <Route path="orders" element={<OrdersPage />} />
-            <Route path="orders/:id" element={<OrdersPage />} />
-            <Route path="consultations" element={<ConsultationsPage />} />
-            <Route path="customers" element={<CustomersPage />} />
-            <Route path="customers/:id" element={<CustomersPage />} />
-            <Route path="settings" element={<AdminSettingsPage />} />
-            <Route path="notifications" element={<NotificationsPage />} />
-            <Route path="statistics" element={<StatisticsPage />} />
-            <Route path="hero-images" element={<HeroImagesPage />} />
-            <Route path="promotional-banners" element={<PromotionalBannersPage />} />
-          </Route>
+            {/* Admin Panel */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboardPage />} />
+              <Route path="products" element={<ProductsPage />} />
+              <Route path="categories" element={<CategoriesPage />} />
+              <Route path="colors" element={<ColorsPage />} />
+              <Route path="capacities" element={<CapacitiesPage />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="orders/:id" element={<OrdersPage />} />
+              <Route path="consultations" element={<ConsultationsPage />} />
+              <Route path="customers" element={<CustomersPage />} />
+              <Route path="customers/:id" element={<CustomersPage />} />
+              <Route path="settings" element={<AdminSettingsPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="statistics" element={<StatisticsPage />} />
+              <Route path="hero-images" element={<HeroImagesPage />} />
+              <Route path="promotional-banners" element={<PromotionalBannersPage />} />
+            </Route>
 
-          {/* Storefront */}
-          <Route path="/" element={<HomePage />} />
+            {/* Storefront */}
+            <Route path="/" element={<HomePage />} />
 
-          {/* 404 fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            {/* 404 fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ClientLayout>
       </Suspense>
     </BrowserRouter>
   );
