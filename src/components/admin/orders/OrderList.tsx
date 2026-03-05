@@ -1,6 +1,5 @@
-"use client";
 
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import {
   Eye,
   Package,
@@ -238,7 +237,7 @@ export function OrderList(props: OrderListProps) {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
-                      href={`/admin/orders/${order.id}`}
+                      to={`/admin/orders/${order.id}`}
                       className="inline-flex items-center gap-1 px-3 py-2 text-sm text-white hover:bg-gray-700 rounded-lg transition-colors"
                     >
                       <Eye className="w-4 h-4" />

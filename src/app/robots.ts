@@ -1,8 +1,15 @@
-import { MetadataRoute } from "next";
+type Robots = {
+  rules: Array<{
+    userAgent: string;
+    allow?: string[];
+    disallow?: string[];
+  }>;
+  sitemap: string;
+};
 
-export default function robots(): MetadataRoute.Robots {
+export default function robots(): Robots {
   const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com";
+    import.meta.env.VITE_SITE_URL || "https://starbucks-cups.com";
 
   return {
     rules: [

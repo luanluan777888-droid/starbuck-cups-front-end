@@ -1,17 +1,16 @@
-import { Metadata } from "next";
 import { PageSEO, Product } from "@/types";
 
 export const siteConfig = {
   name: "H's shoucangpu - Collectible Gift Shop",
   description:
     "Ly ST@RBUCKS CHÍNH HÃNG các nước. 95% MẪU TRÊN PAGE là HÀNG SẴN SHIP HOẢ TỐC📍HCM📍 Quà tặng cao cấp Luxury. Có dịch vụ gói quà. FB: Hasron Leung. Dịch vụ ship hoả tốc 24/7",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com",
+  url: import.meta.env.VITE_SITE_URL || "https://starbucks-cups.com",
   image: "/logo.png",
   keywords:
     "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam, ly starbucks chính hãng, ly starbuck chính hãng, ly starbucks auth, starbuck chính hãng, starbucks chính hãng, mua ly starbuck chính hãng, bình starbucks chính hãng, bình giữ nhiệt starbucks, ly giữ nhiệt starbucks, ly sứ starbucks",
 };
 
-export function generateSEO(seo: Partial<PageSEO>): Metadata {
+export function generateSEO(seo: Partial<PageSEO>) {
   const title = seo.title
     ? `${seo.title} | ${siteConfig.name}`
     : siteConfig.name;
@@ -70,8 +69,8 @@ export function generateSEO(seo: Partial<PageSEO>): Metadata {
       },
     },
     verification: {
-      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-      yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
+      google: import.meta.env.VITE_GOOGLE_SITE_VERIFICATION,
+      yandex: import.meta.env.VITE_YANDEX_VERIFICATION,
     },
   };
 }

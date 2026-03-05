@@ -1,4 +1,3 @@
-"use client";
 
 import { useCategories } from "@/hooks/admin/useCategories";
 import { CategoriesHeader } from "@/components/admin/categories/CategoriesHeader";

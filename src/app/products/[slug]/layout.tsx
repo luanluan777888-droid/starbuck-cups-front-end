@@ -1,11 +1,9 @@
-import type { Metadata } from "next";
-
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({ params }: Props) {
+  const { slug } = params;
 
   // Mock product data - in real app, fetch from API
   const productName = slug

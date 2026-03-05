@@ -1,7 +1,7 @@
-"use client";
 
-import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import React, { Suspense } from "react";
+
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Toaster, toast } from "sonner";
@@ -10,29 +10,18 @@ import { clearLastAction } from "@/store/slices/cartSlice";
 import EffectsRuntime from "@/components/layout/EffectsRuntime";
 
 // Dynamic imports để giảm TBT
-const Header = dynamic(() => import("@/components/layout/Header"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-16 bg-white border-b border-gray-200 animate-pulse" />
-  ),
-});
+const Header = React.lazy(() =>
+  import("@/components/layout/Header").then((m) => ({ default: m.Header ?? m.default }))
+);
 
-const Footer = dynamic(() => import("@/components/layout/Footer"), {
-  ssr: false,
-});
+const Footer = React.lazy(() => import("@/components/layout/Footer").then(module => ({ default: module.Footer || module.default })));
 
-const Cart = dynamic(() => import("@/components/ui/Cart"), {
-  ssr: false,
-});
+const Cart = React.lazy(() => import("@/components/ui/Cart").then(module => ({ default: module.Cart || module.default })));
 
-const FloatingContactButton = dynamic(
-  () =>
-    import("@/components/ui/FloatingContactButton").then((mod) => ({
-      default: mod.FloatingContactButton,
-    })),
-  {
-    ssr: false,
-  }
+const FloatingContactButton = React.lazy(() =>
+  import("@/components/ui/FloatingContactButton").then((mod) => ({
+    default: mod.FloatingContactButton,
+  }))
 );
 
 interface ClientLayoutProps {
@@ -40,7 +29,7 @@ interface ClientLayoutProps {
 }
 
 export function ClientLayout({ children }: ClientLayoutProps) {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const isAdminRoute = pathname?.startsWith("/admin");
 
   // For admin routes, don't show customer header and cart

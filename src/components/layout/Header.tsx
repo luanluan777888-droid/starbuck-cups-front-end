@@ -1,8 +1,7 @@
-"use client";
 
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import React, { Suspense } from "react";
+import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { openCart } from "@/store/slices/cartSlice";
@@ -10,14 +9,10 @@ import { Search, Menu as MenuIcon, X } from "lucide-react";
 import { trackCartAction, trackMobileMenu } from "@/lib/analytics";
 import OptimizedImage from "@/components/OptimizedImage";
 
-const SearchAutocompleteModal = dynamic(
-  () =>
-    import("@/components/SearchAutocomplete").then((mod) => ({
-      default: mod.SearchAutocomplete,
-    })),
-  {
-    ssr: false,
-  }
+const SearchAutocompleteModal = React.lazy(() =>
+  import("@/components/SearchAutocomplete").then((mod) => ({
+    default: mod.SearchAutocomplete,
+  }))
 );
 
 interface HeaderProps {
@@ -25,8 +20,8 @@ interface HeaderProps {
 }
 
 export function Header({ className = "" }: HeaderProps) {
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = useLocation().pathname;
+  const router = useNavigate();
   const dispatch = useAppDispatch();
   const { items: cartItems } = useAppSelector((state) => state.cart);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -55,7 +50,7 @@ export function Header({ className = "" }: HeaderProps) {
   };
 
   const handleProductSelect = (slug: string) => {
-    router.push(`/products/${slug}`);
+    router(`/products/${slug}`);
     setIsSearchModalOpen(false);
   };
 
@@ -109,7 +104,7 @@ export function Header({ className = "" }: HeaderProps) {
         {/* Desktop Layout */}
         <div className="hidden md:flex container mx-auto px-6 py-4 items-center justify-between">
           {/* Logo thay thế Menu Button */}
-          <Link href="/" className="flex items-center gap-3 w-[220px]">
+          <Link to="/" className="flex items-center gap-3 w-[220px]">
             <span className="w-8 h-8 flex-shrink-0" aria-hidden="true">
               <OptimizedImage
                 src="/logo-32.png"
@@ -131,7 +126,7 @@ export function Header({ className = "" }: HeaderProps) {
 
           <div className="flex items-center gap-6">
             <Link
-              href="/"
+              to="/"
               className={`text-sm font-medium hover:text-zinc-300 transition-colors ${
                 pathname === "/" ? "text-white" : "text-zinc-400"
               }`}
@@ -139,7 +134,7 @@ export function Header({ className = "" }: HeaderProps) {
               Trang chủ
             </Link>
             <Link
-              href="/products"
+              to="/products"
               className={`font-light tracking-wider transition-colors ${
                 pathname === "/products"
                   ? "text-sm text-white"
@@ -149,7 +144,7 @@ export function Header({ className = "" }: HeaderProps) {
               Sản phẩm
             </Link>
             <Link
-              href="/contacts"
+              to="/contacts"
               className={`font-light tracking-wider transition-colors ${
                 pathname === "/contacts"
                   ? "text-sm text-white"
@@ -237,7 +232,7 @@ export function Header({ className = "" }: HeaderProps) {
           {/* Navigation Links */}
           <div className="space-y-2">
             <Link
-              href="/"
+              to="/"
               onClick={() => setIsSidebarOpen(false)}
               className={`block py-3 px-4 rounded-lg transition-colors ${
                 pathname === "/"
@@ -257,7 +252,7 @@ export function Header({ className = "" }: HeaderProps) {
               </div>
             </Link>
             <Link
-              href="/products"
+              to="/products"
               onClick={() => setIsSidebarOpen(false)}
               className={`block py-3 px-4 rounded-lg transition-colors ${
                 pathname === "/products"
@@ -280,7 +275,7 @@ export function Header({ className = "" }: HeaderProps) {
               </div>
             </Link>
             <Link
-              href="/contacts"
+              to="/contacts"
               onClick={() => setIsSidebarOpen(false)}
               className={`block py-3 px-4 rounded-lg transition-colors ${
                 pathname === "/contacts"

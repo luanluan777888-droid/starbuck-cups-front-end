@@ -1,5 +1,5 @@
 import { ShoppingCart, Clock, ExternalLink } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { RecentOrder } from "@/lib/api/dashboard";
 
 interface RecentOrdersProps {
@@ -8,7 +8,7 @@ interface RecentOrdersProps {
 }
 
 export function RecentOrders({ orders, loading }: RecentOrdersProps) {
-  const router = useRouter();
+  const router = useNavigate();
 
   // Format currency
   const formatCurrency = (amount: number | undefined | null) => {
@@ -80,7 +80,7 @@ export function RecentOrders({ orders, loading }: RecentOrdersProps) {
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-white">Đơn hàng gần đây</h3>
           <button
-            onClick={() => router.push("/admin/orders")}
+            onClick={() => router("/admin/orders")}
             className="text-sm text-gray-300 hover:text-white font-medium"
           >
             Xem tất cả
@@ -113,7 +113,7 @@ export function RecentOrders({ orders, loading }: RecentOrdersProps) {
             orders.map((order) => (
               <div
                 key={order.id}
-                onClick={() => router.push(`/admin/orders/${order.id}`)}
+                onClick={() => router(`/admin/orders/${order.id}`)}
                 className="group flex items-center justify-between p-4 bg-gray-700/50 rounded-lg border border-gray-600 hover:border-gray-500 hover:bg-gray-700 transition-all cursor-pointer"
               >
                 <div className="flex-1">
@@ -163,3 +163,4 @@ export function RecentOrders({ orders, loading }: RecentOrdersProps) {
     </div>
   );
 }
+

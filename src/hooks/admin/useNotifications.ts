@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/store";
 import {
   markNotificationAsRead,
@@ -44,7 +44,7 @@ export interface UseNotificationsReturn {
 }
 
 export function useNotifications(): UseNotificationsReturn {
-  const router = useRouter();
+  const router = useNavigate();
   const dispatch = useAppDispatch();
   const { notifications, unreadCount } = useAppSelector(
     (state) => state.notifications
@@ -125,12 +125,12 @@ export function useNotifications(): UseNotificationsReturn {
       if (notification.type === "consultation") {
         const consultationData = notification.data as ConsultationData;
         if (consultationData?.consultationId) {
-          router.push(`/admin/consultations`);
+          router(`/admin/consultations`);
         }
       } else if (notification.type === "order") {
         const orderData = notification.data as OrderData;
         if (orderData?.orderId) {
-          router.push(`/admin/orders/${orderData.orderId}`);
+          router(`/admin/orders/${orderData.orderId}`);
         }
       }
     } catch (error) {
@@ -199,3 +199,4 @@ export function useNotifications(): UseNotificationsReturn {
     formatTimestamp,
   };
 }
+

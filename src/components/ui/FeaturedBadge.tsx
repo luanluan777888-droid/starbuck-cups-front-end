@@ -1,4 +1,3 @@
-"use client";
 
 interface FeaturedBadgeProps {
   size?: "sm" | "md" | "lg";
@@ -20,7 +19,7 @@ export function FeaturedBadge({
     <div className={`inline-block featured-shimmer ${className}`}>
       <span style={sizes[size]}>⭐</span>
 
-      <style jsx>{`
+      <style>{`
         .featured-shimmer {
           position: relative;
           overflow: hidden !important;

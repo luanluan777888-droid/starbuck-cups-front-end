@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Home, Search, AlertCircle } from "lucide-react";
 
 export default function NotFound() {
@@ -28,7 +28,7 @@ export default function NotFound() {
         {/* Action Buttons */}
         <div className="space-y-3">
           <Link
-            href="/"
+            to="/"
             className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 border border-gray-600 transition-colors"
           >
             <Home className="w-4 h-4" />
@@ -36,7 +36,7 @@ export default function NotFound() {
           </Link>
 
           <Link
-            href="/products"
+            to="/products"
             className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition-colors"
           >
             <Search className="w-4 h-4" />

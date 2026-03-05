@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { clearCart } from "@/store/slices/cartSlice";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ChevronLeft, FileText, Phone, User, MapPin, Mail } from "lucide-react";
 import type { CartItem } from "@/types";
@@ -25,7 +25,7 @@ interface ConsultationFormData {
 }
 
 export default function CartPage() {
-  const router = useRouter();
+  const router = useNavigate();
   const dispatch = useAppDispatch();
   const { items } = useAppSelector((state) => state.cart);
 
@@ -162,7 +162,7 @@ export default function CartPage() {
 
         // Clear cart and redirect
         dispatch(clearCart());
-        router.push("/products");
+        router("/products");
       } else {
         const errorData = await response.json();
         const errorMessage = errorData.error || "Failed to create consultation";
@@ -194,7 +194,7 @@ export default function CartPage() {
                 Bạn chưa có sản phẩm nào trong giỏ tư vấn.
               </p>
               <button
-                onClick={() => router.push("/products")}
+                onClick={() => router("/products")}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-medium rounded-lg hover:bg-zinc-100 transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -389,3 +389,4 @@ function CartItemRow({ item }: { item: CartItem }) {
     </div>
   );
 }
+

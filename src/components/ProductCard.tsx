@@ -1,7 +1,6 @@
-"use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import { Product } from "@/types";
 import { getFirstProductImage, getSecondProductImage } from "@/lib/utils/image";
@@ -108,7 +107,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <Link
-      href={`/products/${product.slug}`}
+      to={`/products/${product.slug}`}
       aria-label={`Xem chi tiết sản phẩm ${product.name}`}
       className={`group block ${
         animationDelay !== undefined ? animationStyles.zoomIn : ""

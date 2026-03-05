@@ -1,50 +1,29 @@
-﻿"use client";
+"use client";
 
-import dynamic from "next/dynamic";
+import React from "react";
+
 import { useEffect, useRef } from "react";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // Dynamic imports for better performance
-const LexicalComposer = dynamic(
-  () => import("@lexical/react/LexicalComposer").then(mod => ({ default: mod.LexicalComposer })),
-  { ssr: false, loading: () => <LoadingSpinner /> }
-);
+const LexicalComposer = React.lazy(() => import("@lexical/react/LexicalComposer").then(m => ({ default: m.LexicalComposer ?? m.default })));
 
-const RichTextPlugin = dynamic(
-  () => import("@lexical/react/LexicalRichTextPlugin").then(mod => ({ default: mod.RichTextPlugin })),
-  { ssr: false }
-);
+const RichTextPlugin = React.lazy(() => import("@lexical/react/LexicalRichTextPlugin").then(m => ({ default: m.RichTextPlugin ?? m.default })));
 
-const ContentEditable = dynamic(
-  () => import("@lexical/react/LexicalContentEditable").then(mod => ({ default: mod.ContentEditable })),
-  { ssr: false }
-);
+const ContentEditable = React.lazy(() => import("@lexical/react/LexicalContentEditable").then(m => ({ default: m.ContentEditable ?? m.default })));
 
-const HistoryPlugin = dynamic(
-  () => import("@lexical/react/LexicalHistoryPlugin").then(mod => ({ default: mod.HistoryPlugin })),
-  { ssr: false }
-);
+const HistoryPlugin = React.lazy(() => import("@lexical/react/LexicalHistoryPlugin").then(m => ({ default: m.HistoryPlugin ?? m.default })));
 
-const OnChangePlugin = dynamic(
-  () => import("@lexical/react/LexicalOnChangePlugin").then(mod => ({ default: mod.OnChangePlugin })),
-  { ssr: false }
-);
+const OnChangePlugin = React.lazy(() => import("@lexical/react/LexicalOnChangePlugin").then(m => ({ default: m.OnChangePlugin ?? m.default })));
 
-const LexicalErrorBoundary = dynamic(
-  () => import("@lexical/react/LexicalErrorBoundary").then(mod => ({ default: mod.LexicalErrorBoundary })),
-  { ssr: false }
-);
+const LexicalErrorBoundary = React.lazy(() => import("@lexical/react/LexicalErrorBoundary").then(m => ({ default: m.LexicalErrorBoundary ?? m.default })));
 
 // Toolbar Component (import sau để tránh circular dependency)
-const ToolbarPlugin = dynamic(() => import("./ToolbarPlugin"), {
-  ssr: false,
-  loading: () => <div className="h-12 bg-gray-100 animate-pulse rounded" />
-});
+const ToolbarPlugin = React.lazy(() =>
+  import("./ToolbarPlugin")
+);
 
 // Image Plugin
-const ImagePlugin = dynamic(() => import("./ImagePlugin"), {
-  ssr: false,
-});
+const ImagePlugin = React.lazy(() => import("./ImagePlugin"));
 
 // Import lexical utilities directly (these are needed for the ValuePlugin)
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
@@ -265,3 +244,4 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 };
 
 export default RichTextEditor;
+

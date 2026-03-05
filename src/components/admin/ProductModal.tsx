@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
-import dynamic from "next/dynamic";
+import React from "react";
+
 import { toast } from "sonner";
 import { X, Upload, ImageIcon } from "lucide-react";
 import type { Product, Category, Color, Capacity } from "@/types";
@@ -12,13 +13,11 @@ import ImageReorder from "./ImageReorder";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
 import { VipToggle } from "./VipRadio";
 import { FeaturedToggle } from "./FeaturedToggle";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // Dynamic import for RichTextEditor to reduce initial bundle
-const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), {
-  ssr: false,
-  loading: () => <div className="w-full h-[300px] border rounded-md flex items-center justify-center"><LoadingSpinner /></div>
-});
+const RichTextEditor = React.lazy(() =>
+  import("@/components/ui/RichTextEditor")
+);
 
 // Extended product type for admin operations
 interface AdminProduct extends Omit<Product, "stockQuantity"> {
@@ -27,6 +26,7 @@ interface AdminProduct extends Omit<Product, "stockQuantity"> {
   isVip?: boolean;
   isFeatured?: boolean;
 }
+
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -289,7 +289,7 @@ export default function ProductModal({
             </label>
             <RichTextEditor
               value={formData.description || ""}
-              onChange={(htmlContent) =>
+              onChange={(htmlContent: string) =>
                 updateField("description", htmlContent)
               }
               placeholder="Nhập mô tả chi tiết sản phẩm..."

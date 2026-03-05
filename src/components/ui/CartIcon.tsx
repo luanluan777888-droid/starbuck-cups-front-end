@@ -1,4 +1,3 @@
-"use client";
 
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleCart } from "@/store/slices/cartSlice";

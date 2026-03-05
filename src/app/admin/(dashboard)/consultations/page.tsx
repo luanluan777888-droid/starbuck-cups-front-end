@@ -1,4 +1,3 @@
-"use client";
 
 import { useConsultations } from "@/hooks/admin/useConsultations";
 import { ConsultationsHeader } from "@/components/admin/consultations/ConsultationsHeader";

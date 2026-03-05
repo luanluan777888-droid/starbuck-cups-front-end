@@ -1,11 +1,10 @@
-"use client";
 
 import React from "react";
 import {
   useCustomerForm,
   type CustomerFormData,
 } from "@/hooks/business/useCustomerForm";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 interface CustomerFormProps {
   initialData?: Partial<CustomerFormData>;
@@ -24,7 +23,7 @@ export function CustomerForm({
       isEditing,
       customerId,
     });
-  const router = useRouter();
+  const router = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -304,7 +303,7 @@ export function CustomerForm({
         <div className="flex gap-4 pt-6">
           <button
             type="button"
-            onClick={() => router.push("/admin/customers")}
+            onClick={() => router("/admin/customers")}
             className="flex-1 px-4 py-2 border border-gray-600 rounded-lg text-gray-300 bg-gray-700 hover:bg-gray-600 transition-colors"
           >
             Hủy
@@ -325,3 +324,4 @@ export function CustomerForm({
     </div>
   );
 }
+

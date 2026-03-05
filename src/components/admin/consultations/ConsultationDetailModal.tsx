@@ -7,7 +7,7 @@ import {
   CheckCircle,
   MessageCircle,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import type { Consultation, ConsultationStatus } from "@/types";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
 import OptimizedImage from "@/components/OptimizedImage";
@@ -160,7 +160,7 @@ export function ConsultationDetailModal({
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <Link
-                            href={`/products/${
+                            to={`/products/${
                               item.product?.slug || item.productId
                             }`}
                             target="_blank"

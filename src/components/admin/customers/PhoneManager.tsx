@@ -1,4 +1,3 @@
-"use client";
 
 import { useState, useEffect } from "react";
 import { Phone, Plus, Edit2, Trash2, Star, Check, X, Edit } from "lucide-react";

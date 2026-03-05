@@ -1,4 +1,3 @@
-"use client";
 
 import { useCapacities } from "@/hooks/admin/useCapacities";
 import { CapacitiesHeader } from "@/components/admin/capacities/CapacitiesHeader";

@@ -1,8 +1,7 @@
-"use client";
 
 import { use } from "react";
 import { ArrowLeft, Plus } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { AddressManager } from "@/components/admin/customers/AddressManager";
 
 interface CustomerAddressesPageProps {
@@ -22,7 +21,7 @@ export default function CustomerAddressesPage({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
-            href={`/admin/customers/${id}`}
+            to={`/admin/customers/${id}`}
             className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-gray-300" />

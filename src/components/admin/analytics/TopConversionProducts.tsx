@@ -1,8 +1,7 @@
-"use client";
 
 import { TrendingUp, MousePointer, ShoppingCart } from "lucide-react";
 import { ProductAnalytics } from "@/hooks/admin/useProductAnalytics";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Pagination } from "@/components/ui/Pagination";
 
 interface TopConversionProductsProps {
@@ -79,7 +78,7 @@ export function TopConversionProducts({
         {products.map((product, index) => (
           <Link
             key={product.productId}
-            href={`/products/${product.productSlug || product.productId}`}
+            to={`/products/${product.productSlug || product.productId}`}
             target="_blank"
             className="flex items-center justify-between p-4 bg-gray-800/50 border border-gray-700 rounded-lg hover:bg-gray-800 hover:border-gray-600 transition-all cursor-pointer"
           >

@@ -1,8 +1,7 @@
-"use client";
 
 import { useState } from "react";
 import { Plus, Download } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { OrderList } from "@/components/admin/orders/OrderList";
 import { OrderStatsCards } from "@/components/admin/orders/OrderStatsCards";
 import { OrderFilters } from "@/components/admin/orders/OrderFilters";
@@ -63,7 +62,7 @@ export default function OrdersPage() {
             Xuất Excel
           </button>
           <Link
-            href="/admin/orders/new"
+            to="/admin/orders/new"
             className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
             <Plus className="w-4 h-4" />

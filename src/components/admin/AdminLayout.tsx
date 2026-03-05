@@ -1,8 +1,8 @@
-"use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useAppSelector } from "@/store";
 import { useAdminAuth } from "@/hooks/useStandardAuth";
 import { useSocket } from "@/hooks/useSocket";
@@ -36,17 +36,13 @@ interface SidebarItem {
   submenu?: { label: string; path: string }[];
 }
 
-interface AdminLayoutProps {
-  children: React.ReactNode;
-}
-
-export function AdminLayout({ children }: AdminLayoutProps) {
+export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationDropdownOpen, setNotificationDropdownOpen] =
     useState(false);
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const { user } = useAppSelector((state) => state.auth);
 
   // Sử dụng standardized admin authentication hook
@@ -251,7 +247,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                         {item.submenu.map((subItem) => (
                           <Link
                             key={subItem.path}
-                            href={subItem.path}
+                            to={subItem.path}
                             className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
                               pathname === subItem.path
                                 ? "bg-gray-700 text-white"
@@ -266,7 +262,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   </div>
                 ) : (
                   <Link
-                    href={item.path}
+                    to={item.path}
                     className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                       isActivePath(item.path)
                         ? "bg-gray-700 text-white border-r-2 border-white"
@@ -366,7 +362,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       </div>
 
                       <Link
-                        href="/admin/profile"
+                        to="/admin/profile"
                         onClick={() => setProfileDropdownOpen(false)}
                         className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
                       >
@@ -375,7 +371,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       </Link>
 
                       <Link
-                        href="/admin/settings"
+                        to="/admin/settings"
                         onClick={() => setProfileDropdownOpen(false)}
                         className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
                       >
@@ -404,7 +400,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 bg-black">{children}</main>
+        <main className="flex-1 p-6 bg-black">
+          <Outlet />
+        </main>
       </div>
 
       {/* Sidebar Overlay */}

@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/store";
 import { toast } from "sonner";
 
@@ -61,7 +61,7 @@ export function useCustomerForm(
     onError,
   } = options;
 
-  const router = useRouter();
+  const router = useNavigate();
 
   // Get token from Redux store
   const { token } = useAppSelector((state) => state.auth);
@@ -246,7 +246,7 @@ export function useCustomerForm(
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push("/admin/customers");
+        router("/admin/customers");
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "Có lỗi xảy ra";
@@ -302,3 +302,4 @@ export function useCustomerForm(
     resetForm,
   };
 }
+

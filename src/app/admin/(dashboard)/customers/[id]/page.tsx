@@ -1,9 +1,8 @@
-"use client";
 
 import { use, useState } from "react";
 import { ArrowLeft, Trash2 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CustomerDetail } from "@/components/admin/customers/CustomerDetail";
 import { useAppSelector } from "@/store";
 import { toast } from "sonner";
@@ -18,7 +17,7 @@ export default function CustomerDetailPage({
   params,
 }: CustomerDetailPageProps) {
   const { id } = use(params);
-  const router = useRouter();
+  const router = useNavigate();
   const { token } = useAppSelector((state) => state.auth);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -46,7 +45,7 @@ export default function CustomerDetailPage({
       const data = await response.json();
       if (data.success) {
         toast.success("Xóa khách hàng thành công");
-        router.push("/admin/customers");
+        router("/admin/customers");
       } else {
         throw new Error(data.message || "Failed to delete customer");
       }
@@ -65,7 +64,7 @@ export default function CustomerDetailPage({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
-            href="/admin/customers"
+            to="/admin/customers"
             className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-gray-300" />

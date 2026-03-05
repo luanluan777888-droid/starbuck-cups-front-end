@@ -1,19 +1,14 @@
-"use client";
 
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import React, { Suspense } from "react";
 
-const SettingsSocketProvider = dynamic(
-  () =>
-    import("@/components/providers/SettingsSocketProvider").then((mod) => ({
-      default: mod.SettingsSocketProvider,
-    })),
-  { ssr: false }
+const SettingsSocketProvider = React.lazy(() =>
+  import("@/components/providers/SettingsSocketProvider").then((mod) => ({
+    default: mod.SettingsSocketProvider,
+  }))
 );
 
-const EffectManager = dynamic(() => import("@/components/effects/EffectManager"), {
-  ssr: false,
-});
+const EffectManager = React.lazy(() => import("@/components/effects/EffectManager"));
 
 export default function EffectsRuntime() {
   const [isReady, setIsReady] = useState(false);

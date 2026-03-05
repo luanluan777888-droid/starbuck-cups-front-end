@@ -1,15 +1,11 @@
-"use client";
-
-import dynamic from "next/dynamic";
+import React, { Suspense } from "react";
 import { X } from "lucide-react";
 import type { Category } from "@/types";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // Dynamic import for RichTextEditor to reduce initial bundle
-const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), {
-  ssr: false,
-  loading: () => <div className="w-full h-[200px] border rounded-md flex items-center justify-center"><LoadingSpinner /></div>
-});
+const RichTextEditor = React.lazy(() =>
+  import("@/components/ui/RichTextEditor")
+);
 
 interface CategoryFormData {
   name: string;
@@ -53,10 +49,7 @@ export function CategoryFormModal({
           <h3 className="text-lg font-semibold text-white">
             {editingCategory ? "Chỉnh sửa danh mục" : "Thêm danh mục mới"}
           </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-300"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-300">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -89,14 +82,16 @@ export function CategoryFormModal({
               <label className="block text-sm font-medium text-white mb-1">
                 Mô tả
               </label>
-              <RichTextEditor
-                value={formData.description || ""}
-                onChange={(htmlContent) =>
-                  onFormDataChange({ ...formData, description: htmlContent })
-                }
-                placeholder="Nhập mô tả chi tiết về danh mục..."
-                height={200}
-              />
+              <Suspense fallback={<div className="w-full h-[200px] border rounded-md flex items-center justify-center bg-gray-700 text-gray-400">Đang tải...</div>}>
+                <RichTextEditor
+                  value={formData.description || ""}
+                  onChange={(htmlContent: string) =>
+                    onFormDataChange({ ...formData, description: htmlContent })
+                  }
+                  placeholder="Nhập mô tả chi tiết về danh mục..."
+                  height={200}
+                />
+              </Suspense>
               {formErrors.description && (
                 <p className="text-red-400 text-sm mt-1">
                   {formErrors.description}

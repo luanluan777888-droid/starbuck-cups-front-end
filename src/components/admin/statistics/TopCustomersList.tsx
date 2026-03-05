@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, Phone } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 interface TopCustomer {
   id: string;
@@ -43,7 +43,7 @@ export function TopCustomersList({ customers }: TopCustomersListProps) {
                 </div>
                 <div className="flex-1">
                   <Link
-                    href={`/admin/customers/${customer.id}`}
+                    to={`/admin/customers/${customer.id}`}
                     className="font-medium text-white hover:text-green-400 transition-colors cursor-pointer"
                   >
                     {customer.name}

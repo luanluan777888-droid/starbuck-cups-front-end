@@ -1,8 +1,7 @@
-"use client";
 
 import { useState } from "react";
 import { Plus, Search, Filter, Download } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { CustomerList } from "@/components/admin/customers/CustomerList";
 
 export default function CustomersPage() {
@@ -30,7 +29,7 @@ export default function CustomersPage() {
             Xuất Excel
           </button>
           <Link
-            href="/admin/customers/new"
+            to="/admin/customers/new"
             className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
           >
             <Plus className="w-4 h-4" />

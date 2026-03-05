@@ -1,4 +1,3 @@
-"use client";
 
 import { Header } from "@/components/layout/Header";
 import { Cart } from "@/components/ui/Cart";

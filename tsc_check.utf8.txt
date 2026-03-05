@@ -1,0 +1,6 @@
+﻿src/components/home/DeferredHomeProductGrid.tsx(6,82): error TS1005: ';' expected.
+src/components/home/DeferredHomeProductGrid.tsx(7,1): error TS1109: Expression expected.
+src/components/home/DeferredHomeProductGrid.tsx(7,2): error TS1128: Declaration or statement expected.
+src/components/home/HeroSection.tsx(9,69): error TS1005: ';' expected.
+src/components/home/HeroSection.tsx(12,1): error TS1109: Expression expected.
+src/components/home/HeroSection.tsx(12,2): error TS1128: Declaration or statement expected.

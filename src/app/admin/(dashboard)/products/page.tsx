@@ -1,44 +1,12 @@
-"use client";
-
-import dynamic from "next/dynamic";
+import React from "react";
 import { useProducts } from "@/hooks/admin/useProducts";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
-
-// Dynamic imports for better performance
-const ProductsHeader = dynamic(
-  () => import("@/components/admin/products/ProductsHeader").then(mod => ({ default: mod.ProductsHeader })),
-  { loading: () => <div className="h-16 bg-gray-100 animate-pulse rounded" /> }
-);
-
-const ProductsFilters = dynamic(
-  () => import("@/components/admin/products/ProductsFilters").then(mod => ({ default: mod.ProductsFilters })),
-  { loading: () => <div className="h-12 bg-gray-100 animate-pulse rounded" /> }
-);
-
-const ProductsBulkActions = dynamic(
-  () => import("@/components/admin/products/ProductsBulkActions").then(mod => ({ default: mod.ProductsBulkActions })),
-  { loading: () => <div className="h-10 bg-gray-100 animate-pulse rounded" /> }
-);
-
-const ProductsTable = dynamic(
-  () => import("@/components/admin/products/ProductsTable").then(mod => ({ default: mod.ProductsTable })),
-  { loading: () => <LoadingSpinner /> }
-);
-
-const ProductsPagination = dynamic(
-  () => import("@/components/admin/products/ProductsPagination").then(mod => ({ default: mod.ProductsPagination })),
-  { loading: () => <div className="h-8 bg-gray-100 animate-pulse rounded" /> }
-);
-
-const ProductModal = dynamic(
-  () => import("@/components/admin/ProductModal"),
-  { ssr: false, loading: () => <LoadingSpinner /> }
-);
-
-const ProductConfirmModal = dynamic(
-  () => import("@/components/admin/products/ProductConfirmModal").then(mod => ({ default: mod.ProductConfirmModal })),
-  { ssr: false }
-);
+import { ProductsHeader } from "@/components/admin/products/ProductsHeader";
+import { ProductsFilters } from "@/components/admin/products/ProductsFilters";
+import { ProductsBulkActions } from "@/components/admin/products/ProductsBulkActions";
+import { ProductsTable } from "@/components/admin/products/ProductsTable";
+import { ProductsPagination } from "@/components/admin/products/ProductsPagination";
+import ProductModal from "@/components/admin/ProductModal";
+import { ProductConfirmModal } from "@/components/admin/products/ProductConfirmModal";
 
 export default function AdminProductsPage() {
   const {

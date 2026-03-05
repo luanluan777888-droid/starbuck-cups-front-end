@@ -1,8 +1,7 @@
-import { Metadata } from "next";
 import { generateSEO } from "@/lib/seo";
 import ContactsPageComponent from "@/components/pages/ContactsPage";
 
-export const metadata: Metadata = generateSEO({
+export const metadata = generateSEO({
   title: "Liên hệ",
   description:
     "Liên hệ với H's shoucangpu - Chuyên cung cấp ly Starbucks chính hãng. Hotline: 0896 686 008, Zalo, Messenger.",

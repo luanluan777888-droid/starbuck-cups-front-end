@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/store";
 import {
   markNotificationAsRead,
@@ -23,7 +23,7 @@ export function NotificationDropdown({
   onClose,
   unreadCount,
 }: NotificationDropdownProps) {
-  const router = useRouter();
+  const router = useNavigate();
   const dispatch = useAppDispatch();
   const { notifications } = useAppSelector((state) => state.notifications);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -63,9 +63,9 @@ export function NotificationDropdown({
 
     // Navigate based on notification type
     if (notification.type === "consultation") {
-      router.push("/admin/consultations");
+      router("/admin/consultations");
     } else if (notification.type === "order") {
-      router.push("/admin/orders");
+      router("/admin/orders");
     }
 
     // Close dropdown
@@ -239,7 +239,7 @@ export function NotificationDropdown({
         <div className="p-3 border-t border-gray-700 flex-shrink-0">
           <button
             onClick={() => {
-              router.push("/admin/notifications");
+              router("/admin/notifications");
               onClose();
             }}
             className="w-full text-center text-sm text-white hover:text-gray-300 transition-colors"
@@ -251,3 +251,4 @@ export function NotificationDropdown({
     </div>
   );
 }
+

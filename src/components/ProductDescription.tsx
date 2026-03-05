@@ -1,4 +1,3 @@
-"use client";
 
 import type { Product } from "@/types";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";

@@ -1,7 +1,6 @@
-"use client";
 
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { CustomerForm } from "@/components/admin/customers/CustomerForm";
 
 export default function NewCustomerPage() {
@@ -10,7 +9,7 @@ export default function NewCustomerPage() {
       {/* Page Header */}
       <div className="flex items-center gap-4">
         <Link
-          href="/admin/customers"
+          to="/admin/customers"
           className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-gray-300" />

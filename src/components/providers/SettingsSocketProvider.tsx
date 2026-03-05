@@ -1,4 +1,3 @@
-"use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
@@ -20,7 +19,7 @@ function normalizeSocketBaseUrl(apiUrl: string): string {
 }
 
 function getSocketCandidates(): string[] {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
   const configuredBaseUrl = normalizeSocketBaseUrl(apiUrl);
 
   if (typeof window === "undefined") {

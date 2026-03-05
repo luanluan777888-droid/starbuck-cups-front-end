@@ -137,7 +137,6 @@ export function useAuthRefresh() {
 
       return () => clearTimeout(timer);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Intentionally empty để chỉ chạy 1 lần
 
   // Setup interval để check token định kỳ (mỗi 3 phút) - check thường xuyên hơn

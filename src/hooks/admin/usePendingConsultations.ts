@@ -67,7 +67,6 @@ export function usePendingConsultations() {
   useEffect(() => {
     fetchPendingCount();
     // Chỉ fetch một lần khi mount, không polling
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   return {

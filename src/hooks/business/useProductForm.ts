@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAppSelector } from "@/hooks/redux";
 
@@ -59,7 +59,7 @@ export function useProductForm(
     onError,
   } = options;
 
-  const router = useRouter();
+  const router = useNavigate();
   const { token } = useAppSelector((state) => state.auth);
 
   const [formData, setFormData] = useState<ProductFormData>({
@@ -296,7 +296,7 @@ export function useProductForm(
       if (onSuccess) {
         onSuccess(data.data);
       } else {
-        router.push("/admin/products");
+        router("/admin/products");
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : "Có lỗi xảy ra";
@@ -462,7 +462,7 @@ export function useProductForm(
         if (onSuccess) {
           onSuccess(data.data);
         } else {
-          router.push("/admin/products");
+          router("/admin/products");
         }
       } catch (error) {
         const errorMsg =
@@ -520,3 +520,4 @@ export function useProductForm(
     resetForm,
   };
 }
+

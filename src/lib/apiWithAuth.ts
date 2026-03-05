@@ -94,7 +94,7 @@ class ApiWithAuth {
       // Directly call backend API since it's not in the main apiService yet
       const response = await fetch(
         `${
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api"
+          import.meta.env.VITE_API_URL || "http://localhost:8080/api"
         }/admin/notifications/mark-all-read`,
         {
           method: "PUT",

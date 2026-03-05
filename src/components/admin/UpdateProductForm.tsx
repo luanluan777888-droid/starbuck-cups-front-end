@@ -1,7 +1,4 @@
-﻿"use client";
-
 import React, { useState, useCallback } from "react";
-import dynamic from "next/dynamic";
 import { X, Upload, ImageIcon } from "lucide-react";
 import type { Category, Color, Capacity } from "@/types";
 import { useUpdateProduct } from "@/hooks/business/useUpdateProduct";
@@ -9,13 +6,11 @@ import { uploadAPI } from "@/lib/api/upload";
 import ImageReorder from "./ImageReorder";
 import { VipToggle } from "./VipRadio";
 import { FeaturedToggle } from "./FeaturedToggle";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // Dynamic import for RichTextEditor to reduce initial bundle
-const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), {
-  ssr: false,
-  loading: () => <div className="w-full h-[300px] border rounded-md flex items-center justify-center"><LoadingSpinner /></div>
-});
+const RichTextEditor = React.lazy(() =>
+  import("@/components/ui/RichTextEditor")
+);
 
 interface UpdateProductFormProps {
   productId: string;
@@ -165,7 +160,9 @@ export function UpdateProductForm({
           </label>
           <RichTextEditor
             value={formData.description || ""}
-            onChange={(htmlContent) => updateField("description", htmlContent)}
+            onChange={(htmlContent: string) =>
+              updateField("description", htmlContent)
+            }
             placeholder="Nhập mô tả chi tiết sản phẩm..."
             height={300}
           />
@@ -421,3 +418,4 @@ export function UpdateProductForm({
     </div>
   );
 }
+

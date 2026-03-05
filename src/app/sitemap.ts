@@ -1,11 +1,22 @@
-﻿import { MetadataRoute } from "next";
+type SitemapEntry = {
+  url: string;
+  lastModified: Date;
+  changeFrequency?:
+    | "always"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "never";
+  priority?: number;
+};
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hasron.vn";
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+export default async function sitemap(): Promise<SitemapEntry[]> {
+  const baseUrl = import.meta.env.VITE_SITE_URL || "https://hasron.vn";
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
-  // Static pages
-  const staticPages: MetadataRoute.Sitemap = [
+  const staticPages: SitemapEntry[] = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -26,12 +37,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Fetch dynamic product pages from API
-  let productPages: MetadataRoute.Sitemap = [];
+  let productPages: SitemapEntry[] = [];
 
   try {
     const response = await fetch(`${apiUrl}/products/public?limit=100`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
       headers: {
         "User-Agent": "Sitemap Generator",
       },
@@ -41,7 +50,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const data = await response.json();
 
       if (data.success && data.data && data.data.items) {
-        // Backend trả về: data.data.items là array chứa products
         const products = data.data.items;
 
         if (Array.isArray(products)) {
@@ -49,18 +57,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             (product: { slug: string; createdAt: string }) => ({
               url: `${baseUrl}/products/${product.slug}`,
               lastModified: new Date(product.createdAt),
-              changeFrequency: "weekly" as const,
+              changeFrequency: "weekly",
               priority: 0.8,
             })
           );
-        } else {
         }
-      } else {
       }
-    } else {
     }
   } catch {
-    // Fallback to empty array if API fails
+    // Keep only static entries when product fetch fails.
   }
 
   return [...staticPages, ...productPages];

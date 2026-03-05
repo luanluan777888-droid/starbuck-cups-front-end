@@ -1,8 +1,5 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
-import Script from "next/script";
+import { useLocation } from "react-router-dom";
 
 interface DeferredGoogleAnalyticsProps {
   measurementId: string;
@@ -14,14 +11,25 @@ function isValidMeasurementId(measurementId: string): boolean {
   );
 }
 
+// Helper to inject script tags manually (replaces next/script)
+function injectScript(id: string, src?: string, inline?: string, strategy?: string) {
+  if (document.getElementById(id)) return;
+  const s = document.createElement("script");
+  s.id = id;
+  if (src) s.src = src;
+  if (inline) s.textContent = inline;
+  s.async = true;
+  document.head.appendChild(s);
+}
+
 export default function DeferredGoogleAnalytics({
   measurementId,
 }: DeferredGoogleAnalyticsProps) {
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const [enabled, setEnabled] = useState(false);
 
   const shouldLoadAnalytics = useMemo(() => {
-    if (process.env.NODE_ENV !== "production") return false;
+    if (import.meta.env.MODE !== "production") return false;
     if (!isValidMeasurementId(measurementId)) return false;
     if (pathname?.startsWith("/admin")) return false;
     return true;
@@ -53,32 +61,32 @@ export default function DeferredGoogleAnalytics({
     };
   }, [enabled, shouldLoadAnalytics]);
 
-  if (!enabled || !shouldLoadAnalytics) {
-    return null;
-  }
+  useEffect(() => {
+    if (!enabled || !shouldLoadAnalytics) return;
 
-  return (
-    <>
-      <Script
-        id="ga-loader"
-        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
-        strategy="afterInteractive"
-      />
-      <Script id="ga-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          window.gtag = gtag;
-          gtag('js', new Date());
-          gtag('config', '${measurementId}', {
-            page_title: document.title,
-            page_location: window.location.href,
-            anonymize_ip: true,
-            allow_google_signals: false,
-            cookie_flags: 'SameSite=None;Secure'
-          });
-        `}
-      </Script>
-    </>
-  );
+    injectScript(
+      "ga-loader",
+      `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
+    );
+
+    injectScript(
+      "ga-init",
+      undefined,
+      `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', '${measurementId}', {
+          page_title: document.title,
+          page_location: window.location.href,
+          anonymize_ip: true,
+          allow_google_signals: false,
+          cookie_flags: 'SameSite=None;Secure'
+        });
+      `
+    );
+  }, [enabled, shouldLoadAnalytics, measurementId]);
+
+  return null;
 }

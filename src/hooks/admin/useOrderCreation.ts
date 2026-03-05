@@ -1,5 +1,5 @@
-﻿import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/store";
 import { OrderFormData, Product } from "@/types/orders";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ const initialFormData: OrderFormData = {
 };
 
 export function useOrderCreation() {
-  const router = useRouter();
+  const router = useNavigate();
   const { token } = useAppSelector((state) => state.auth);
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -331,7 +331,7 @@ export function useOrderCreation() {
       if (data.success) {
 
         toast.success("Đơn hàng đã được tạo thành công!");
-        router.push("/admin/orders");
+        router("/admin/orders");
       } else {
         throw new Error(data.message || "Failed to create order");
       }
@@ -377,3 +377,4 @@ export function useOrderCreation() {
     toggleFreeShipping,
   };
 }
+

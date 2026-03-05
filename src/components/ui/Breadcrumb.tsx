@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Home, ChevronRight } from "lucide-react";
 
 interface BreadcrumbItem {
@@ -21,7 +21,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
           <div key={index} className="flex items-center gap-2">
             {item.href ? (
               <Link
-                href={item.href}
+                to={item.href}
                 className="flex items-center gap-1 text-zinc-400 hover:text-white transition-colors"
               >
                 {isFirst && <Home className="w-4 h-4" />}

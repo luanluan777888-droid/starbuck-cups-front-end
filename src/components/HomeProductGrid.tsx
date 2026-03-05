@@ -5,7 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import { Product } from "@/types";
 import { useAppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import animationStyles from "@/components/home/ZoomIn.module.css";
 // CSS cho skeleton được import ở app level để tránh duplicate
@@ -252,7 +252,7 @@ export default function HomeProductGrid({
         <div className="flex justify-center mt-12">
           <div className={animationStyles.zoomIn}>
             <Link
-              href="/products"
+              to="/products"
               className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900 text-white font-semibold rounded-2xl relative overflow-hidden group transition-colors duration-300"
             >
               {/* Hover effect layer */}

@@ -1,4 +1,3 @@
-"use client";
 
 import { MousePointer, ShoppingCart, TrendingUp, Eye } from "lucide-react";
 import { AnalyticsSummary } from "@/hooks/admin/useProductAnalytics";

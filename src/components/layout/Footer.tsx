@@ -1,7 +1,6 @@
-"use client";
 
 import { Facebook, Mail, Phone, MapPin } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -28,7 +27,7 @@ export function Footer() {
               <br />
               PAGE:{" "}
               <Link
-                href="https://www.facebook.com/p/Hs%E6%94%B6%E8%97%8F%E9%8B%AA-Hs-shoucangpu-61560973846348/"
+                to="https://www.facebook.com/p/Hs%E6%94%B6%E8%97%8F%E9%8B%AA-Hs-shoucangpu-61560973846348/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-zinc-100 hover:text-white transition-colors underline"
@@ -38,7 +37,7 @@ export function Footer() {
               <br />
               FB:{" "}
               <Link
-                href="https://www.facebook.com/hasron.luong"
+                to="https://www.facebook.com/hasron.luong"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-zinc-100 hover:text-white transition-colors underline"

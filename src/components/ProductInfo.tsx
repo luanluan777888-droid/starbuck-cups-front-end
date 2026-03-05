@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
-import { useParams, notFound, useRouter } from "next/navigation";
+import { useNavigate, useParams } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
@@ -32,7 +32,7 @@ interface ProductCategory {
 
 export default function ProductInfo() {
   const params = useParams();
-  const router = useRouter();
+  const router = useNavigate();
   const dispatch = useAppDispatch();
   const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
@@ -76,7 +76,7 @@ export default function ProductInfo() {
 
   // Show error page if product not found AFTER we tried to fetch
   if (error && !loading && hasAttemptedFetch) {
-    notFound();
+    /* TODO: Handle notFound */
   }
 
   const handleAddToCart = () => {
@@ -120,7 +120,7 @@ export default function ProductInfo() {
 
   const handleColorClick = (colorSlug: string) => {
     // Navigate to products page with color filter
-    router.push(`/products?color=${colorSlug}`);
+    router(`/products?color=${colorSlug}`);
   };
 
   // Handle capacity click - navigate to products with capacity filter
@@ -129,19 +129,19 @@ export default function ProductInfo() {
     name: string;
     volumeMl: number;
   }) => {
-    router.push(
+    router(
       `/products?minCapacity=${capacity.volumeMl}&maxCapacity=${capacity.volumeMl}`
     );
   };
 
   // Handle category click - navigate to products with category filter
   const handleCategoryClick = (categorySlug: string) => {
-    router.push(`/products?category=${categorySlug}`);
+    router(`/products?category=${categorySlug}`);
   };
 
   // Only redirect to 404 if we've attempted fetch and got error, or if no product after successful fetch
   if (!product && !loading && hasAttemptedFetch && !error) {
-    return notFound();
+    return /* TODO: Handle notFound */
   }
 
   // Show skeleton loading if we haven't attempted fetch yet or if loading
@@ -373,3 +373,4 @@ export default function ProductInfo() {
     </div>
   );
 }
+

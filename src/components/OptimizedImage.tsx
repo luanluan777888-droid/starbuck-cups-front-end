@@ -1,4 +1,3 @@
-'use client';
 
 import { ImgHTMLAttributes } from 'react';
 import { convertDriveUrl } from '@/utils/googleDriveHelper';
@@ -19,7 +18,7 @@ interface OptimizedImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 
 
 /**
  * Custom optimized image component that works without Vercel
- * Uses our custom /api/image endpoint for optimization
+ * In Vite/static deployment, use direct source URLs.
  */
 export default function OptimizedImage({
   src,
@@ -135,9 +134,9 @@ function resolveImageSource(
   const allowDirectFallback =
     convertedSrc.startsWith("/") || Boolean(priority);
 
+  // Next.js API image optimizer is no longer available after Vite migration.
   return {
-    imageSrc: getOptimizedUrl(convertedSrc, width, quality),
-    imageSrcSet: buildSrcSet(convertedSrc, width, quality),
+    imageSrc: convertedSrc,
     directFallbackSrc: allowDirectFallback ? convertedSrc : undefined,
   };
 }
@@ -155,29 +154,17 @@ function shouldBypassOptimization(src: string): boolean {
     return true;
   }
 
-  // Remote images should go through /api/image for resize/re-encode/cache.
-  return false;
+  // For static deployment, keep remote images as direct URLs.
+  return true;
 }
 
 /**
  * Generate optimized image URL using our API
  */
 function getOptimizedUrl(src: string, width?: number, quality?: number): string {
-  const params = new URLSearchParams();
-  params.set('url', src);
-  
-  if (width) {
-    params.set('w', width.toString());
-  }
-  
-  if (quality) {
-    params.set('q', quality.toString());
-  }
-  
-  // Let server negotiate AVIF/WebP based on request Accept header
-  params.set('f', 'auto');
-  
-  return `/api/image?${params.toString()}`;
+  void width;
+  void quality;
+  return src;
 }
 
 function buildSrcSet(src: string, width?: number, quality?: number): string | undefined {
@@ -203,9 +190,7 @@ export function preloadImage(src: string, width?: number) {
   if (typeof window === 'undefined') return;
 
   const convertedSrc = convertDriveUrl(src);
-  const optimizedUrl = convertedSrc.startsWith('/') 
-    ? convertedSrc 
-    : getOptimizedUrl(convertedSrc, width, 85);
+  const optimizedUrl = convertedSrc;
 
   const link = document.createElement('link');
   link.rel = 'preload';

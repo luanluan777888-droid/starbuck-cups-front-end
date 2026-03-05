@@ -9,7 +9,7 @@ declare global {
 }
 
 // GA4 Measurement ID - Read from environment variable
-export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
+export const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
 
 // Check if GA4 is loaded and available
 export const isGAAvailable = (): boolean => {

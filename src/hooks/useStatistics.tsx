@@ -100,7 +100,7 @@ export const useStatistics = (period: "week" | "month" | "year" = "month") => {
         }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard/statistics?period=${selectedPeriod}`,
+          `${import.meta.env.VITE_API_URL}/admin/dashboard/statistics?period=${selectedPeriod}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -1,8 +1,8 @@
 import { Package, Users, ShoppingCart, MessageSquare } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 export function QuickActions() {
-  const router = useRouter();
+  const router = useNavigate();
 
   const actions = [
     {
@@ -39,7 +39,7 @@ export function QuickActions() {
             return (
               <button
                 key={action.path}
-                onClick={() => router.push(action.path)}
+                onClick={() => router(action.path)}
                 className="flex flex-col items-center gap-3 p-4 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-colors cursor-pointer border border-gray-600/50 hover:border-gray-500"
               >
                 <Icon className="w-8 h-8 text-gray-300" />
@@ -54,3 +54,4 @@ export function QuickActions() {
     </div>
   );
 }
+

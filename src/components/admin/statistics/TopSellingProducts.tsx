@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 interface TopProduct {
   id: string;
@@ -28,7 +28,7 @@ export function TopSellingProducts({ products }: TopSellingProductsProps) {
           {products.map((product, index) => (
             <Link
               key={product.id}
-              href={`/products/${product.slug || product.id}`}
+              to={`/products/${product.slug || product.id}`}
               target="_blank"
               className="flex items-center justify-between p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors cursor-pointer"
             >

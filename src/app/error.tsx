@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 export default function Error({
   error,
@@ -40,7 +40,7 @@ export default function Error({
           </button>
 
           <Link
-            href="/"
+            to="/"
             className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Home className="w-4 h-4" />

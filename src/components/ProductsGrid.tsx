@@ -128,7 +128,6 @@ export default function ProductsGrid({
     };
 
     fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchQuery,
     selectedCategory,

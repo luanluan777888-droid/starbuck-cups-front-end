@@ -94,7 +94,7 @@ export function useConsultations(): UseConsultationsReturn {
 
 
       const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+        import.meta.env.VITE_API_URL || "http://localhost:8080/api";
       const response = await fetch(`${apiUrl}/admin/consultations?${params}`, {
         headers,
       });
@@ -135,7 +135,7 @@ export function useConsultations(): UseConsultationsReturn {
 
 
       const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+        import.meta.env.VITE_API_URL || "http://localhost:8080/api";
       const response = await fetch(
         `${apiUrl}/admin/consultations/${selectedConsultation.id}/status`,
         {
@@ -200,7 +200,7 @@ export function useConsultations(): UseConsultationsReturn {
       setActionLoading("delete");
 
       const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+        import.meta.env.VITE_API_URL || "http://localhost:8080/api";
       const response = await fetch(
         `${apiUrl}/consultations/${consultationToDelete}`,
         {

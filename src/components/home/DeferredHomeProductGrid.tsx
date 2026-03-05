@@ -1,13 +1,8 @@
-"use client";
-
-import dynamic from "next/dynamic";
+import React, { Suspense } from "react";
 import { useEffect, useRef, useState } from "react";
 import { ProductGridSkeleton } from "@/components/ui/LoadingSkeleton";
 
-const HomeProductGrid = dynamic(() => import("@/components/HomeProductGrid"), {
-  ssr: false,
-  loading: () => <ProductGridSkeleton />,
-});
+const HomeProductGrid = React.lazy(() => import("@/components/HomeProductGrid"));
 
 interface DeferredHomeProductGridProps {
   selectedCategory?: string | null;
@@ -85,7 +80,9 @@ export default function DeferredHomeProductGrid({
   return (
     <div ref={sentinelRef}>
       {shouldMountGrid ? (
-        <HomeProductGrid selectedCategory={selectedCategory} />
+        <Suspense fallback={<ProductGridSkeleton />}>
+          <HomeProductGrid selectedCategory={selectedCategory} />
+        </Suspense>
       ) : (
         <ProductGridSkeleton />
       )}

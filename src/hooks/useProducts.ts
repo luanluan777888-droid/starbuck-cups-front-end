@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import type { Category, Color, Capacity, CapacityRange } from "@/types";
 
 interface UseProductsReturn {
@@ -54,8 +54,8 @@ interface UseProductsReturn {
 }
 
 export function useProducts(): UseProductsReturn {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const [searchParams] = useSearchParams();
+  const router = useNavigate();
 
   // Local state
   const [searchQuery, setSearchQuery] = useState(
@@ -228,7 +228,7 @@ export function useProducts(): UseProductsReturn {
       const newURL = params.toString()
         ? `/products?${params.toString()}`
         : "/products";
-      router.replace(newURL, { scroll: false });
+      router(newURL, { replace: true });
     },
     [
       searchQuery,
@@ -281,7 +281,7 @@ export function useProducts(): UseProductsReturn {
     setCapacityRange({ min: 0, max: 9999 });
     setSortBy("featured");
     setCurrentPage(1);
-    router.replace("/products", { scroll: false });
+    router("/products", { replace: true });
   };
 
   const hasActiveFilters =

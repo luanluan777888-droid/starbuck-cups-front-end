@@ -1,8 +1,7 @@
-"use client";
 
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { usePathname } from "next/navigation";
+import { useLocation } from "react-router-dom";
 import { RootState, AppDispatch } from "@/store"; // Need to ensure store export
 import {
   fetchEffectSettings,
@@ -10,20 +9,16 @@ import {
   EffectSettings,
 } from "@/store/effectSettingsSlice"; // Need to create this slice
 import { useSettingsSocket } from "@/components/providers/SettingsSocketProvider";
-import dynamic from "next/dynamic";
+import React from "react";
+
 
 // Dynamically import effects
-const SnowEffect = dynamic(() => import("./SnowEffect"), {
-  ssr: false,
-});
-
-const RedEnvelopeEffect = dynamic(() => import("./RedEnvelopeEffect"), {
-  ssr: false,
-});
+const SnowEffect = React.lazy(() => import("./SnowEffect"));
+const RedEnvelopeEffect = React.lazy(() => import("./RedEnvelopeEffect"));
 
 export default function EffectManager() {
   const dispatch = useDispatch<AppDispatch>(); // Ensure AppDispatch type exists
-  const pathname = usePathname();
+  const pathname = useLocation().pathname;
   const [allowAnimatedEffects, setAllowAnimatedEffects] = useState(false);
   
   // Select from store - assumed structure

@@ -1,4 +1,3 @@
-"use client";
 
 import { useDashboard } from "@/hooks/admin/useDashboard";
 import { WelcomeSection } from "@/components/admin/dashboard/WelcomeSection";

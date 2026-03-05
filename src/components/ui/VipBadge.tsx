@@ -1,4 +1,3 @@
-"use client";
 
 import React from "react";
 import OptimizedImage from "@/components/OptimizedImage";
@@ -26,7 +25,7 @@ export function VipBadge({ size = "md", className = "" }: VipBadgeProps) {
         loading="lazy"
       />
 
-      <style jsx>{`
+      <style>{`
         .vip-pulse {
           animation: vip-pulse 1.5s infinite;
         }

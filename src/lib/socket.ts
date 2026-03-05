@@ -28,8 +28,8 @@ class SocketManager {
   }
 
   private getSocketCandidates(): string[] {
-    const configuredUrl = process.env.NEXT_PUBLIC_API_URL
-      ? this.normalizeSocketBaseUrl(process.env.NEXT_PUBLIC_API_URL)
+    const configuredUrl = import.meta.env.VITE_API_URL
+      ? this.normalizeSocketBaseUrl(import.meta.env.VITE_API_URL)
       : "http://localhost:8080";
 
     if (typeof window === "undefined") {

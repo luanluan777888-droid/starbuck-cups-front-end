@@ -1,4 +1,3 @@
-"use client";
 
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";

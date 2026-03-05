@@ -1,4 +1,3 @@
-"use client";
 
 import { useColors } from "@/hooks/admin/useColors";
 import { ColorsHeader } from "@/components/admin/colors/ColorsHeader";

@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useRef, useEffect, useState } from "react";
 import { Search, X, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "@/components/ProductCard";
 import { useAppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
@@ -20,7 +20,7 @@ export function SearchAutocomplete({
   onClose,
   onProductSelect,
 }: SearchAutocompleteProps) {
-  const router = useRouter();
+  const router = useNavigate();
   const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -92,7 +92,7 @@ export function SearchAutocomplete({
     if (onProductSelect) {
       onProductSelect(slug);
     } else {
-      router.push(`/products/${slug}`);
+      router(`/products/${slug}`);
     }
     handleClose();
   };
@@ -107,14 +107,14 @@ export function SearchAutocomplete({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+      router(`/products?search=${encodeURIComponent(query.trim())}`);
       handleClose();
     }
   };
 
   const handleViewAllResults = () => {
     if (query.trim()) {
-      router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+      router(`/products?search=${encodeURIComponent(query.trim())}`);
       handleClose();
     }
   };
@@ -237,3 +237,4 @@ export function SearchAutocomplete({
     </div>
   );
 }
+

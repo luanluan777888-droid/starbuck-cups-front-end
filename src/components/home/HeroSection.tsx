@@ -1,18 +1,14 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import dynamic from "next/dynamic";
+import React, { Suspense, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import OptimizedImage from "@/components/OptimizedImage";
 
 // Dynamic import toàn bộ Swiper bundle
-const SwiperCarousel = dynamic(() => import("./SwiperCarousel"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full bg-gray-200 rounded-2xl md:rounded-3xl animate-pulse" />
-  ),
-});
+const SwiperCarousel = React.lazy(() => import("./SwiperCarousel"));
+
+const SwiperFallback = () => (
+  <div className="h-full bg-gray-200 rounded-2xl md:rounded-3xl animate-pulse" />
+);
 
 interface HeroImageData {
   id: string;
@@ -257,7 +253,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               dangerouslySetInnerHTML={{ __html: bannerData.description }}
             />
             <Link
-              href={bannerData.buttonLink}
+              to={bannerData.buttonLink}
               className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition-all duration-300 w-fit text-sm md:text-base"
             >
               {bannerData.buttonText}
@@ -285,7 +281,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                   />
                 </div>
               ) : (
-                <SwiperCarousel images={activeImages} />
+                <Suspense fallback={<SwiperFallback />}>
+                  <SwiperCarousel images={activeImages} />
+                </Suspense>
               )}
             </div>
           </div>

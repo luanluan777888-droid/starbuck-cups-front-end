@@ -1,24 +1,25 @@
-import Script from "next/script";
+// In Vite/React, structured data should be injected into index.html
+// or rendered as a <script> tag directly in the JSX.
 
-export function StructuredData() {
+interface StructuredDataProps {}
+
+export function StructuredData({}: StructuredDataProps) {
+  const siteUrl = import.meta.env.VITE_SITE_URL || "https://starbucks-cups.com";
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Store",
     name: "H's shoucangpu - Collectible Gift Shop",
     description:
       "Khám phá bộ sưu tập ly St@rbucks đa dạng với nhiều màu sắc và dung tích. Tư vấn miễn phí qua Zalo 0896686008.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com",
+    url: siteUrl,
     logo: {
       "@type": "ImageObject",
-      url: `${
-        process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com"
-      }/logo.png`,
+      url: `${siteUrl}/logo.png`,
       width: "200",
       height: "200",
     },
-    image: `${
-      process.env.NEXT_PUBLIC_SITE_URL || "https://starbucks-cups.com"
-    }/logo.png`,
+    image: `${siteUrl}/logo.png`,
     sameAs: [
       "https://www.facebook.com/starbuckscupsshop",
       "https://www.instagram.com/starbuckscupsshop",
@@ -34,7 +35,7 @@ export function StructuredData() {
             name: "Ly St@rbucks Tumbler",
             category: "Drinkware",
             keywords:
-              "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam, ly starbucks chính hãng, ly starbuck chính hãng, ly starbucks auth, starbuck chính hãng, starbucks chính hãng, mua ly starbuck chính hãng, bình starbucks chính hãng, bình giữ nhiệt starbucks, ly giữ nhiệt starbucks, ly sứ starbucks",
+              "starbucks, ly starbucks, cups, tumbler, ly giữ nhiệt, starbucks vietnam, ly starbucks chính hãng",
           },
         },
       ],
@@ -63,7 +64,7 @@ export function StructuredData() {
   };
 
   return (
-    <Script
+    <script
       id="structured-data"
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}

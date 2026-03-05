@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { loginAdmin } from "@/store/slices/authSlice";
 import { useStandardAuth } from "@/hooks/useStandardAuth";
@@ -17,14 +17,14 @@ export default function AdminLoginPage() {
   const [remember, setRemember] = useState(false);
 
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  const router = useNavigate();
   const { loading, error } = useAppSelector((state) => state.auth);
   const { isAuthenticated, isReady } = useStandardAuth();
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isReady && isAuthenticated) {
-      router.push("/admin/dashboard");
+      router("/admin/dashboard");
     }
   }, [isReady, isAuthenticated, router]);
 
@@ -35,7 +35,7 @@ export default function AdminLoginPage() {
       const result = await dispatch(loginAdmin(formData));
       if (loginAdmin.fulfilled.match(result)) {
         toast.success("Đăng nhập thành công!");
-        router.push("/admin/dashboard");
+        router("/admin/dashboard");
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -190,3 +190,4 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+

@@ -1,7 +1,6 @@
-"use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useNotifications } from "@/hooks/admin/useNotifications";
 import { NotificationHeader } from "@/components/admin/notifications/NotificationHeader";
 import { NotificationStats } from "@/components/admin/notifications/NotificationStats";
@@ -10,7 +9,7 @@ import { NotificationList } from "@/components/admin/notifications/NotificationL
 import type { OrderData } from "@/types/notification.types";
 
 export default function NotificationsPage() {
-  const router = useRouter();
+  const router = useNavigate();
   const {
     notifications,
     filteredNotifications,
@@ -50,7 +49,7 @@ export default function NotificationsPage() {
   });
 
   const handleBack = () => {
-    router.back();
+    router(-1);
   };
 
   return (
@@ -97,3 +96,4 @@ export default function NotificationsPage() {
     </div>
   );
 }
+

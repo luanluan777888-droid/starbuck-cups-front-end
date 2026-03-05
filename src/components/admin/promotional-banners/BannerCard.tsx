@@ -1,4 +1,3 @@
-"use client";
 
 import { PromotionalBanner } from "@/hooks/admin/usePromotionalBanner";
 import { Edit, Trash2, Eye, EyeOff, Calendar, Link as LinkIcon } from "lucide-react";

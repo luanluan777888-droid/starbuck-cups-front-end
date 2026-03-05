@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { Eye, Edit, Trash2 } from "lucide-react";
 
 import { useAdminCustomers } from "@/hooks/admin/useCustomers";
@@ -340,14 +340,14 @@ export function CustomerList({
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
                     <Link
-                      href={`/admin/customers/${customer.id}`}
+                      to={`/admin/customers/${customer.id}`}
                       className="text-white hover:bg-gray-700 p-1 rounded transition-colors"
                       title="Xem chi tiết"
                     >
                       <Eye className="w-4 h-4" />
                     </Link>
                     <Link
-                      href={`/admin/customers/${customer.id}?edit=true`}
+                      to={`/admin/customers/${customer.id}?edit=true`}
                       className="text-white hover:bg-gray-700 p-1 rounded transition-colors"
                       title="Chỉnh sửa"
                     >

@@ -1,13 +1,12 @@
-"use client";
 
 import { useAppDispatch, useAppSelector } from "@/store";
 import { removeFromCart, clearCart, closeCart } from "@/store/slices/cartSlice";
 import { X, ShoppingBag, FileText } from "lucide-react";
 import type { CartItem } from "@/types";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { getFirstProductImageUrl } from "@/lib/utils/image";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import OptimizedImage from "@/components/OptimizedImage";
 
 interface CartProps {
@@ -16,7 +15,7 @@ interface CartProps {
 
 export function Cart({ className = "" }: CartProps) {
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  const router = useNavigate();
   const { items, isOpen } = useAppSelector((state) => state.cart);
 
   const totalItems = items.length;
@@ -61,7 +60,7 @@ export function Cart({ className = "" }: CartProps) {
     dispatch(closeCart());
 
     // Navigate to cart page for consultation form
-    router.push("/cart");
+    router("/cart");
   };
 
   if (!isOpen) return null;
@@ -168,7 +167,7 @@ function CartItemCard({ item, onRemove }: CartItemCardProps) {
     <div className="flex gap-3 p-3 bg-zinc-800 rounded-lg">
       {/* Product Image */}
       <Link
-        href={`/products/${product.slug}`}
+        to={`/products/${product.slug}`}
         className="w-16 h-16 bg-zinc-700 rounded-lg overflow-hidden flex-shrink-0 hover:opacity-80 transition-opacity"
       >
         {getFirstProductImageUrl(product.productImages) ? (
@@ -191,7 +190,7 @@ function CartItemCard({ item, onRemove }: CartItemCardProps) {
       {/* Product Info */}
       <div className="flex-1 min-w-0">
         <Link
-          href={`/products/${product.slug}`}
+          to={`/products/${product.slug}`}
           className="hover:text-zinc-300 transition-colors"
         >
           <h4 className="font-medium text-white text-sm line-clamp-2 mb-1">
@@ -253,3 +252,4 @@ function CartItemCard({ item, onRemove }: CartItemCardProps) {
 }
 
 export default Cart;
+
