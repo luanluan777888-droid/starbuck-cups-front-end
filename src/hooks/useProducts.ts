@@ -106,17 +106,17 @@ export function useProducts(): UseProductsReturn {
         };
 
         // Fetch categories
-        const categoriesRes = await fetch("/api/public/categories");
+        const categoriesRes = await fetch("/api/categories/public");
         const categoriesData = await categoriesRes.json();
         if (categoriesData.success) setCategories(parseListData<Category>(categoriesData));
 
         // Fetch colors
-        const colorsRes = await fetch("/api/public/colors");
+        const colorsRes = await fetch("/api/colors/public");
         const colorsData = await colorsRes.json();
         if (colorsData.success) setColors(parseListData<Color>(colorsData));
 
         // Fetch capacities
-        const capacitiesRes = await fetch("/api/public/capacities");
+        const capacitiesRes = await fetch("/api/capacities/public");
         const capacitiesData = await capacitiesRes.json();
         if (capacitiesData.success) {
           setCapacities(parseListData<Capacity>(capacitiesData));

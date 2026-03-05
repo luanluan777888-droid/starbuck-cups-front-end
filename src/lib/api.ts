@@ -198,17 +198,17 @@ class ApiService {
   }
 
   async getPublicCategories(): Promise<ApiResponse<Category[]>> {
-    const response = await this.api.get("/public/categories");
+    const response = await this.api.get("/categories/public");
     return response.data;
   }
 
   async getPublicColors(): Promise<ApiResponse<Color[]>> {
-    const response = await this.api.get("/public/colors");
+    const response = await this.api.get("/colors/public");
     return response.data;
   }
 
   async getPublicCapacities(): Promise<ApiResponse<Capacity[]>> {
-    const response = await this.api.get("/public/capacities");
+    const response = await this.api.get("/capacities/public");
     return response.data;
   }
 
