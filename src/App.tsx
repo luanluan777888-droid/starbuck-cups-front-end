@@ -1,6 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ClientLayout from '@/components/layout/ClientLayout';
+import ScrollToTop from '@/components/layout/ScrollToTop';
 
 // Loading fallback
 const LoadingPage = () => (
@@ -40,6 +41,7 @@ const CartPage = React.lazy(() => import('@/app/cart/page').then(m => ({ default
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Suspense fallback={<LoadingPage />}>
         <ClientLayout>
           <Routes>

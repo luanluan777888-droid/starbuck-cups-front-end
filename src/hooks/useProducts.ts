@@ -94,40 +94,32 @@ export function useProducts(): UseProductsReturn {
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        // Fetch categories
-        const categoriesRes = await fetch("/api/categories");
-        const categoriesData = await categoriesRes.json();
+        const parseListData = <T,>(payload: unknown): T[] => {
+          if (!payload || typeof payload !== "object") return [];
+          const data = (payload as { data?: unknown }).data;
+          if (Array.isArray(data)) return data as T[];
+          if (data && typeof data === "object") {
+            const items = (data as { items?: unknown }).items;
+            if (Array.isArray(items)) return items as T[];
+          }
+          return [];
+        };
 
-        if (
-          categoriesData.success &&
-          categoriesData.data?.items &&
-          Array.isArray(categoriesData.data.items)
-        ) {
-          setCategories(categoriesData.data.items);
-        }
+        // Fetch categories
+        const categoriesRes = await fetch("/api/public/categories");
+        const categoriesData = await categoriesRes.json();
+        if (categoriesData.success) setCategories(parseListData<Category>(categoriesData));
 
         // Fetch colors
-        const colorsRes = await fetch("/api/colors");
+        const colorsRes = await fetch("/api/public/colors");
         const colorsData = await colorsRes.json();
-
-        if (
-          colorsData.success &&
-          colorsData.data?.items &&
-          Array.isArray(colorsData.data.items)
-        ) {
-          setColors(colorsData.data.items);
-        }
+        if (colorsData.success) setColors(parseListData<Color>(colorsData));
 
         // Fetch capacities
-        const capacitiesRes = await fetch("/api/capacities");
+        const capacitiesRes = await fetch("/api/public/capacities");
         const capacitiesData = await capacitiesRes.json();
-
-        if (
-          capacitiesData.success &&
-          capacitiesData.data?.items &&
-          Array.isArray(capacitiesData.data.items)
-        ) {
-          setCapacities(capacitiesData.data.items);
+        if (capacitiesData.success) {
+          setCapacities(parseListData<Capacity>(capacitiesData));
         }
       } catch {
         // Silently handle fetch errors
