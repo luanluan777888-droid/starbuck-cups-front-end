@@ -355,9 +355,13 @@ export default function CartPage() {
 }
 
 function CartItemRow({ item }: { item: CartItem }) {
+  const categoryText =
+    item.product.productCategories?.map((pc) => pc.category.name).join(", ") ||
+    "N/A";
+
   return (
-    <div className="flex items-center gap-4 p-4 border border-zinc-700 rounded-lg bg-zinc-800">
-      <div className="relative w-16 h-16 flex-shrink-0">
+    <div className="flex items-start gap-3 p-3 border border-zinc-700 rounded-lg bg-zinc-800">
+      <div className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-zinc-700">
         <OptimizedImage
           src={
             getFirstProductImageUrl(item.product.productImages) ||
@@ -369,22 +373,26 @@ function CartItemRow({ item }: { item: CartItem }) {
         />
       </div>
 
-      <div className="flex-1 min-w-0">
-        <h3 className="font-medium text-white truncate">{item.product.name}</h3>
-        <p className="text-sm text-zinc-400">
-          Màu: {item.colorRequest || "Chưa chọn"} •{" "}
+      <div className="flex-1 min-w-0 space-y-1">
+        <h3 className="font-medium text-white line-clamp-2 leading-snug">
+          {item.product.name}
+        </h3>
+        <p className="text-sm text-zinc-300">
+          <span className="text-zinc-400">Màu:</span>{" "}
+          {item.colorRequest || "Chưa chọn"}
+        </p>
+        <p className="text-sm text-zinc-300">
+          <span className="text-zinc-400">Dung tích:</span>{" "}
           {item.product.capacity?.name || "Chưa có"}
         </p>
-        <p className="text-sm text-zinc-400">
-          Danh mục:{" "}
-          {item.product.productCategories
-            ?.map((pc) => pc.category.name)
-            .join(", ") || "N/A"}
+        <p className="text-sm text-zinc-300 line-clamp-2">
+          <span className="text-zinc-400">Danh mục:</span> {categoryText}
         </p>
-      </div>
-
-      <div className="text-right">
-        <p className="text-sm text-zinc-400">Sản phẩm quan tâm</p>
+        <div className="pt-1">
+          <span className="inline-flex items-center px-2 py-1 text-xs rounded-full bg-zinc-700 text-zinc-300 border border-zinc-600">
+            Sản phẩm quan tâm
+          </span>
+        </div>
       </div>
     </div>
   );

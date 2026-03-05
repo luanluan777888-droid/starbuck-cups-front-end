@@ -158,10 +158,10 @@ export function Header({ className = "" }: HeaderProps) {
           <div className="flex items-center justify-end gap-4 w-[220px]">
             <button
               onClick={handleSearchClick}
-              className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors"
+              className="flex items-center justify-center w-9 h-9 rounded-md text-white hover:text-zinc-300 hover:bg-zinc-800 transition-colors"
+              aria-label="Tìm kiếm sản phẩm"
             >
               <Search className="w-4 h-4" />
-              Tìm kiếm
             </button>
 
             <button
