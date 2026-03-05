@@ -61,7 +61,7 @@ export function usePromotionalBanner() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch("/api/admin/promotional-banners", {
+      const response = await fetch("/api/promotional-banners/admin", {
         headers: getAuthHeaders(),
       });
 
@@ -91,7 +91,7 @@ export function usePromotionalBanner() {
     try {
       setLoading(true);
 
-      const response = await fetch("/api/admin/promotional-banners", {
+      const response = await fetch("/api/promotional-banners/admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,7 +130,7 @@ export function usePromotionalBanner() {
       setLoading(true);
 
       const response = await fetch(
-        `/api/admin/promotional-banners/${bannerId}`,
+        `/api/promotional-banners/admin/${bannerId}`,
         {
           method: "PUT",
           headers: {
@@ -168,7 +168,7 @@ export function usePromotionalBanner() {
       setLoading(true);
 
       const response = await fetch(
-        `/api/admin/promotional-banners/${bannerId}`,
+        `/api/promotional-banners/admin/${bannerId}`,
         {
           method: "DELETE",
           headers: getAuthHeaders(),

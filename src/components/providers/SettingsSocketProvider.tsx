@@ -26,7 +26,7 @@ function getSocketCandidates(): string[] {
     return [configuredBaseUrl];
   }
 
-  return Array.from(new Set([window.location.origin, configuredBaseUrl]));
+  return Array.from(new Set([configuredBaseUrl, window.location.origin]));
 }
 
 export function SettingsSocketProvider({
@@ -45,7 +45,7 @@ export function SettingsSocketProvider({
     const connect = (targetUrl: string, allowFallback: boolean) => {
       const instance = io(targetUrl, {
         withCredentials: true,
-        transports: ["websocket", "polling"],
+        transports: ["polling", "websocket"],
         timeout: 8000,
         reconnectionAttempts: 2,
         reconnectionDelay: 1000,

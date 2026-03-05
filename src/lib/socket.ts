@@ -36,7 +36,7 @@ class SocketManager {
       return [configuredUrl];
     }
 
-    return Array.from(new Set([window.location.origin, configuredUrl]));
+    return Array.from(new Set([configuredUrl, window.location.origin]));
   }
 
   public connect(
@@ -80,7 +80,7 @@ class SocketManager {
           auth: {
             token,
           },
-          transports: ["websocket", "polling"],
+          transports: ["polling", "websocket"],
           timeout: 8000,
           reconnection: false,
         });
