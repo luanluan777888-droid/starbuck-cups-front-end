@@ -45,7 +45,8 @@ export function SettingsSocketProvider({
     const connect = (targetUrl: string, allowFallback: boolean) => {
       const instance = io(targetUrl, {
         withCredentials: true,
-        transports: ["polling", "websocket"],
+        transports: ["polling"],
+        upgrade: false,
         timeout: 8000,
         reconnectionAttempts: 2,
         reconnectionDelay: 1000,

@@ -80,7 +80,8 @@ class SocketManager {
           auth: {
             token,
           },
-          transports: ["polling", "websocket"],
+          transports: ["polling"],
+          upgrade: false,
           timeout: 8000,
           reconnection: false,
         });

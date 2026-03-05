@@ -27,6 +27,15 @@ export interface MultipleUploadResponse {
 export type UploadFolder = 'products' | 'categories' | 'colors' | 'avatars' | 'uploads';
 
 class UploadAPI {
+  private async buildErrorMessage(response: Response): Promise<string> {
+    if (response.status === 413) {
+      return "Dung lượng upload vượt giới hạn server. Hãy giảm dung lượng ảnh hoặc upload ít ảnh hơn mỗi lần.";
+    }
+
+    const errorData = await response.json().catch(() => ({}));
+    return errorData.message || `HTTP error! status: ${response.status}`;
+  }
+
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
 
@@ -42,8 +51,7 @@ class UploadAPI {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      throw new Error(await this.buildErrorMessage(response));
     }
 
     return response.json();
@@ -76,10 +84,39 @@ class UploadAPI {
 
     formData.append('folder', folder);
 
-    return this.request<MultipleUploadResponse>('/admin/upload/multiple', {
+    const url = `${API_BASE_URL}/admin/upload/multiple`;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+
+    const response = await fetch(url, {
       method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
       body: formData,
     });
+
+    if (response.ok) {
+      return response.json();
+    }
+
+    if (response.status === 413 && files.length > 1) {
+      const uploadedResults: MultipleUploadResponse["data"] = [];
+      for (const file of files) {
+        const single = await this.uploadSingle(file, folder);
+        if (!single?.success || !single?.data) {
+          throw new Error("Không thể upload từng ảnh sau khi fallback.");
+        }
+        uploadedResults.push(single.data);
+      }
+
+      return {
+        success: true,
+        data: uploadedResults,
+        message: "Uploaded with single-file fallback",
+      };
+    }
+
+    throw new Error(await this.buildErrorMessage(response));
   }
 
   /**
